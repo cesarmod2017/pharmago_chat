@@ -7,13 +7,14 @@ package chat;
 import "google/protobuf/timestamp.proto";
 
 // ============================================================================
-// RAG Service - Manage RAG knowledge base
+// RAG Service - Manage RAG knowledge base with vector embeddings
+// Uses DocumentsTable for storage with OpenAI embeddings
 // ============================================================================
 service RAGService {
-  // Add document/text for training (embedding generation)
+  // Add document/text with embedding generation
   rpc AddDocument (RagAddDocumentRequest) returns (RagAddDocumentResponse);
 
-  // Add multiple documents in batch
+  // Add multiple documents in batch with embeddings
   rpc AddDocumentsBatch (RagAddDocumentsBatchRequest) returns (RagAddDocumentsBatchResponse);
 
   // Delete a document from RAG base
@@ -28,7 +29,7 @@ service RAGService {
   // Get document details
   rpc GetDocument (RagGetDocumentRequest) returns (RagDocumentInfo);
 
-  // Search documents by query (semantic search)
+  // Search documents by query (semantic search using vector similarity)
   rpc SearchDocuments (RagSearchDocumentsRequest) returns (RagSearchDocumentsResponse);
 }
 
@@ -45,9 +46,8 @@ message RagAddDocumentRequest {
 }
 
 message RagAddDocumentResponse {
-  string document_id = 1;
-  int32 chunks_created = 2;
-  google.protobuf.Timestamp created_at = 3;
+  int64 document_id = 1;
+  google.protobuf.Timestamp created_at = 2;
 }
 
 message RagAddDocumentsBatchRequest {
@@ -62,16 +62,15 @@ message RagAddDocumentsBatchResponse {
 }
 
 message RagDeleteDocumentRequest {
-  string document_id = 1;
+  int64 document_id = 1;
 }
 
 message RagDeleteDocumentResponse {
   bool success = 1;
-  int32 chunks_deleted = 2;
 }
 
 message RagDeleteDocumentsBatchRequest {
-  repeated string document_ids = 1;
+  repeated int64 document_ids = 1;
 }
 
 message RagDeleteDocumentsBatchResponse {
@@ -93,19 +92,18 @@ message RagListDocumentsResponse {
 }
 
 message RagGetDocumentRequest {
-  string document_id = 1;
+  int64 document_id = 1;
 }
 
 message RagDocumentInfo {
-  string document_id = 1;
+  int64 document_id = 1;
   string title = 2;
   string document_type = 3;
-  int32 chunk_count = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-  map<string, string> metadata = 7;
-  repeated string tags = 8;
-  int32 content_length = 9;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  map<string, string> metadata = 6;
+  repeated string tags = 7;
+  int32 content_length = 8;
 }
 
 message RagSearchDocumentsRequest {
@@ -120,10 +118,10 @@ message RagSearchDocumentsResponse {
 }
 
 message RagSearchResult {
-  string document_id = 1;
-  string chunk_id = 2;
-  string title = 3;
-  string content = 4;
-  float similarity_score = 5;
-  map<string, string> metadata = 6;
+  int64 document_id = 1;
+  string title = 2;
+  string content = 3;
+  float similarity_score = 4;
+  map<string, string> metadata = 5;
+  repeated string tags = 6;
 }

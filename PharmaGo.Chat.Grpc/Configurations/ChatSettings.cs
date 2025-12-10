@@ -208,7 +208,7 @@ public class EmbeddingSettings
     public int Dimensions { get; set; } = 1536;
     public int MaxChunkSize { get; set; } = 500;
     public int ChunkOverlap { get; set; } = 50;
-    public float DefaultSimilarityThreshold { get; set; } = 0.7f;
+    public float DefaultSimilarityThreshold { get; set; } = 0.3f; // Lowered from 0.7 - semantic similarity rarely exceeds 0.5
     public int DefaultTopK { get; set; } = 5;
 }
 

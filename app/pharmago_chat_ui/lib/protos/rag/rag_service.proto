@@ -30,6 +30,19 @@ service RAGService {
 
   // Search documents by query (semantic search)
   rpc SearchDocuments (RagSearchDocumentsRequest) returns (RagSearchDocumentsResponse);
+
+  // ============================================================================
+  // DocumentsTable operations (Supabase-style direct embedding storage)
+  // ============================================================================
+
+  // Add a document with embedding directly to documents table
+  rpc AddEmbeddingDocument (RagAddEmbeddingDocumentRequest) returns (RagAddEmbeddingDocumentResponse);
+
+  // Delete a document from documents table
+  rpc DeleteEmbeddingDocument (RagDeleteEmbeddingDocumentRequest) returns (RagDeleteEmbeddingDocumentResponse);
+
+  // Search documents by embedding similarity (returns top N most similar)
+  rpc SearchEmbeddingDocuments (RagSearchEmbeddingDocumentsRequest) returns (RagSearchEmbeddingDocumentsResponse);
 }
 
 // ============================================================================
@@ -126,4 +139,42 @@ message RagSearchResult {
   string content = 4;
   float similarity_score = 5;
   map<string, string> metadata = 6;
+}
+
+// ============================================================================
+// DocumentsTable Messages (Supabase-style direct embedding storage)
+// ============================================================================
+
+message RagAddEmbeddingDocumentRequest {
+  string content = 1;
+  map<string, string> metadata = 2;
+}
+
+message RagAddEmbeddingDocumentResponse {
+  int64 document_id = 1;
+}
+
+message RagDeleteEmbeddingDocumentRequest {
+  int64 document_id = 1;
+}
+
+message RagDeleteEmbeddingDocumentResponse {
+  bool success = 1;
+}
+
+message RagSearchEmbeddingDocumentsRequest {
+  string query = 1;
+  int32 limit = 2; // Max results (default 5)
+  map<string, string> filter = 3; // Optional metadata filter
+}
+
+message RagSearchEmbeddingDocumentsResponse {
+  repeated RagEmbeddingSearchResult results = 1;
+}
+
+message RagEmbeddingSearchResult {
+  int64 id = 1;
+  string content = 2;
+  map<string, string> metadata = 3;
+  float similarity_score = 4;
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -12,9 +13,11 @@ using PharmaGo.Chat.Grpc.Data.Context;
 namespace PharmaGo.Chat.Grpc.Migrations
 {
     [DbContext(typeof(ChatDbContext))]
-    partial class ChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251210152548_Document")]
+    partial class Document
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,10 +169,6 @@ namespace PharmaGo.Chat.Grpc.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
 
-                    b.Property<int?>("ChunkIndex")
-                        .HasColumnType("integer")
-                        .HasColumnName("chunk_index");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text")
@@ -193,22 +192,10 @@ namespace PharmaGo.Chat.Grpc.Migrations
                         .HasColumnType("vector(1536)")
                         .HasColumnName("embedding");
 
-                    b.Property<int?>("EndChar")
-                        .HasColumnType("integer")
-                        .HasColumnName("end_char");
-
                     b.Property<string>("Metadata")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("metadata");
-
-                    b.Property<long?>("ParentDocumentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("parent_document_id");
-
-                    b.Property<int?>("StartChar")
-                        .HasColumnType("integer")
-                        .HasColumnName("start_char");
 
                     b.PrimitiveCollection<string[]>("Tags")
                         .IsRequired()
@@ -240,9 +227,6 @@ namespace PharmaGo.Chat.Grpc.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Embedding"), "ivfflat");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Embedding"), new[] { "vector_cosine_ops" });
-
-                    b.HasIndex("ParentDocumentId")
-                        .HasDatabaseName("ix_documents_parent_document_id");
 
                     b.HasIndex("Tags")
                         .HasDatabaseName("ix_documents_tags");

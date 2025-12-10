@@ -89,13 +89,13 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         await _cacheService.AddMessageAsync(request.SessionId, userMessage);
         history.Add(userMessage);
 
-        // Build RAG context
+        // Build RAG context from DocumentsTable using vector similarity search
         var ragContext = await _ragService.BuildContextAsync(request.Message);
         var sources = new List<string>();
 
         if (!string.IsNullOrEmpty(ragContext))
         {
-            var searchResults = await _ragService.SearchAsync(request.Message, limit: 3);
+            var searchResults = await _ragService.SearchAsync(request.Message, limit: 5);
             sources = searchResults.Select(r => r.Title).Distinct().ToList();
         }
 
@@ -157,13 +157,13 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         await _cacheService.AddMessageAsync(request.SessionId, userMessage);
         history.Add(userMessage);
 
-        // Build RAG context
+        // Build RAG context from DocumentsTable using vector similarity search
         var ragContext = await _ragService.BuildContextAsync(request.Message);
         var sources = new List<string>();
 
         if (!string.IsNullOrEmpty(ragContext))
         {
-            var searchResults = await _ragService.SearchAsync(request.Message, limit: 3);
+            var searchResults = await _ragService.SearchAsync(request.Message, limit: 5);
             sources = searchResults.Select(r => r.Title).Distinct().ToList();
         }
 

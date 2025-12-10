@@ -1,8 +1,6 @@
 using System.Text.Json;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Microsoft.EntityFrameworkCore;
-using PharmaGo.Chat.Grpc.Data.Context;
 using PharmaGo.Chat.Grpc.Protos;
 
 namespace PharmaGo.Chat.Grpc.Services.RAG;
@@ -10,16 +8,13 @@ namespace PharmaGo.Chat.Grpc.Services.RAG;
 public class RagGrpcService : RAGService.RAGServiceBase
 {
     private readonly IRagService _ragService;
-    private readonly ChatDbContext _dbContext;
     private readonly ILogger<RagGrpcService> _logger;
 
     public RagGrpcService(
         IRagService ragService,
-        ChatDbContext dbContext,
         ILogger<RagGrpcService> logger)
     {
         _ragService = ragService;
-        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -32,15 +27,14 @@ public class RagGrpcService : RAGService.RAGServiceBase
             request.Title,
             request.Content,
             request.DocumentType,
-            metadata,
-            tags);
+            metadata.Count > 0 ? metadata : null,
+            tags.Length > 0 ? tags : null);
 
         _logger.LogInformation("Added document {DocumentId}: {Title}", document.Id, document.Title);
 
         return new RagAddDocumentResponse
         {
-            DocumentId = document.Id.ToString(),
-            ChunksCreated = document.ChunkCount,
+            DocumentId = document.Id,
             CreatedAt = Timestamp.FromDateTime(document.CreatedAt.ToUniversalTime())
         };
     }
@@ -51,24 +45,34 @@ public class RagGrpcService : RAGService.RAGServiceBase
         int successCount = 0;
         int failureCount = 0;
 
+        var documentsToAdd = new List<DocumentAddRequest>();
+
         foreach (var docRequest in request.Documents)
+        {
+            documentsToAdd.Add(new DocumentAddRequest
+            {
+                Title = docRequest.Title,
+                Content = docRequest.Content,
+                DocumentType = docRequest.DocumentType,
+                Metadata = docRequest.Metadata.Count > 0 ? docRequest.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) : null,
+                Tags = docRequest.Tags.Count > 0 ? docRequest.Tags.ToArray() : null
+            });
+        }
+
+        foreach (var docRequest in documentsToAdd)
         {
             try
             {
-                var metadata = docRequest.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                var tags = docRequest.Tags.ToArray();
-
                 var document = await _ragService.AddDocumentAsync(
                     docRequest.Title,
                     docRequest.Content,
                     docRequest.DocumentType,
-                    metadata,
-                    tags);
+                    docRequest.Metadata,
+                    docRequest.Tags);
 
                 response.Results.Add(new RagAddDocumentResponse
                 {
-                    DocumentId = document.Id.ToString(),
-                    ChunksCreated = document.ChunkCount,
+                    DocumentId = document.Id,
                     CreatedAt = Timestamp.FromDateTime(document.CreatedAt.ToUniversalTime())
                 });
 
@@ -90,25 +94,18 @@ public class RagGrpcService : RAGService.RAGServiceBase
 
     public override async Task<RagDeleteDocumentResponse> DeleteDocument(RagDeleteDocumentRequest request, ServerCallContext context)
     {
-        var documentId = Guid.Parse(request.DocumentId);
-        var document = await _dbContext.Documents
-            .Include(d => d.Chunks)
-            .FirstOrDefaultAsync(d => d.Id == documentId);
+        var success = await _ragService.DeleteDocumentAsync(request.DocumentId);
 
-        if (document == null)
+        if (!success)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Document not found"));
         }
-
-        var chunkCount = document.ChunkCount;
-        var success = await _ragService.DeleteDocumentAsync(documentId);
 
         _logger.LogInformation("Deleted document {DocumentId}", request.DocumentId);
 
         return new RagDeleteDocumentResponse
         {
-            Success = success,
-            ChunksDeleted = chunkCount
+            Success = success
         };
     }
 
@@ -122,8 +119,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
         {
             try
             {
-                var guid = Guid.Parse(documentId);
-                var success = await _ragService.DeleteDocumentAsync(guid);
+                var success = await _ragService.DeleteDocumentAsync(documentId);
 
                 if (success)
                 {
@@ -167,10 +163,9 @@ public class RagGrpcService : RAGService.RAGServiceBase
             var metadata = JsonSerializer.Deserialize<Dictionary<string, string>>(doc.Metadata.AsSpan()) ?? new();
             var info = new RagDocumentInfo
             {
-                DocumentId = doc.Id.ToString(),
+                DocumentId = doc.Id,
                 Title = doc.Title,
                 DocumentType = doc.DocumentType,
-                ChunkCount = doc.ChunkCount,
                 CreatedAt = Timestamp.FromDateTime(doc.CreatedAt.ToUniversalTime()),
                 UpdatedAt = Timestamp.FromDateTime(doc.UpdatedAt.ToUniversalTime()),
                 ContentLength = doc.ContentLength,
@@ -190,8 +185,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
 
     public override async Task<RagDocumentInfo> GetDocument(RagGetDocumentRequest request, ServerCallContext context)
     {
-        var documentId = Guid.Parse(request.DocumentId);
-        var document = await _ragService.GetDocumentAsync(documentId);
+        var document = await _ragService.GetDocumentAsync(request.DocumentId);
 
         if (document == null)
         {
@@ -201,10 +195,9 @@ public class RagGrpcService : RAGService.RAGServiceBase
         var metadata = JsonSerializer.Deserialize<Dictionary<string, string>>(document.Metadata.AsSpan()) ?? new();
         var info = new RagDocumentInfo
         {
-            DocumentId = document.Id.ToString(),
+            DocumentId = document.Id,
             Title = document.Title,
             DocumentType = document.DocumentType,
-            ChunkCount = document.ChunkCount,
             CreatedAt = Timestamp.FromDateTime(document.CreatedAt.ToUniversalTime()),
             UpdatedAt = Timestamp.FromDateTime(document.UpdatedAt.ToUniversalTime()),
             ContentLength = document.ContentLength,
@@ -223,10 +216,11 @@ public class RagGrpcService : RAGService.RAGServiceBase
     {
         var tagFilter = request.TagFilter.Count > 0 ? request.TagFilter.ToArray() : null;
 
+        // Default threshold is 0.3 (lowered from 0.7 for better semantic matching)
         var results = await _ragService.SearchAsync(
             request.Query,
             request.Limit > 0 ? request.Limit : 10,
-            request.SimilarityThreshold > 0 ? request.SimilarityThreshold : 0.7f,
+            request.SimilarityThreshold > 0 ? request.SimilarityThreshold : 0.3f,
             tagFilter);
 
         var response = new RagSearchDocumentsResponse();
@@ -235,11 +229,11 @@ public class RagGrpcService : RAGService.RAGServiceBase
         {
             var searchResult = new RagSearchResult
             {
-                DocumentId = result.DocumentId.ToString(),
-                ChunkId = result.ChunkId.ToString(),
+                DocumentId = result.DocumentId,
                 Title = result.Title,
                 Content = result.Content,
-                SimilarityScore = result.SimilarityScore
+                SimilarityScore = result.SimilarityScore,
+                Tags = { result.Tags }
             };
 
             foreach (var kvp in result.Metadata)

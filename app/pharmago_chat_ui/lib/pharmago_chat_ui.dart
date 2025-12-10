@@ -3,6 +3,12 @@
 /// This library provides UI components for building chat functionality
 /// in PharmaGO applications across Android, iOS, Windows, and Web platforms.
 ///
+/// ## Modules
+///
+/// - **Chat Module**: AI-powered chatbot with streaming support
+/// - **RAG Module**: Knowledge base management with semantic search
+/// - **Support Module**: Human support transfer with real-time messaging
+///
 /// ## Features
 ///
 /// - WhatsApp-style chat interface with customizable colors
@@ -13,21 +19,14 @@
 /// - Multi-language support (en_US, pt_BR, es_ES)
 /// - Environment-aware configuration (debug/release)
 ///
-/// ## Quick Start
+/// ## Quick Start - Chat Module
 ///
 /// ```dart
-/// import 'package:pharmago_chat_ui/pharmago_chat_ui.dart';
+/// import 'package:pharmago_chat_ui/modules/chat/chat_module.dart';
 ///
 /// // Option 1: Use built-in environment configuration (recommended)
-/// // - Debug mode: connects to localhost:5144
-/// // - Release mode: connects to production URL:443
 /// final bindingFactory = ChatBindingFactory(
 ///   channelFactory: ChatEnvironment.channelFactory,
-/// );
-///
-/// // Option 2: Custom channel factory
-/// final bindingFactory = ChatBindingFactory(
-///   channelFactory: () async => yourGrpcChannel,
 /// );
 ///
 /// // 2. Create chat pages
@@ -47,30 +46,65 @@
 /// Get.toNamed(ChatRoutes.chat);
 /// ```
 ///
-/// ## Environment Configuration
-///
-/// Use [ChatEnvironment] for environment-aware connections:
+/// ## Quick Start - RAG Module
 ///
 /// ```dart
-/// // Configure production URL before release
-/// ChatEnvironment.setReleaseHost('chat.yourcompany.com');
+/// import 'package:pharmago_chat_ui/modules/rag/rag_module.dart';
 ///
-/// // Or configure custom settings for testing
-/// ChatEnvironment.configure(
-///   host: 'staging.yourcompany.com',
-///   port: 443,
-///   useTls: true,
+/// final ragBindingFactory = RagBindingFactory(
+///   channelFactory: RagEnvironment.channelFactory,
 /// );
 ///
-/// // Check current environment
-/// print(ChatEnvironment.description);
-/// // Output: [DEBUG] localhost:5144 (insecure)
-/// // Or: [RELEASE] chat.yourcompany.com:443 (TLS)
+/// final ragPages = RagPages(bindingFactory: ragBindingFactory);
+///
+/// GetMaterialApp(
+///   getPages: [...ragPages.getPages()],
+/// );
+///
+/// Get.toNamed(RagRoutes.rag);
 /// ```
+///
+/// ## Quick Start - Support Module
+///
+/// ```dart
+/// import 'package:pharmago_chat_ui/modules/support/support_module.dart';
+///
+/// final supportBindingFactory = SupportBindingFactory(
+///   channelFactory: SupportEnvironment.channelFactory,
+/// );
+///
+/// final supportPages = SupportPages(bindingFactory: supportBindingFactory);
+///
+/// GetMaterialApp(
+///   getPages: [
+///     ...supportPages.getPages(
+///       operatorId: 'operator-123',
+///       operatorName: 'John Doe',
+///     ),
+///   ],
+/// );
+///
+/// Get.toNamed(SupportRoutes.support);
+/// ```
+///
+/// ## Entry Points
+///
+/// The example app provides multiple entry points:
+/// - `main.dart` - Original chat-only entry point
+/// - `main_chat.dart` - Chat module only
+/// - `main_rag.dart` - RAG module only
+/// - `main_support.dart` - Support module only
+/// - `main_all.dart` - All modules combined with module selector
 library;
 
 // gRPC exports
 export 'src/grpc/grpc_exports.dart';
 
 // Chat module exports
-// export 'src/modules/chat/chat_module.dart';
+export 'modules/chat/chat_module.dart';
+
+// RAG module exports
+export 'modules/rag/rag_module.dart';
+
+// Support module exports
+export 'modules/support/support_module.dart';

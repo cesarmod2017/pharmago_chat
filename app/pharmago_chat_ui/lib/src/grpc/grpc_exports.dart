@@ -1,4 +1,4 @@
-// Arquivo gerado automaticamente em 25/11/2025 11:12:39,16 
+// Arquivo gerado automaticamente em 10/12/2025 11:29:57,38 
  
 // Este arquivo exporta todos os arquivos gRPC gerados 
  

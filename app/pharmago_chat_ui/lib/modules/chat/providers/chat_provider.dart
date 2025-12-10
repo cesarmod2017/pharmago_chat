@@ -106,4 +106,18 @@ class ChatProvider {
     final request = ChatGetSessionInfoRequest(sessionId: sessionId);
     return grpcClient.getSessionInfo(request);
   }
+
+  Future<ChatListActiveSessionsResponse> listActiveSessions({
+    int limit = 20,
+    int offset = 0,
+    String? statusFilter,
+  }) async {
+    final grpcClient = await client;
+    final request = ChatListActiveSessionsRequest(
+      limit: limit,
+      offset: offset,
+      statusFilter: statusFilter,
+    );
+    return grpcClient.listActiveSessions(request);
+  }
 }

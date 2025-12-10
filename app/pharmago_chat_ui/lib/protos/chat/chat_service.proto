@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+option csharp_namespace = "PharmaGo.Chat.Grpc.Protos";
+
+package chat;
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// Chat Service - Main chatbot service with session management
+// ============================================================================
+service ChatService {
+  // Create a new chat session
+  rpc CreateSession (ChatCreateSessionRequest) returns (ChatCreateSessionResponse);
+
+  // Send a message and receive response (complete)
+  rpc SendMessage (ChatSendMessageRequest) returns (ChatSendMessageResponse);
+
+  // Send a message and receive streaming response
+  rpc SendMessageStream (ChatSendMessageRequest) returns (stream ChatMessageChunk);
+
+  // Get chat history for a session
+  rpc GetHistory (ChatGetHistoryRequest) returns (ChatGetHistoryResponse);
+
+  // End a chat session
+  rpc EndSession (ChatEndSessionRequest) returns (ChatEndSessionResponse);
+
+  // Get session info
+  rpc GetSessionInfo (ChatGetSessionInfoRequest) returns (ChatSessionInfo);
+
+  // List active sessions (for admin/support)
+  rpc ListActiveSessions (ChatListActiveSessionsRequest) returns (ChatListActiveSessionsResponse);
+}
+
+// ============================================================================
+// Chat Messages
+// ============================================================================
+
+message ChatCreateSessionRequest {
+  string name = 1;
+  string email = 2;
+  map<string, string> metadata = 3; // Additional user data
+}
+
+message ChatCreateSessionResponse {
+  string session_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  string welcome_message = 3;
+}
+
+message ChatSendMessageRequest {
+  string session_id = 1;
+  string message = 2;
+  bool use_streaming = 3; // Hint for response mode
+  string preferred_model = 4; // Optional: claude, gpt-5.0, gpt-5.1, gpt-4.1
+}
+
+message ChatSendMessageResponse {
+  string message_id = 1;
+  string response = 2;
+  string model_used = 3;
+  int32 tokens_used = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  repeated string sources = 6; // RAG sources used
+}
+
+message ChatMessageChunk {
+  string chunk_id = 1;
+  string content = 2;
+  bool is_final = 3;
+  string model_used = 4;
+  int32 tokens_used = 5; // Only populated on final chunk
+  repeated string sources = 6; // Only populated on final chunk
+}
+
+message ChatGetHistoryRequest {
+  string session_id = 1;
+  int32 limit = 2; // 0 = all
+  int32 offset = 3;
+}
+
+message ChatGetHistoryResponse {
+  repeated ChatMessage messages = 1;
+  int32 total_count = 2;
+}
+
+message ChatMessage {
+  string message_id = 1;
+  string role = 2; // user, assistant, system
+  string content = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string model_used = 5;
+  int32 tokens_used = 6;
+}
+
+message ChatEndSessionRequest {
+  string session_id = 1;
+  string reason = 2; // Optional
+}
+
+message ChatEndSessionResponse {
+  bool success = 1;
+  google.protobuf.Timestamp ended_at = 2;
+  int32 total_messages = 3;
+  int32 total_tokens = 4;
+}
+
+message ChatGetSessionInfoRequest {
+  string session_id = 1;
+}
+
+message ChatSessionInfo {
+  string session_id = 1;
+  string user_name = 2;
+  string user_email = 3;
+  string status = 4; // active, ended, transferred
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp last_activity = 6;
+  int32 message_count = 7;
+  int32 total_tokens = 8;
+  string current_operator_id = 9; // If in support mode
+  map<string, string> metadata = 10;
+}
+
+message ChatListActiveSessionsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  string status_filter = 3; // Optional: active, transferred
+}
+
+message ChatListActiveSessionsResponse {
+  repeated ChatSessionInfo sessions = 1;
+  int32 total_count = 2;
+}

@@ -1,0 +1,148 @@
+syntax = "proto3";
+
+option csharp_namespace = "PharmaGo.Chat.Grpc.Protos";
+
+package chat;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// ============================================================================
+// Support Service - Transfer conversation to human support
+// ============================================================================
+service SupportService {
+  // Request transfer to human support
+  rpc RequestTransfer (SupportRequestTransferRequest) returns (SupportRequestTransferResponse);
+
+  // Accept a transfer request (for support operators)
+  rpc AcceptTransfer (SupportAcceptTransferRequest) returns (SupportAcceptTransferResponse);
+
+  // End support session and return to bot (or close)
+  rpc EndSupportSession (SupportEndSupportSessionRequest) returns (SupportEndSupportSessionResponse);
+
+  // Send message in support mode (operator -> client or client -> operator)
+  rpc SendSupportMessage (SupportSendSupportMessageRequest) returns (SupportSendSupportMessageResponse);
+
+  // Stream support messages (for real-time updates)
+  rpc StreamSupportMessages (SupportStreamSupportMessagesRequest) returns (stream SupportMessage);
+
+  // List pending transfer requests (for support dashboard)
+  rpc ListPendingTransfers (SupportListPendingTransfersRequest) returns (SupportListPendingTransfersResponse);
+
+  // Get support queue status
+  rpc GetQueueStatus (google.protobuf.Empty) returns (SupportQueueStatusResponse);
+}
+
+// ============================================================================
+// Support Messages
+// ============================================================================
+
+message SupportRequestTransferRequest {
+  string session_id = 1;
+  string reason = 2;
+  int32 priority = 3; // 1-5, 5 being highest
+}
+
+message SupportRequestTransferResponse {
+  string transfer_id = 1;
+  int32 queue_position = 2;
+  string estimated_wait = 3;
+  google.protobuf.Timestamp requested_at = 4;
+}
+
+message SupportAcceptTransferRequest {
+  string transfer_id = 1;
+  string operator_id = 2;
+  string operator_name = 3;
+}
+
+message SupportAcceptTransferResponse {
+  bool success = 1;
+  string session_id = 2;
+  string user_name = 3;
+  string user_email = 4;
+  repeated SupportChatMessage history = 5; // ChatMessage imported from chat_service.proto
+  google.protobuf.Timestamp accepted_at = 6;
+}
+
+message SupportEndSupportSessionRequest {
+  string session_id = 1;
+  string operator_id = 2;
+  string resolution = 3; // resolved, returned_to_bot, closed
+  string notes = 4;
+}
+
+message SupportEndSupportSessionResponse {
+  bool success = 1;
+  google.protobuf.Timestamp ended_at = 2;
+  int32 support_duration_seconds = 3;
+}
+
+message SupportSendSupportMessageRequest {
+  string session_id = 1;
+  string sender_id = 2; // operator_id or empty for client
+  string sender_type = 3; // operator, client
+  string message = 4;
+}
+
+message SupportSendSupportMessageResponse {
+  string message_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  bool delivered = 3;
+}
+
+message SupportStreamSupportMessagesRequest {
+  string session_id = 1;
+  string subscriber_id = 2; // operator_id or client session_id
+}
+
+message SupportMessage {
+  string message_id = 1;
+  string session_id = 2;
+  string sender_id = 3;
+  string sender_type = 4;
+  string sender_name = 5;
+  string content = 6;
+  google.protobuf.Timestamp timestamp = 7;
+  string message_type = 8; // text, system, transfer_notice
+}
+
+message SupportListPendingTransfersRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message SupportListPendingTransfersResponse {
+  repeated SupportTransferRequest transfers = 1;
+  int32 total_count = 2;
+}
+
+message SupportTransferRequest {
+  string transfer_id = 1;
+  string session_id = 2;
+  string user_name = 3;
+  string user_email = 4;
+  string reason = 5;
+  int32 priority = 6;
+  google.protobuf.Timestamp requested_at = 7;
+  int32 wait_time_seconds = 8;
+  string last_message = 9;
+}
+
+message SupportQueueStatusResponse {
+  int32 pending_transfers = 1;
+  int32 active_support_sessions = 2;
+  int32 available_operators = 3;
+  float average_wait_time_seconds = 4;
+}
+
+
+
+message SupportChatMessage {
+  string message_id = 1;
+  string role = 2; // user, assistant, system
+  string content = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string model_used = 5;
+  int32 tokens_used = 6;
+}

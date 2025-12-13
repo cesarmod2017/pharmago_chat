@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/chat_theme.dart';
 
@@ -13,6 +15,14 @@ class ChatInput extends StatelessWidget {
   final Widget? leading;
   final List<Widget>? trailing;
 
+  /// If true, pressing Enter sends the message on Windows/Web.
+  /// If false, CTRL+Enter is required on Windows/Web.
+  /// On mobile (Android/iOS), Enter never sends - only the send button does.
+  final bool sendOnEnter;
+
+  /// Custom icon for the send button.
+  final IconData? sendButtonIcon;
+
   const ChatInput({
     super.key,
     required this.controller,
@@ -24,7 +34,58 @@ class ChatInput extends StatelessWidget {
     this.maxLines = 5,
     this.leading,
     this.trailing,
+    this.sendOnEnter = true,
+    this.sendButtonIcon,
   });
+
+  bool get _isMobile =>
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
+
+  bool get _isDesktopOrWeb =>
+      kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.macOS ||
+      defaultTargetPlatform == TargetPlatform.linux;
+
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is! KeyDownEvent) return;
+    if (!enabled) return;
+
+    final isEnterKey = event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (!isEnterKey) return;
+
+    // On mobile, Enter never sends - only the send button does
+    if (_isMobile) return;
+
+    // On desktop/web
+    if (_isDesktopOrWeb) {
+      final isCtrlPressed = HardwareKeyboard.instance.isControlPressed;
+      final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
+
+      // Shift+Enter always inserts newline
+      if (isShiftPressed) return;
+
+      if (sendOnEnter) {
+        // Enter sends, Ctrl+Enter for newline
+        if (!isCtrlPressed) {
+          _sendIfValid();
+        }
+      } else {
+        // Ctrl+Enter sends
+        if (isCtrlPressed) {
+          _sendIfValid();
+        }
+      }
+    }
+  }
+
+  void _sendIfValid() {
+    if (enabled && controller.text.trim().isNotEmpty) {
+      onSend();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,35 +122,46 @@ class ChatInput extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: controller,
-                        focusNode: focusNode,
-                        enabled: enabled,
-                        maxLines: maxLines,
-                        minLines: 1,
-                        textCapitalization: TextCapitalization.sentences,
-                        textInputAction: TextInputAction.newline,
-                        keyboardType: TextInputType.multiline,
-                        style: TextStyle(
-                          color: chatTheme.inputTextColor,
-                          fontSize: 16,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: hintText ?? 'Digite uma mensagem...',
-                          hintStyle: TextStyle(
-                            color:
-                                chatTheme.inputTextColor.withValues(alpha: 0.5),
+                      child: KeyboardListener(
+                        focusNode: FocusNode(),
+                        onKeyEvent: _handleKeyEvent,
+                        child: TextField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          enabled: enabled,
+                          maxLines: maxLines,
+                          minLines: 1,
+                          textCapitalization: TextCapitalization.sentences,
+                          textInputAction: _isMobile
+                              ? TextInputAction.newline
+                              : (sendOnEnter
+                                  ? TextInputAction.send
+                                  : TextInputAction.newline),
+                          keyboardType: TextInputType.multiline,
+                          style: TextStyle(
+                            color: chatTheme.inputTextColor,
                             fontSize: 16,
                           ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                          decoration: InputDecoration(
+                            hintText: hintText ?? 'Digite uma mensagem...',
+                            hintStyle: TextStyle(
+                              color: chatTheme.inputTextColor
+                                  .withValues(alpha: 0.5),
+                              fontSize: 16,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                           ),
+                          onSubmitted: (_) {
+                            // onSubmitted is called when textInputAction is send
+                            if (enabled && _isDesktopOrWeb && sendOnEnter) {
+                              onSend();
+                            }
+                          },
                         ),
-                        onSubmitted: (_) {
-                          if (enabled) onSend();
-                        },
                       ),
                     ),
                     if (trailing != null) ...trailing!,
@@ -101,6 +173,7 @@ class ChatInput extends StatelessWidget {
             _SendButton(
               onPressed: enabled ? onSend : null,
               theme: chatTheme,
+              icon: sendButtonIcon,
             ),
           ],
         ),
@@ -112,10 +185,12 @@ class ChatInput extends StatelessWidget {
 class _SendButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final ChatThemeData theme;
+  final IconData? icon;
 
   const _SendButton({
     required this.onPressed,
     required this.theme,
+    this.icon,
   });
 
   @override
@@ -133,8 +208,9 @@ class _SendButton extends StatelessWidget {
           height: 48,
           alignment: Alignment.center,
           child: Icon(
-            Icons.send,
-            color: Colors.white.withValues(alpha: onPressed != null ? 1.0 : 0.5),
+            icon ?? Icons.send,
+            color: theme.sendButtonIconColor
+                .withValues(alpha: onPressed != null ? 1.0 : 0.5),
             size: 22,
           ),
         ),

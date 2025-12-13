@@ -28,7 +28,7 @@ public class RedisCacheService : IChatCacheService
         _logger = logger;
     }
 
-    public async Task<bool> CreateSessionAsync(string sessionId, string userName, string userEmail, Dictionary<string, string>? metadata = null)
+    public async Task<bool> CreateSessionAsync(string sessionId, string userName, string userEmail, string client, string agentName, string? erpName, string language, string type, Dictionary<string, string>? metadata = null)
     {
         var session = new SessionCacheData
         {
@@ -40,7 +40,12 @@ public class RedisCacheService : IChatCacheService
             LastActivity = DateTime.UtcNow,
             MessageCount = 0,
             TotalTokens = 0,
-            Metadata = metadata ?? new Dictionary<string, string>()
+            Metadata = metadata ?? new Dictionary<string, string>(),
+            Client = client,
+            AgentName = agentName,
+            ErpName = erpName,
+            Language = language,
+            Type = type
         };
 
         var key = SessionPrefix + sessionId;
@@ -48,7 +53,8 @@ public class RedisCacheService : IChatCacheService
         var expiry = TimeSpan.FromMinutes(_settings.SessionExpirationMinutes);
 
         var result = await _db.StringSetAsync(key, json, expiry);
-        _logger.LogDebug("Created session {SessionId} in Redis: {Result}", sessionId, result);
+        _logger.LogDebug("Created session {SessionId} in Redis with Client='{Client}', Type='{Type}': {Result}",
+            sessionId, client, type, result);
 
         return result;
     }

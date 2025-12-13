@@ -4,6 +4,7 @@ using PharmaGo.Chat.Grpc.Data.Context;
 using PharmaGo.Chat.Grpc.Services.AI;
 using PharmaGo.Chat.Grpc.Services.Chat;
 using PharmaGo.Chat.Grpc.Services.RAG;
+using PharmaGo.Chat.Grpc.Services.Prompts;
 using PharmaGo.Chat.Grpc.Services.Support;
 using Polly;
 using Polly.Extensions.Http;
@@ -203,6 +204,7 @@ app.MapHealthChecks("/health");
 app.MapGrpcService<ChatGrpcService>().RequireCors("CorsPolicy").EnableGrpcWeb();
 app.MapGrpcService<RagGrpcService>().RequireCors("CorsPolicy").EnableGrpcWeb();
 app.MapGrpcService<SupportGrpcService>().RequireCors("CorsPolicy").EnableGrpcWeb();
+app.MapGrpcService<PromptGrpcService>().RequireCors("CorsPolicy").EnableGrpcWeb();
 
 if (app.Environment.IsDevelopment())
 {

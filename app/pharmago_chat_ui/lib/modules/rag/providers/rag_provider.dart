@@ -30,6 +30,7 @@ class RagProvider {
     required String title,
     required String content,
     required String documentType,
+    String? type,
     Map<String, String>? metadata,
     List<String>? tags,
   }) async {
@@ -38,6 +39,7 @@ class RagProvider {
       title: title,
       content: content,
       documentType: documentType,
+      type: type ?? '',
       metadata: metadata,
       tags: tags,
     );
@@ -71,6 +73,7 @@ class RagProvider {
   Future<RagListDocumentsResponse> listDocuments({
     int limit = 20,
     int offset = 0,
+    String? documentTypeFilter,
     String? typeFilter,
     List<String>? tagFilter,
   }) async {
@@ -78,7 +81,8 @@ class RagProvider {
     final request = RagListDocumentsRequest(
       limit: limit,
       offset: offset,
-      typeFilter: typeFilter,
+      documentTypeFilter: documentTypeFilter ?? '',
+      typeFilter: typeFilter ?? '',
       tagFilter: tagFilter,
     );
     return grpcClient.listDocuments(request);
@@ -96,6 +100,7 @@ class RagProvider {
     required String query,
     int limit = 10,
     double similarityThreshold = 0.7,
+    String? typeFilter,
     List<String>? tagFilter,
   }) async {
     final grpcClient = await client;
@@ -103,6 +108,7 @@ class RagProvider {
       query: query,
       limit: limit,
       similarityThreshold: similarityThreshold,
+      typeFilter: typeFilter ?? '',
       tagFilter: tagFilter,
     );
     return grpcClient.searchDocuments(request);

@@ -1,6 +1,8 @@
+import 'package:example/pages/chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pharmago_chat_ui/modules/prompts/routes/prompts_routes.dart';
 
-import 'chat_page.dart';
 import 'rag_page.dart';
 import 'support_page.dart';
 
@@ -56,6 +58,14 @@ class HomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const SupportPage()),
               ),
             ),
+            const SizedBox(height: 16),
+            _ModuleCard(
+              icon: Icons.list,
+              color: Colors.red,
+              title: 'Prompts',
+              description: 'Gerenciamento de prompts',
+              onTap: () => Get.toNamed(PromptsRoutes.prompts),
+            ),
           ],
         ),
       ),
@@ -108,17 +118,12 @@ class _ModuleCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey.shade400,
-              ),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
             ],
           ),
         ),

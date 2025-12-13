@@ -8,6 +8,11 @@ class ChatBinding implements Bindings {
   final Future<ClientChannel> Function() channelFactory;
   final String userName;
   final String userEmail;
+  final String client;
+  final String agentName;
+  final String? erpName;
+  final String language;
+  final String type;
   final Map<String, String>? metadata;
   final bool useStreaming;
   final String? preferredModel;
@@ -16,6 +21,11 @@ class ChatBinding implements Bindings {
     required this.channelFactory,
     required this.userName,
     required this.userEmail,
+    required this.client,
+    required this.agentName,
+    this.erpName,
+    this.language = 'pt-BR',
+    required this.type,
     this.metadata,
     this.useStreaming = true,
     this.preferredModel,
@@ -33,6 +43,11 @@ class ChatBinding implements Bindings {
         provider: Get.find<ChatProvider>(),
         userName: userName,
         userEmail: userEmail,
+        client: client,
+        agentName: agentName,
+        erpName: erpName,
+        language: language,
+        type: type,
         metadata: metadata,
         useStreaming: useStreaming,
         preferredModel: preferredModel,
@@ -50,6 +65,11 @@ class ChatBindingFactory {
   ChatBinding create({
     required String userName,
     required String userEmail,
+    required String client,
+    required String agentName,
+    String? erpName,
+    String language = 'pt-BR',
+    required String type,
     Map<String, String>? metadata,
     bool useStreaming = true,
     String? preferredModel,
@@ -58,6 +78,11 @@ class ChatBindingFactory {
       channelFactory: channelFactory,
       userName: userName,
       userEmail: userEmail,
+      client: client,
+      agentName: agentName,
+      erpName: erpName,
+      language: language,
+      type: type,
       metadata: metadata,
       useStreaming: useStreaming,
       preferredModel: preferredModel,

@@ -36,6 +36,11 @@ class _ChatPageState extends State<ChatPage> {
           provider: _provider!,
           userName: 'Usuario',
           userEmail: 'usuario@pharmago.com.br',
+          client: 'farmago',
+          agentName: 'Assistente PharmaGO',
+          erpName: null,
+          language: 'pt-BR',
+          type: 'farmago',
           useStreaming: true,
           metadata: {
             'source': 'chat_app',
@@ -123,6 +128,20 @@ class _ChatPageState extends State<ChatPage> {
       );
     }
 
+    // Example of custom theme (uncomment to use):
+    // final customTheme = ChatThemeData.light(
+    //   headerBackgroundColor: Colors.blue,
+    //   headerTextColor: Colors.white,
+    //   headerAvatarBackgroundColor: Colors.blue.shade700,
+    //   headerAvatarTextColor: Colors.white,
+    //   userBubbleColor: Colors.blue,
+    //   userBubbleTextColor: Colors.white,
+    //   assistantBubbleColor: Colors.grey.shade200,
+    //   assistantBubbleTextColor: Colors.black87,
+    //   sendButtonColor: Colors.blue,
+    //   sendButtonIconColor: Colors.white,
+    // );
+
     return Scaffold(
       body: SafeArea(
         child: ChatPageWidget(
@@ -133,6 +152,7 @@ class _ChatPageState extends State<ChatPage> {
                 ? 'Modo Demo'
                 : '${ChatEnvironment.host}:${ChatEnvironment.port}',
             isOnline: true,
+            // avatarUrl: 'https://example.com/avatar.png', // Optional avatar URL
           ),
           onBackPressed: () => Navigator.of(context).pop(),
           headerActions: [
@@ -148,6 +168,13 @@ class _ChatPageState extends State<ChatPage> {
             ),
           ],
           inputHintText: 'Digite sua mensagem...',
+          // theme: customTheme, // Uncomment to use custom theme
+          //
+          // sendOnEnter: true => Enter sends on Windows/Web, Shift+Enter for newline
+          // sendOnEnter: false => Ctrl+Enter sends on Windows/Web, Enter for newline
+          // On mobile (Android/iOS), Enter never sends - only the send button does
+          sendOnEnter: true,
+          // sendButtonIcon: Icons.arrow_upward, // Custom send button icon
         ),
       ),
     );
@@ -160,6 +187,9 @@ class _MockChatController extends ChatController {
           provider: _MockChatProvider(),
           userName: 'Test User',
           userEmail: 'test@example.com',
+          client: 'farmago',
+          agentName: 'Assistente Demo',
+          type: 'farmago',
           useStreaming: false,
         );
 

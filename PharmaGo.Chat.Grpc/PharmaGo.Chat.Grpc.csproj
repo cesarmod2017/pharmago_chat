@@ -17,6 +17,7 @@
     <Protobuf Include="Protos\Chat\chat_service.proto" />
     <Protobuf Include="Protos\Rag\rag_service.proto" />
     <Protobuf Include="Protos\Support\support_service.proto" />
+    <Protobuf Include="Protos\Prompts\prompt_service.proto" />
   </ItemGroup>
 
   <ItemGroup>

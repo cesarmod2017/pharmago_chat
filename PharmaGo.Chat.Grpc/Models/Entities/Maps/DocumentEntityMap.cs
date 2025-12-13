@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace PharmaGo.Chat.Grpc.Models.Entities.Maps;
 
-public class DocumentsTableMap : IEntityTypeConfiguration<DocumentsTable>
+public class DocumentEntityMap : IEntityTypeConfiguration<DocumentEntity>
 {
-    public void Configure(EntityTypeBuilder<DocumentsTable> entity)
+    public void Configure(EntityTypeBuilder<DocumentEntity> entity)
     {
         entity.ToTable("documents");
 
@@ -22,6 +22,10 @@ public class DocumentsTableMap : IEntityTypeConfiguration<DocumentsTable>
         entity.Property(e => e.DocumentType)
               .HasColumnName("document_type")
               .HasMaxLength(50);
+
+        entity.Property(e => e.Type)
+              .HasColumnName("type")
+              .HasMaxLength(100);
 
         entity.Property(e => e.Content)
               .HasColumnName("content");
@@ -65,6 +69,7 @@ public class DocumentsTableMap : IEntityTypeConfiguration<DocumentsTable>
         // Indexes
         entity.HasIndex(e => e.Title).HasDatabaseName("ix_documents_title");
         entity.HasIndex(e => e.DocumentType).HasDatabaseName("ix_documents_document_type");
+        entity.HasIndex(e => e.Type).HasDatabaseName("ix_documents_type");
         entity.HasIndex(e => e.CreatedAt).HasDatabaseName("ix_documents_created_at");
         entity.HasIndex(e => e.Tags).HasMethod("gin").HasDatabaseName("ix_documents_tags");
 

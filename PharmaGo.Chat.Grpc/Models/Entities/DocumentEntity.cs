@@ -8,7 +8,7 @@ namespace PharmaGo.Chat.Grpc.Models.Entities;
 /// Supports chunking: parent documents have ParentDocumentId = null,
 /// chunks have ParentDocumentId pointing to the parent.
 /// </summary>
-public class DocumentsTable
+public class DocumentEntity
 {
     /// <summary>
     /// Primary key - auto-incrementing bigint
@@ -44,6 +44,12 @@ public class DocumentsTable
     /// Document type: text, markdown, pdf_text, html
     /// </summary>
     public string DocumentType { get; set; } = "text";
+
+    /// <summary>
+    /// Type for filtering by client/agent (e.g., farmago, linx, aotech)
+    /// Used to filter prompts and RAG documents per client
+    /// </summary>
+    public string Type { get; set; } = string.Empty;
 
     /// <summary>
     /// Document content - corresponds to Document.pageContent in LangChain

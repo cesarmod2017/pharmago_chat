@@ -7,7 +7,9 @@ package chat;
 import "google/protobuf/timestamp.proto";
 
 // ============================================================================
-// RAG Service - Manage RAG knowledge base
+// RAG Service - Manage RAG knowledge base with vector embeddings
+// Uses DocumentEntity for storage with OpenAI embeddings
+// Supports filtering by 'type' field for multi-client/agent scenarios
 // ============================================================================
 service RAGService {
   // Add document/text for training (embedding generation)
@@ -53,8 +55,9 @@ message RagAddDocumentRequest {
   string title = 1;
   string content = 2;
   string document_type = 3; // text, markdown, pdf_text, html
-  map<string, string> metadata = 4;
-  repeated string tags = 5;
+  string type = 4; // Client/agent filter: farmago, linx, aotech, etc.
+  map<string, string> metadata = 5;
+  repeated string tags = 6;
 }
 
 message RagAddDocumentResponse {
@@ -96,8 +99,9 @@ message RagDeleteDocumentsBatchResponse {
 message RagListDocumentsRequest {
   int32 limit = 1;
   int32 offset = 2;
-  string type_filter = 3;
-  repeated string tag_filter = 4;
+  string document_type_filter = 3; // Filter by document type: text, markdown, pdf_text, html
+  string type_filter = 4; // Filter by client/agent type: farmago, linx, aotech, etc.
+  repeated string tag_filter = 5;
 }
 
 message RagListDocumentsResponse {
@@ -113,19 +117,21 @@ message RagDocumentInfo {
   string document_id = 1;
   string title = 2;
   string document_type = 3;
-  int32 chunk_count = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-  map<string, string> metadata = 7;
-  repeated string tags = 8;
-  int32 content_length = 9;
+  string type = 4; // Client/agent type: farmago, linx, aotech, etc.
+  int32 chunk_count = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  map<string, string> metadata = 8;
+  repeated string tags = 9;
+  int32 content_length = 10;
 }
 
 message RagSearchDocumentsRequest {
   string query = 1;
   int32 limit = 2; // Max results
   float similarity_threshold = 3; // 0.0 - 1.0
-  repeated string tag_filter = 4;
+  string type_filter = 4; // Filter by client/agent type: farmago, linx, aotech, etc.
+  repeated string tag_filter = 5;
 }
 
 message RagSearchDocumentsResponse {
@@ -137,8 +143,10 @@ message RagSearchResult {
   string chunk_id = 2;
   string title = 3;
   string content = 4;
-  float similarity_score = 5;
-  map<string, string> metadata = 6;
+  string type = 5; // Client/agent type: farmago, linx, aotech, etc.
+  float similarity_score = 6;
+  map<string, string> metadata = 7;
+  repeated string tags = 8;
 }
 
 // ============================================================================

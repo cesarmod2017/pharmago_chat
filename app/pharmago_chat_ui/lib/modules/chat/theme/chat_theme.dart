@@ -9,8 +9,11 @@ class ChatThemeData {
   final Color inputBackgroundColor;
   final Color inputTextColor;
   final Color sendButtonColor;
+  final Color sendButtonIconColor;
   final Color headerBackgroundColor;
   final Color headerTextColor;
+  final Color headerAvatarBackgroundColor;
+  final Color headerAvatarTextColor;
   final Color timestampColor;
   final Color onlineIndicatorColor;
 
@@ -23,8 +26,11 @@ class ChatThemeData {
     required this.inputBackgroundColor,
     required this.inputTextColor,
     required this.sendButtonColor,
+    required this.sendButtonIconColor,
     required this.headerBackgroundColor,
     required this.headerTextColor,
+    required this.headerAvatarBackgroundColor,
+    required this.headerAvatarTextColor,
     required this.timestampColor,
     required this.onlineIndicatorColor,
   });
@@ -44,8 +50,11 @@ class ChatThemeData {
       inputBackgroundColor: colorScheme.surfaceContainerHighest,
       inputTextColor: colorScheme.onSurface,
       sendButtonColor: colorScheme.primary,
+      sendButtonIconColor: colorScheme.onPrimary,
       headerBackgroundColor: colorScheme.primary,
       headerTextColor: colorScheme.onPrimary,
+      headerAvatarBackgroundColor: colorScheme.onPrimary.withValues(alpha: 0.2),
+      headerAvatarTextColor: colorScheme.onPrimary,
       timestampColor: colorScheme.onSurfaceVariant,
       onlineIndicatorColor: const Color(0xFF4CAF50),
     );
@@ -60,8 +69,11 @@ class ChatThemeData {
     Color? inputBackgroundColor,
     Color? inputTextColor,
     Color? sendButtonColor,
+    Color? sendButtonIconColor,
     Color? headerBackgroundColor,
     Color? headerTextColor,
+    Color? headerAvatarBackgroundColor,
+    Color? headerAvatarTextColor,
     Color? timestampColor,
     Color? onlineIndicatorColor,
   }) {
@@ -74,8 +86,12 @@ class ChatThemeData {
       inputBackgroundColor: inputBackgroundColor ?? Colors.white,
       inputTextColor: inputTextColor ?? Colors.black87,
       sendButtonColor: sendButtonColor ?? const Color(0xFF075E54),
+      sendButtonIconColor: sendButtonIconColor ?? Colors.white,
       headerBackgroundColor: headerBackgroundColor ?? const Color(0xFF075E54),
       headerTextColor: headerTextColor ?? Colors.white,
+      headerAvatarBackgroundColor:
+          headerAvatarBackgroundColor ?? Colors.white.withValues(alpha: 0.2),
+      headerAvatarTextColor: headerAvatarTextColor ?? Colors.white,
       timestampColor: timestampColor ?? Colors.grey,
       onlineIndicatorColor: onlineIndicatorColor ?? const Color(0xFF4CAF50),
     );
@@ -90,8 +106,11 @@ class ChatThemeData {
     Color? inputBackgroundColor,
     Color? inputTextColor,
     Color? sendButtonColor,
+    Color? sendButtonIconColor,
     Color? headerBackgroundColor,
     Color? headerTextColor,
+    Color? headerAvatarBackgroundColor,
+    Color? headerAvatarTextColor,
     Color? timestampColor,
     Color? onlineIndicatorColor,
   }) {
@@ -105,8 +124,12 @@ class ChatThemeData {
       inputBackgroundColor: inputBackgroundColor ?? const Color(0xFF1F2C34),
       inputTextColor: inputTextColor ?? Colors.white.withValues(alpha: 0.87),
       sendButtonColor: sendButtonColor ?? const Color(0xFF00A884),
+      sendButtonIconColor: sendButtonIconColor ?? Colors.white,
       headerBackgroundColor: headerBackgroundColor ?? const Color(0xFF1F2C34),
       headerTextColor: headerTextColor ?? Colors.white,
+      headerAvatarBackgroundColor:
+          headerAvatarBackgroundColor ?? Colors.white.withValues(alpha: 0.2),
+      headerAvatarTextColor: headerAvatarTextColor ?? Colors.white,
       timestampColor: timestampColor ?? Colors.grey,
       onlineIndicatorColor: onlineIndicatorColor ?? const Color(0xFF4CAF50),
     );
@@ -121,8 +144,11 @@ class ChatThemeData {
     Color? inputBackgroundColor,
     Color? inputTextColor,
     Color? sendButtonColor,
+    Color? sendButtonIconColor,
     Color? headerBackgroundColor,
     Color? headerTextColor,
+    Color? headerAvatarBackgroundColor,
+    Color? headerAvatarTextColor,
     Color? timestampColor,
     Color? onlineIndicatorColor,
   }) {
@@ -136,9 +162,14 @@ class ChatThemeData {
       inputBackgroundColor: inputBackgroundColor ?? this.inputBackgroundColor,
       inputTextColor: inputTextColor ?? this.inputTextColor,
       sendButtonColor: sendButtonColor ?? this.sendButtonColor,
+      sendButtonIconColor: sendButtonIconColor ?? this.sendButtonIconColor,
       headerBackgroundColor:
           headerBackgroundColor ?? this.headerBackgroundColor,
       headerTextColor: headerTextColor ?? this.headerTextColor,
+      headerAvatarBackgroundColor:
+          headerAvatarBackgroundColor ?? this.headerAvatarBackgroundColor,
+      headerAvatarTextColor:
+          headerAvatarTextColor ?? this.headerAvatarTextColor,
       timestampColor: timestampColor ?? this.timestampColor,
       onlineIndicatorColor: onlineIndicatorColor ?? this.onlineIndicatorColor,
     );

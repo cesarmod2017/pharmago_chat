@@ -40,16 +40,31 @@ public class ChatGrpcService : ChatService.ChatServiceBase
     {
         var sessionId = Guid.NewGuid().ToString();
         var metadata = request.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        var language = string.IsNullOrEmpty(request.Language) ? "pt-BR" : request.Language;
 
-        // Create session in Redis cache
-        await _cacheService.CreateSessionAsync(sessionId, request.Name, request.Email, metadata);
+        // Create session in Redis cache with new parameters
+        await _cacheService.CreateSessionAsync(
+            sessionId,
+            request.Name,
+            request.Email,
+            request.Client,
+            request.AgentName,
+            string.IsNullOrEmpty(request.ErpName) ? null : request.ErpName,
+            language,
+            request.Type,
+            metadata);
 
-        // Persist to database
+        // Persist to database with new parameters
         var session = new ChatSession
         {
             Id = Guid.Parse(sessionId),
             UserName = request.Name,
             UserEmail = request.Email,
+            Client = request.Client,
+            AgentName = request.AgentName,
+            ErpName = string.IsNullOrEmpty(request.ErpName) ? null : request.ErpName,
+            Language = language,
+            Type = request.Type,
             Metadata = JsonSerializer.Serialize(metadata)
         };
         _dbContext.Sessions.Add(session);
@@ -63,7 +78,8 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         };
         await _cacheService.AddMessageAsync(sessionId, systemMessage);
 
-        _logger.LogInformation("Created session {SessionId} for user {UserName}", sessionId, request.Name);
+        _logger.LogInformation("Created session {SessionId} for user {UserName}, Client='{Client}', Type='{Type}'",
+            sessionId, request.Name, request.Client, request.Type);
 
         return new ChatCreateSessionResponse
         {
@@ -76,7 +92,8 @@ public class ChatGrpcService : ChatService.ChatServiceBase
     public override async Task<ChatSendMessageResponse> SendMessage(ChatSendMessageRequest request, ServerCallContext context)
     {
         // Validate session
-        if (!await _cacheService.SessionExistsAsync(request.SessionId))
+        var sessionData = await _cacheService.GetSessionAsync(request.SessionId);
+        if (sessionData == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Session not found"));
         }
@@ -89,13 +106,15 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         await _cacheService.AddMessageAsync(request.SessionId, userMessage);
         history.Add(userMessage);
 
-        // Build RAG context from DocumentsTable using vector similarity search
-        var ragContext = await _ragService.BuildContextAsync(request.Message);
+        // Build RAG context from DocumentEntity using vector similarity search
+        // Filter by session type if available
+        var typeFilter = string.IsNullOrEmpty(sessionData.Type) ? null : sessionData.Type;
+        var ragContext = await _ragService.BuildContextAsync(request.Message, typeFilter);
         var sources = new List<string>();
 
         if (!string.IsNullOrEmpty(ragContext))
         {
-            var searchResults = await _ragService.SearchAsync(request.Message, limit: 5);
+            var searchResults = await _ragService.SearchAsync(request.Message, limit: 5, typeFilter: typeFilter);
             sources = searchResults.Select(r => r.Title).Distinct().ToList();
         }
 
@@ -144,7 +163,8 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         ServerCallContext context)
     {
         // Validate session
-        if (!await _cacheService.SessionExistsAsync(request.SessionId))
+        var sessionData = await _cacheService.GetSessionAsync(request.SessionId);
+        if (sessionData == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Session not found"));
         }
@@ -157,13 +177,15 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         await _cacheService.AddMessageAsync(request.SessionId, userMessage);
         history.Add(userMessage);
 
-        // Build RAG context from DocumentsTable using vector similarity search
-        var ragContext = await _ragService.BuildContextAsync(request.Message);
+        // Build RAG context from DocumentEntity using vector similarity search
+        // Filter by session type if available
+        var typeFilter = string.IsNullOrEmpty(sessionData.Type) ? null : sessionData.Type;
+        var ragContext = await _ragService.BuildContextAsync(request.Message, typeFilter);
         var sources = new List<string>();
 
         if (!string.IsNullOrEmpty(ragContext))
         {
-            var searchResults = await _ragService.SearchAsync(request.Message, limit: 5);
+            var searchResults = await _ragService.SearchAsync(request.Message, limit: 5, typeFilter: typeFilter);
             sources = searchResults.Select(r => r.Title).Distinct().ToList();
         }
 
@@ -319,7 +341,12 @@ public class ChatGrpcService : ChatService.ChatServiceBase
             LastActivity = Timestamp.FromDateTime(session.LastActivity.ToUniversalTime()),
             MessageCount = session.MessageCount,
             TotalTokens = session.TotalTokens,
-            CurrentOperatorId = session.CurrentOperatorId ?? string.Empty
+            CurrentOperatorId = session.CurrentOperatorId ?? string.Empty,
+            Client = session.Client,
+            AgentName = session.AgentName,
+            ErpName = session.ErpName ?? string.Empty,
+            Language = session.Language,
+            Type = session.Type
         };
 
         foreach (var kvp in metadata)
@@ -362,7 +389,12 @@ public class ChatGrpcService : ChatService.ChatServiceBase
                 LastActivity = Timestamp.FromDateTime(session.LastActivity.ToUniversalTime()),
                 MessageCount = session.MessageCount,
                 TotalTokens = session.TotalTokens,
-                CurrentOperatorId = session.CurrentOperatorId ?? string.Empty
+                CurrentOperatorId = session.CurrentOperatorId ?? string.Empty,
+                Client = session.Client,
+                AgentName = session.AgentName,
+                ErpName = session.ErpName ?? string.Empty,
+                Language = session.Language,
+                Type = session.Type
             };
 
             foreach (var kvp in metadata)

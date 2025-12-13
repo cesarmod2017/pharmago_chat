@@ -27,10 +27,11 @@ public class RagGrpcService : RAGService.RAGServiceBase
             request.Title,
             request.Content,
             request.DocumentType,
+            string.IsNullOrEmpty(request.Type) ? null : request.Type,
             metadata.Count > 0 ? metadata : null,
             tags.Length > 0 ? tags : null);
 
-        _logger.LogInformation("Added document {DocumentId}: {Title}", document.Id, document.Title);
+        _logger.LogInformation("Added document {DocumentId}: {Title} with Type='{Type}'", document.Id, document.Title, request.Type);
 
         return new RagAddDocumentResponse
         {
@@ -54,6 +55,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
                 Title = docRequest.Title,
                 Content = docRequest.Content,
                 DocumentType = docRequest.DocumentType,
+                Type = docRequest.Type,
                 Metadata = docRequest.Metadata.Count > 0 ? docRequest.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) : null,
                 Tags = docRequest.Tags.Count > 0 ? docRequest.Tags.ToArray() : null
             });
@@ -67,6 +69,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
                     docRequest.Title,
                     docRequest.Content,
                     docRequest.DocumentType,
+                    string.IsNullOrEmpty(docRequest.Type) ? null : docRequest.Type,
                     docRequest.Metadata,
                     docRequest.Tags);
 
@@ -153,6 +156,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
         var (documents, totalCount) = await _ragService.ListDocumentsAsync(
             request.Limit > 0 ? request.Limit : 20,
             request.Offset,
+            string.IsNullOrEmpty(request.DocumentTypeFilter) ? null : request.DocumentTypeFilter,
             string.IsNullOrEmpty(request.TypeFilter) ? null : request.TypeFilter,
             tagFilter);
 
@@ -166,6 +170,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
                 DocumentId = doc.Id,
                 Title = doc.Title,
                 DocumentType = doc.DocumentType,
+                Type = doc.Type,
                 CreatedAt = Timestamp.FromDateTime(doc.CreatedAt.ToUniversalTime()),
                 UpdatedAt = Timestamp.FromDateTime(doc.UpdatedAt.ToUniversalTime()),
                 ContentLength = doc.ContentLength,
@@ -198,6 +203,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
             DocumentId = document.Id,
             Title = document.Title,
             DocumentType = document.DocumentType,
+            Type = document.Type,
             CreatedAt = Timestamp.FromDateTime(document.CreatedAt.ToUniversalTime()),
             UpdatedAt = Timestamp.FromDateTime(document.UpdatedAt.ToUniversalTime()),
             ContentLength = document.ContentLength,
@@ -221,6 +227,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
             request.Query,
             request.Limit > 0 ? request.Limit : 10,
             request.SimilarityThreshold > 0 ? request.SimilarityThreshold : 0.3f,
+            string.IsNullOrEmpty(request.TypeFilter) ? null : request.TypeFilter,
             tagFilter);
 
         var response = new RagSearchDocumentsResponse();
@@ -232,6 +239,7 @@ public class RagGrpcService : RAGService.RAGServiceBase
                 DocumentId = result.DocumentId,
                 Title = result.Title,
                 Content = result.Content,
+                Type = result.Type,
                 SimilarityScore = result.SimilarityScore,
                 Tags = { result.Tags }
             };

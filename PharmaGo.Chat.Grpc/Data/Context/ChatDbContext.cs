@@ -12,7 +12,8 @@ public class ChatDbContext : DbContext
     public DbSet<ChatSession> Sessions { get; set; } = null!;
     public DbSet<ChatMessageEntity> Messages { get; set; } = null!;
     public DbSet<TransferRequestEntity> TransferRequests { get; set; } = null!;
-    public DbSet<DocumentsTable> DocumentsTable { get; set; } = null!;
+    public DbSet<DocumentEntity> Documents { get; set; } = null!;
+    public DbSet<ChatPromptEntity> ChatPrompts { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

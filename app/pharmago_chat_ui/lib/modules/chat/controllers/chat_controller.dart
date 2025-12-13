@@ -12,6 +12,11 @@ class ChatController extends GetxController {
   final ChatProvider provider;
   final String userName;
   final String userEmail;
+  final String client;
+  final String agentName;
+  final String? erpName;
+  final String language;
+  final String type;
   final Map<String, String>? metadata;
   final bool useStreaming;
   final String? preferredModel;
@@ -20,6 +25,11 @@ class ChatController extends GetxController {
     required this.provider,
     required this.userName,
     required this.userEmail,
+    required this.client,
+    required this.agentName,
+    this.erpName,
+    this.language = 'pt-BR',
+    required this.type,
     this.metadata,
     this.useStreaming = true,
     this.preferredModel,
@@ -68,6 +78,11 @@ class ChatController extends GetxController {
       final response = await provider.createSession(
         name: userName,
         email: userEmail,
+        client: client,
+        agentName: agentName,
+        erpName: erpName,
+        language: language,
+        type: type,
         metadata: metadata,
       );
 

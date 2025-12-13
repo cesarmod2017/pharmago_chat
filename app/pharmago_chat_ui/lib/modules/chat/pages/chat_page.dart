@@ -16,6 +16,14 @@ class ChatPage extends GetView<ChatController> {
   final Widget? emptyWidget;
   final String? inputHintText;
 
+  /// If true, pressing Enter sends the message on Windows/Web.
+  /// If false, CTRL+Enter is required on Windows/Web.
+  /// On mobile (Android/iOS), Enter never sends - only the send button does.
+  final bool sendOnEnter;
+
+  /// Custom icon for the send button.
+  final IconData? sendButtonIcon;
+
   const ChatPage({
     super.key,
     this.contact,
@@ -24,6 +32,8 @@ class ChatPage extends GetView<ChatController> {
     this.headerActions,
     this.emptyWidget,
     this.inputHintText,
+    this.sendOnEnter = true,
+    this.sendButtonIcon,
   });
 
   @override
@@ -74,6 +84,8 @@ class ChatPage extends GetView<ChatController> {
                   controller.sessionId.value.isNotEmpty,
               theme: chatTheme,
               hintText: inputHintText,
+              sendOnEnter: sendOnEnter,
+              sendButtonIcon: sendButtonIcon,
             ),
           ),
         ],
@@ -121,6 +133,14 @@ class ChatPageWidget extends StatelessWidget {
   final String? inputHintText;
   final bool showAppBar;
 
+  /// If true, pressing Enter sends the message on Windows/Web.
+  /// If false, CTRL+Enter is required on Windows/Web.
+  /// On mobile (Android/iOS), Enter never sends - only the send button does.
+  final bool sendOnEnter;
+
+  /// Custom icon for the send button.
+  final IconData? sendButtonIcon;
+
   const ChatPageWidget({
     super.key,
     required this.controller,
@@ -131,6 +151,8 @@ class ChatPageWidget extends StatelessWidget {
     this.emptyWidget,
     this.inputHintText,
     this.showAppBar = true,
+    this.sendOnEnter = true,
+    this.sendButtonIcon,
   });
 
   @override
@@ -185,6 +207,8 @@ class ChatPageWidget extends StatelessWidget {
                 controller.sessionId.value.isNotEmpty,
             theme: chatTheme,
             hintText: inputHintText,
+            sendOnEnter: sendOnEnter,
+            sendButtonIcon: sendButtonIcon,
           ),
         ),
       ],

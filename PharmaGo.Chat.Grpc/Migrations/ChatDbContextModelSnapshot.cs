@@ -84,12 +84,68 @@ namespace PharmaGo.Chat.Grpc.Migrations
                     b.ToTable("chat_messages", (string)null);
                 });
 
+            modelBuilder.Entity("PharmaGo.Chat.Grpc.Models.Entities.ChatPromptEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Prompt")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("prompt");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_chat_prompts");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_chat_prompts_name");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("ix_chat_prompts_type");
+
+                    b.ToTable("chat_prompts", (string)null);
+                });
+
             modelBuilder.Entity("PharmaGo.Chat.Grpc.Models.Entities.ChatSession", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("AgentName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("agent_name");
+
+                    b.Property<string>("Client")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("client");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamptz")
@@ -103,6 +159,17 @@ namespace PharmaGo.Chat.Grpc.Migrations
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("ended_at");
+
+                    b.Property<string>("ErpName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("erp_name");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("language");
 
                     b.Property<DateTime>("LastActivity")
                         .HasColumnType("timestamptz")
@@ -127,6 +194,12 @@ namespace PharmaGo.Chat.Grpc.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("total_tokens");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("type");
+
                     b.Property<string>("UserEmail")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -142,6 +215,9 @@ namespace PharmaGo.Chat.Grpc.Migrations
                     b.HasKey("Id")
                         .HasName("pk_chat_sessions");
 
+                    b.HasIndex("Client")
+                        .HasDatabaseName("ix_chat_sessions_client");
+
                     b.HasIndex("CreatedAt")
                         .HasDatabaseName("ix_chat_sessions_created_at");
 
@@ -151,13 +227,16 @@ namespace PharmaGo.Chat.Grpc.Migrations
                     b.HasIndex("Status")
                         .HasDatabaseName("ix_chat_sessions_status");
 
+                    b.HasIndex("Type")
+                        .HasDatabaseName("ix_chat_sessions_type");
+
                     b.HasIndex("UserEmail")
                         .HasDatabaseName("ix_chat_sessions_user_email");
 
                     b.ToTable("chat_sessions", (string)null);
                 });
 
-            modelBuilder.Entity("PharmaGo.Chat.Grpc.Models.Entities.DocumentsTable", b =>
+            modelBuilder.Entity("PharmaGo.Chat.Grpc.Models.Entities.DocumentEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -221,6 +300,12 @@ namespace PharmaGo.Chat.Grpc.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("title");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("type");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("updated_at");
@@ -251,6 +336,9 @@ namespace PharmaGo.Chat.Grpc.Migrations
 
                     b.HasIndex("Title")
                         .HasDatabaseName("ix_documents_title");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("ix_documents_type");
 
                     b.ToTable("documents", (string)null);
                 });

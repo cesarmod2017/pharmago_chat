@@ -95,22 +95,35 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
       return CircleAvatar(
         radius: 20,
         backgroundImage: NetworkImage(contact.avatarUrl!),
-        backgroundColor: chatTheme.headerTextColor.withValues(alpha: 0.2),
+        backgroundColor: chatTheme.headerAvatarBackgroundColor,
       );
     }
 
     return CircleAvatar(
       radius: 20,
-      backgroundColor: chatTheme.headerTextColor.withValues(alpha: 0.2),
+      backgroundColor: chatTheme.headerAvatarBackgroundColor,
       child: Text(
-        contact.name.isNotEmpty ? contact.name[0].toUpperCase() : '?',
+        _getInitials(contact.name),
         style: TextStyle(
-          color: chatTheme.headerTextColor,
+          color: chatTheme.headerAvatarTextColor,
           fontWeight: FontWeight.bold,
-          fontSize: 18,
+          fontSize: 16,
         ),
       ),
     );
+  }
+
+  /// Generates initials from the contact name.
+  /// For "Cesar Mesquita" returns "CM".
+  /// For single names like "Assistente" returns "A".
+  String _getInitials(String name) {
+    if (name.isEmpty) return '?';
+
+    final words = name.trim().split(RegExp(r'\s+'));
+    if (words.length >= 2) {
+      return '${words.first[0]}${words.last[0]}'.toUpperCase();
+    }
+    return words.first[0].toUpperCase();
   }
 
   @override

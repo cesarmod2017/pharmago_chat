@@ -14,42 +14,33 @@ public class ChatSession
     public string? CurrentOperatorId { get; set; }
     public string Metadata { get; set; } = "{}";
 
+    // New session parameters for multi-client/agent support
+    /// <summary>
+    /// Client identifier (e.g., farmago, linx, aotech)
+    /// </summary>
+    public string Client { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Agent name for prompt customization
+    /// </summary>
+    public string AgentName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// ERP name (optional, e.g., linx, totvs)
+    /// </summary>
+    public string? ErpName { get; set; }
+
+    /// <summary>
+    /// Language for responses (e.g., pt-BR, en-US, es-ES)
+    /// </summary>
+    public string Language { get; set; } = "pt-BR";
+
+    /// <summary>
+    /// Type for filtering prompts and RAG documents
+    /// </summary>
+    public string Type { get; set; } = string.Empty;
+
     // Navigation
     public virtual ICollection<ChatMessageEntity> Messages { get; set; } = new List<ChatMessageEntity>();
     public virtual ICollection<TransferRequestEntity> TransferRequests { get; set; } = new List<TransferRequestEntity>();
-}
-
-public class ChatMessageEntity
-{
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid SessionId { get; set; }
-    public string Role { get; set; } = "user"; // user, assistant, system, operator
-    public string Content { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-    public string? ModelUsed { get; set; }
-    public int TokensUsed { get; set; } = 0;
-    public string? SenderId { get; set; }
-    public string? SenderName { get; set; }
-
-    // Navigation
-    public virtual ChatSession Session { get; set; } = null!;
-}
-
-public class TransferRequestEntity
-{
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid SessionId { get; set; }
-    public string Reason { get; set; } = string.Empty;
-    public int Priority { get; set; } = 3;
-    public string Status { get; set; } = "pending"; // pending, accepted, completed, cancelled
-    public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? AcceptedAt { get; set; }
-    public DateTime? CompletedAt { get; set; }
-    public string? OperatorId { get; set; }
-    public string? OperatorName { get; set; }
-    public string? Resolution { get; set; }
-    public string? Notes { get; set; }
-
-    // Navigation
-    public virtual ChatSession Session { get; set; } = null!;
 }

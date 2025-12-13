@@ -39,7 +39,12 @@ service ChatService {
 message ChatCreateSessionRequest {
   string name = 1;
   string email = 2;
-  map<string, string> metadata = 3; // Additional user data
+  string client = 3; // Client identifier: farmago, linx, aotech, etc.
+  string agent_name = 4; // Agent name for prompt customization
+  string erp_name = 5; // ERP name (optional): linx, totvs, etc.
+  string language = 6; // Language for responses: pt-BR, en-US, es-ES
+  string type = 7; // Type for filtering prompts and RAG documents
+  map<string, string> metadata = 8; // Additional user data
 }
 
 message ChatCreateSessionResponse {
@@ -119,7 +124,12 @@ message ChatSessionInfo {
   int32 message_count = 7;
   int32 total_tokens = 8;
   string current_operator_id = 9; // If in support mode
-  map<string, string> metadata = 10;
+  string client = 10; // Client identifier
+  string agent_name = 11; // Agent name
+  string erp_name = 12; // ERP name (optional)
+  string language = 13; // Language for responses
+  string type = 14; // Type for filtering prompts and RAG
+  map<string, string> metadata = 15;
 }
 
 message ChatListActiveSessionsRequest {

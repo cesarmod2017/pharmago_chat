@@ -150,33 +150,36 @@ public class RagService : IRagService
         return chunks;
     }
 
-    public async Task<DocumentsTable> AddDocumentAsync(
+    public async Task<DocumentEntity> AddDocumentAsync(
         string title,
         string content,
         string documentType,
+        string? type = null,
         Dictionary<string, string>? metadata = null,
         string[]? tags = null)
     {
         var embeddingService = _aiServiceFactory.GetEmbeddingService();
         var metadataJson = metadata != null ? JsonSerializer.Serialize(metadata) : "{}";
         var documentTags = tags ?? Array.Empty<string>();
+        var documentTypeValue = type ?? string.Empty;
 
         // Split content into chunks
         var chunks = SplitTextIntoChunks(content, _settings.MaxChunkSize, _settings.ChunkOverlap);
 
-        _logger.LogInformation("Document '{Title}' ({Length} chars) split into {ChunkCount} chunks",
-            title, content.Length, chunks.Count);
+        _logger.LogInformation("Document '{Title}' ({Length} chars) split into {ChunkCount} chunks, Type='{Type}'",
+            title, content.Length, chunks.Count, documentTypeValue);
 
         // If only one chunk (small document), store as single document without parent reference
         if (chunks.Count == 1)
         {
             var embedding = await embeddingService.GenerateEmbeddingAsync(content);
 
-            var document = new DocumentsTable
+            var document = new DocumentEntity
             {
                 Title = title,
                 Content = content,
                 DocumentType = documentType,
+                Type = documentTypeValue,
                 ContentLength = content.Length,
                 Metadata = metadataJson,
                 Tags = documentTags,
@@ -189,7 +192,7 @@ public class RagService : IRagService
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _dbContext.DocumentsTable.Add(document);
+            _dbContext.Documents.Add(document);
             await _dbContext.SaveChangesAsync();
 
             _logger.LogInformation("Added single document {DocumentId}: {Title} with embedding", document.Id, title);
@@ -197,11 +200,12 @@ public class RagService : IRagService
         }
 
         // For multi-chunk documents: first create parent document without embedding
-        var parentDocument = new DocumentsTable
+        var parentDocument = new DocumentEntity
         {
             Title = title,
             Content = content, // Store full content in parent
             DocumentType = documentType,
+            Type = documentTypeValue,
             ContentLength = content.Length,
             Metadata = metadataJson,
             Tags = documentTags,
@@ -214,7 +218,7 @@ public class RagService : IRagService
             UpdatedAt = DateTime.UtcNow
         };
 
-        _dbContext.DocumentsTable.Add(parentDocument);
+        _dbContext.Documents.Add(parentDocument);
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation("Created parent document {DocumentId}: {Title}", parentDocument.Id, title);
@@ -224,11 +228,12 @@ public class RagService : IRagService
         {
             var chunkEmbedding = await embeddingService.GenerateEmbeddingAsync(chunk.Content);
 
-            var chunkDocument = new DocumentsTable
+            var chunkDocument = new DocumentEntity
             {
                 Title = $"{title} [Chunk {chunk.Index + 1}/{chunks.Count}]",
                 Content = chunk.Content,
                 DocumentType = documentType,
+                Type = documentTypeValue,
                 ContentLength = chunk.Content.Length,
                 Metadata = metadataJson,
                 Tags = documentTags,
@@ -241,7 +246,7 @@ public class RagService : IRagService
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _dbContext.DocumentsTable.Add(chunkDocument);
+            _dbContext.Documents.Add(chunkDocument);
         }
 
         await _dbContext.SaveChangesAsync();
@@ -252,9 +257,9 @@ public class RagService : IRagService
         return parentDocument;
     }
 
-    public async Task<List<DocumentsTable>> AddDocumentsBatchAsync(List<DocumentAddRequest> documents)
+    public async Task<List<DocumentEntity>> AddDocumentsBatchAsync(List<DocumentAddRequest> documents)
     {
-        var addedDocuments = new List<DocumentsTable>();
+        var addedDocuments = new List<DocumentEntity>();
 
         foreach (var docRequest in documents)
         {
@@ -265,6 +270,7 @@ public class RagService : IRagService
                     docRequest.Title,
                     docRequest.Content,
                     docRequest.DocumentType,
+                    docRequest.Type,
                     docRequest.Metadata,
                     docRequest.Tags);
 
@@ -284,7 +290,7 @@ public class RagService : IRagService
 
     public async Task<bool> DeleteDocumentAsync(long documentId)
     {
-        var document = await _dbContext.DocumentsTable.FindAsync(documentId);
+        var document = await _dbContext.Documents.FindAsync(documentId);
 
         if (document == null)
         {
@@ -294,18 +300,18 @@ public class RagService : IRagService
         // If this is a parent document, delete all its chunks first
         if (document.ParentDocumentId == null)
         {
-            var chunks = await _dbContext.DocumentsTable
+            var chunks = await _dbContext.Documents
                 .Where(d => d.ParentDocumentId == documentId)
                 .ToListAsync();
 
             if (chunks.Count > 0)
             {
-                _dbContext.DocumentsTable.RemoveRange(chunks);
+                _dbContext.Documents.RemoveRange(chunks);
                 _logger.LogInformation("Deleted {ChunkCount} chunks for document {DocumentId}", chunks.Count, documentId);
             }
         }
 
-        _dbContext.DocumentsTable.Remove(document);
+        _dbContext.Documents.Remove(document);
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation("Deleted document {DocumentId}: {Title}", documentId, document.Title);
@@ -315,7 +321,7 @@ public class RagService : IRagService
 
     public async Task<bool> DeleteDocumentsBatchAsync(List<long> documentIds)
     {
-        var documents = await _dbContext.DocumentsTable
+        var documents = await _dbContext.Documents
             .Where(d => documentIds.Contains(d.Id))
             .ToListAsync();
 
@@ -332,18 +338,18 @@ public class RagService : IRagService
 
         if (parentIds.Count > 0)
         {
-            var chunks = await _dbContext.DocumentsTable
+            var chunks = await _dbContext.Documents
                 .Where(d => d.ParentDocumentId != null && parentIds.Contains(d.ParentDocumentId.Value))
                 .ToListAsync();
 
             if (chunks.Count > 0)
             {
-                _dbContext.DocumentsTable.RemoveRange(chunks);
+                _dbContext.Documents.RemoveRange(chunks);
                 _logger.LogInformation("Deleted {ChunkCount} chunks for batch deletion", chunks.Count);
             }
         }
 
-        _dbContext.DocumentsTable.RemoveRange(documents);
+        _dbContext.Documents.RemoveRange(documents);
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation("Deleted {Count} documents in batch", documents.Count);
@@ -351,26 +357,32 @@ public class RagService : IRagService
         return true;
     }
 
-    public async Task<DocumentsTable?> GetDocumentAsync(long documentId)
+    public async Task<DocumentEntity?> GetDocumentAsync(long documentId)
     {
-        return await _dbContext.DocumentsTable
+        return await _dbContext.Documents
             .AsNoTracking()
             .FirstOrDefaultAsync(d => d.Id == documentId);
     }
 
-    public async Task<(List<DocumentsTable> Documents, int TotalCount)> ListDocumentsAsync(
+    public async Task<(List<DocumentEntity> Documents, int TotalCount)> ListDocumentsAsync(
         int limit = 20,
         int offset = 0,
+        string? documentTypeFilter = null,
         string? typeFilter = null,
         string[]? tagFilter = null)
     {
         // Only list parent documents (not chunks)
-        var query = _dbContext.DocumentsTable.AsNoTracking()
+        var query = _dbContext.Documents.AsNoTracking()
             .Where(d => d.ParentDocumentId == null);
+
+        if (!string.IsNullOrEmpty(documentTypeFilter))
+        {
+            query = query.Where(d => d.DocumentType == documentTypeFilter);
+        }
 
         if (!string.IsNullOrEmpty(typeFilter))
         {
-            query = query.Where(d => d.DocumentType == typeFilter);
+            query = query.Where(d => d.Type == typeFilter);
         }
 
         if (tagFilter != null && tagFilter.Length > 0)
@@ -393,18 +405,25 @@ public class RagService : IRagService
         string query,
         int limit = 5,
         float similarityThreshold = 0.3f,
+        string? typeFilter = null,
         string[]? tagFilter = null)
     {
         var embeddingService = _aiServiceFactory.GetEmbeddingService();
         var queryEmbedding = await embeddingService.GenerateEmbeddingAsync(query);
         var queryVector = new Vector(queryEmbedding);
 
-        _logger.LogInformation("RAG Search: Query='{Query}', Threshold={Threshold}, EmbeddingDimensions={Dims}",
-            query, similarityThreshold, queryEmbedding.Length);
+        _logger.LogInformation("RAG Search: Query='{Query}', Threshold={Threshold}, TypeFilter='{TypeFilter}', EmbeddingDimensions={Dims}",
+            query, similarityThreshold, typeFilter ?? "none", queryEmbedding.Length);
 
         // Only search documents that have embeddings (chunks or small documents)
-        var documentsQuery = _dbContext.DocumentsTable.AsNoTracking()
+        var documentsQuery = _dbContext.Documents.AsNoTracking()
             .Where(d => d.Embedding != null);
+
+        // Apply type filter if specified
+        if (!string.IsNullOrEmpty(typeFilter))
+        {
+            documentsQuery = documentsQuery.Where(d => d.Type == typeFilter);
+        }
 
         if (tagFilter != null && tagFilter.Length > 0)
         {
@@ -413,7 +432,8 @@ public class RagService : IRagService
 
         // Count documents with embeddings for debugging
         var totalDocsWithEmbedding = await documentsQuery.CountAsync();
-        _logger.LogInformation("RAG Search: Found {Count} documents with embeddings in database", totalDocsWithEmbedding);
+        _logger.LogInformation("RAG Search: Found {Count} documents with embeddings in database (TypeFilter='{TypeFilter}')",
+            totalDocsWithEmbedding, typeFilter ?? "none");
 
         if (totalDocsWithEmbedding == 0)
         {
@@ -471,6 +491,7 @@ public class RagService : IRagService
             ChunkIndex = r.Document.ChunkIndex,
             Title = r.Document.Title,
             Content = r.Document.Content,
+            Type = r.Document.Type,
             // Correct similarity: 1 - (distance/2) gives 0-1 range
             SimilarityScore = (float)(1.0 - r.Distance / 2.0),
             Metadata = JsonSerializer.Deserialize<Dictionary<string, string>>(r.Document.Metadata.AsSpan()) ?? new(),
@@ -478,15 +499,16 @@ public class RagService : IRagService
         }).ToList();
     }
 
-    public async Task<string> BuildContextAsync(string query, int maxTokens = 2000)
+    public async Task<string> BuildContextAsync(string query, string? typeFilter = null, int maxTokens = 2000)
     {
-        _logger.LogInformation("BuildContextAsync: Building context for query '{Query}' with maxTokens={MaxTokens}",
-            query, maxTokens);
+        _logger.LogInformation("BuildContextAsync: Building context for query '{Query}' with maxTokens={MaxTokens}, TypeFilter='{TypeFilter}'",
+            query, maxTokens, typeFilter ?? "none");
 
         var searchResults = await SearchAsync(
             query,
             limit: _settings.DefaultTopK,
-            similarityThreshold: _settings.DefaultSimilarityThreshold);
+            similarityThreshold: _settings.DefaultSimilarityThreshold,
+            typeFilter: typeFilter);
 
         if (searchResults.Count == 0)
         {

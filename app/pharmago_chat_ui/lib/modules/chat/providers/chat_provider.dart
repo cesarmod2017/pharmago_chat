@@ -31,12 +31,22 @@ class ChatProvider {
   Future<ChatCreateSessionResponse> createSession({
     required String name,
     required String email,
+    required String client,
+    required String agentName,
+    String? erpName,
+    String language = 'pt-BR',
+    required String type,
     Map<String, String>? metadata,
   }) async {
-    final grpcClient = await client;
+    final grpcClient = await this.client;
     final request = ChatCreateSessionRequest(
       name: name,
       email: email,
+      client: client,
+      agentName: agentName,
+      erpName: erpName ?? '',
+      language: language,
+      type: type,
       metadata: metadata,
     );
     return grpcClient.createSession(request);

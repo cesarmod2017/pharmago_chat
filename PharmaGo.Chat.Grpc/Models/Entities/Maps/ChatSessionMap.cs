@@ -23,11 +23,20 @@ public class ChatSessionMap : IEntityTypeConfiguration<ChatSession>
         entity.Property(e => e.CurrentOperatorId).HasColumnName("current_operator_id").HasMaxLength(100);
         entity.Property(e => e.Metadata).HasColumnName("metadata").HasColumnType("jsonb");
 
+        // New multi-client/agent fields
+        entity.Property(e => e.Client).HasColumnName("client").HasMaxLength(100);
+        entity.Property(e => e.AgentName).HasColumnName("agent_name").HasMaxLength(200);
+        entity.Property(e => e.ErpName).HasColumnName("erp_name").HasMaxLength(100);
+        entity.Property(e => e.Language).HasColumnName("language").HasMaxLength(10);
+        entity.Property(e => e.Type).HasColumnName("type").HasMaxLength(100);
+
         // Indexes
         entity.HasIndex(e => e.UserEmail).HasDatabaseName("ix_chat_sessions_user_email");
         entity.HasIndex(e => e.Status).HasDatabaseName("ix_chat_sessions_status");
         entity.HasIndex(e => e.CreatedAt).HasDatabaseName("ix_chat_sessions_created_at");
         entity.HasIndex(e => e.LastActivity).HasDatabaseName("ix_chat_sessions_last_activity");
+        entity.HasIndex(e => e.Client).HasDatabaseName("ix_chat_sessions_client");
+        entity.HasIndex(e => e.Type).HasDatabaseName("ix_chat_sessions_type");
 
         // Relationships
         entity.HasMany(e => e.Messages)

@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+option csharp_namespace = "PharmaGo.Chat.Grpc.Protos";
+
+package chat;
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// Prompt Service - CRUD operations for ChatPrompts
+// ============================================================================
+service PromptService {
+  // Create a new prompt
+  rpc CreatePrompt (CreatePromptRequest) returns (CreatePromptResponse);
+
+  // Update an existing prompt
+  rpc UpdatePrompt (UpdatePromptRequest) returns (UpdatePromptResponse);
+
+  // Delete a prompt
+  rpc DeletePrompt (DeletePromptRequest) returns (DeletePromptResponse);
+
+  // Get a prompt by ID
+  rpc GetPrompt (GetPromptRequest) returns (PromptInfo);
+
+  // List all prompts with optional pagination
+  rpc ListPrompts (ListPromptsRequest) returns (ListPromptsResponse);
+
+  // Get prompts by type
+  rpc GetPromptsByType (GetPromptsByTypeRequest) returns (ListPromptsResponse);
+}
+
+// ============================================================================
+// Prompt Messages
+// ============================================================================
+
+message CreatePromptRequest {
+  string name = 1;
+  string type = 2;
+  string prompt = 3;
+}
+
+message CreatePromptResponse {
+  string id = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+message UpdatePromptRequest {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  string prompt = 4;
+}
+
+message UpdatePromptResponse {
+  bool success = 1;
+  google.protobuf.Timestamp updated_at = 2;
+}
+
+message DeletePromptRequest {
+  string id = 1;
+}
+
+message DeletePromptResponse {
+  bool success = 1;
+}
+
+message GetPromptRequest {
+  string id = 1;
+}
+
+message ListPromptsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message GetPromptsByTypeRequest {
+  string type = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListPromptsResponse {
+  repeated PromptInfo prompts = 1;
+  int32 total_count = 2;
+}
+
+message PromptInfo {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  string prompt = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}

@@ -1,0 +1,51 @@
+name: Deploy Docker Service GRPC Cloud
+on:
+  push:
+    branches:
+      - master
+jobs:
+  grpc-chat-build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v3
+
+      - name: Login no Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Construir e enviar imagem Docker - farmago-chat-grpc:latest
+        run: |
+          docker build --no-cache -t cesarmod/farmago-chat-grpc:latest -f PharmaGo.Chat.Grpc/Dockerfile .
+          docker push cesarmod/farmago-chat-grpc:latest
+
+  # redeploy:
+  #   needs: [grpc-chat-build-and-push]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     max-parallel: 3
+  #     matrix:
+  #       stackId: [12,35]
+  #   steps:
+  #     - name: Redeploy stack ${{ matrix.stackId }} via Portainer
+  #       uses: wirgen/portainer-stack-redeploy-action@v1.1
+  #       with:
+  #         portainerUrl: 'https://portainer.appfarmago.com'
+  #         accessToken: ${{ secrets.PORTAINER_API_KEY }}
+  #         stackId: ${{ matrix.stackId }}
+  #         endpointId: 8
+
+  # redeploy-endpoint-10:
+  #   needs: [grpc-chat-build-and-push]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     max-parallel: 1
+  #     matrix:
+  #       stackId: [48,50]
+  #   steps:
+  #     - name: Redeploy stack ${{ matrix.stackId }} via Portainer
+  #       uses: wirgen/portainer-stack-redeploy-action@v1.1
+  #       with:
+  #         portainerUrl: 'https://portainer.appfarmago.com'
+  #         accessToken: ${{ secrets.PORTAINER_API_KEY }}
+  #         stackId: ${{ matrix.stackId }}
+  #         endpointId: 10

@@ -2,6 +2,13 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
+
+# Install Kerberos libraries required by Npgsql for PostgreSQL authentication
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libkrb5-3 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080

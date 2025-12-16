@@ -36,8 +36,8 @@ class _ChatPageState extends State<ChatPage> {
           provider: _provider!,
           userName: 'Usuario',
           userEmail: 'usuario@pharmago.com.br',
-          client: 'farmago',
-          agentName: 'Assistente PharmaGO',
+          client: 'Farma GO',
+          agentName: 'Sofia Martinez',
           erpName: null,
           language: 'pt-BR',
           type: 'farmago',
@@ -72,9 +72,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     if (_initError != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Chat Page'),
-        ),
+        appBar: AppBar(title: const Text('Chat Page')),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -112,9 +110,7 @@ class _ChatPageState extends State<ChatPage> {
 
     if (!_isInitialized) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Chat Page'),
-        ),
+        appBar: AppBar(title: const Text('Chat Page')),
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -189,15 +185,15 @@ class _ChatPageState extends State<ChatPage> {
 
 class _MockChatController extends ChatController {
   _MockChatController()
-      : super(
-          provider: _MockChatProvider(),
-          userName: 'Test User',
-          userEmail: 'test@example.com',
-          client: 'farmago',
-          agentName: 'Assistente Demo',
-          type: 'farmago',
-          useStreaming: false,
-        );
+    : super(
+        provider: _MockChatProvider(),
+        userName: 'Test User',
+        userEmail: 'test@example.com',
+        client: 'Farma GO',
+        agentName: 'Assistente Demo',
+        type: 'farmago',
+        useStreaming: false,
+      );
 
   @override
   void onInit() {
@@ -209,7 +205,8 @@ class _MockChatController extends ChatController {
   void addWelcomeMessage() {
     final welcomeMessage = ChatMessageModel.assistant(
       id: 'welcome-${DateTime.now().millisecondsSinceEpoch}',
-      content: 'Ola! Sou o assistente PharmaGO em modo de demonstracao. '
+      content:
+          'Ola! Sou o assistente PharmaGO em modo de demonstracao. '
           'Como posso ajuda-lo hoje?',
       timestamp: DateTime.now(),
     );

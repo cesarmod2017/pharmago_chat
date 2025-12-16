@@ -65,6 +65,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     return ConnectionMultiplexer.Connect(redisConfig);
 });
 builder.Services.AddSingleton<IChatCacheService, RedisCacheService>();
+builder.Services.AddScoped<IPromptCacheService, PromptCacheService>();
 
 // ============================================================================
 // HTTP Clients for AI APIs

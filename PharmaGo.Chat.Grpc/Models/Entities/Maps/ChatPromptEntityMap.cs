@@ -15,6 +15,7 @@ public class ChatPromptEntityMap : IEntityTypeConfiguration<ChatPromptEntity>
         entity.Property(e => e.Name).HasColumnName("name").HasMaxLength(200).IsRequired();
         entity.Property(e => e.Type).HasColumnName("type").HasMaxLength(100).IsRequired();
         entity.Property(e => e.Prompt).HasColumnName("prompt").HasColumnType("text").IsRequired();
+        entity.Property(e => e.WelcomeMessage).HasColumnName("welcome_message").HasColumnType("text");
         entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("timestamptz");
         entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasColumnType("timestamptz");
 

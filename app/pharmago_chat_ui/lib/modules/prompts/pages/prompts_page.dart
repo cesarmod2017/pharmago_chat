@@ -25,15 +25,14 @@ class PromptsPage extends GetView<PromptsController> {
               }
             },
             itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'all',
-                child: Text('prompts_all_types'.tr),
-              ),
+              PopupMenuItem(value: 'all', child: Text('prompts_all_types'.tr)),
               const PopupMenuDivider(),
-              ...controller.availableTypes.map((type) => PopupMenuItem(
-                    value: type,
-                    child: Text('prompts_type_$type'.tr),
-                  )),
+              ...controller.availableTypes.map(
+                (type) => PopupMenuItem(
+                  value: type,
+                  child: Text('prompts_type_$type'.tr),
+                ),
+              ),
             ],
           ),
           IconButton(
@@ -164,11 +163,7 @@ class PromptListTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
         leading: _getTypeIcon(),
-        title: Text(
-          prompt.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        title: Text(prompt.name, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -212,8 +207,10 @@ class PromptListTile extends StatelessWidget {
                 children: [
                   const Icon(Icons.delete, size: 20, color: Colors.red),
                   const SizedBox(width: 8),
-                  Text('prompts_delete'.tr,
-                      style: const TextStyle(color: Colors.red)),
+                  Text(
+                    'prompts_delete'.tr,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ],
               ),
             ),
@@ -245,7 +242,7 @@ class PromptListTile extends StatelessWidget {
         icon = Icons.star;
         color = Colors.purple;
         break;
-      case 'pharmatec':
+      case 'inovafarma':
         icon = Icons.biotech;
         color = Colors.teal;
         break;
@@ -268,9 +265,7 @@ class PromptsAddPage extends GetView<PromptsController> {
   Widget build(BuildContext context) {
     controller.clearForm();
     return Scaffold(
-      appBar: AppBar(
-        title: Text('prompts_add'.tr),
-      ),
+      appBar: AppBar(title: Text('prompts_add'.tr)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -284,24 +279,38 @@ class PromptsAddPage extends GetView<PromptsController> {
               ),
             ),
             const SizedBox(height: 16),
-            Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedType.value,
-                  decoration: InputDecoration(
-                    labelText: 'prompts_type'.tr,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: controller.availableTypes
-                      .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: Text('prompts_type_$type'.tr),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      controller.selectedType.value = value;
-                    }
-                  },
-                )),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                initialValue: controller.selectedType.value,
+                decoration: InputDecoration(
+                  labelText: 'prompts_type'.tr,
+                  border: const OutlineInputBorder(),
+                ),
+                items: controller.availableTypes
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Text('prompts_type_$type'.tr),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedType.value = value;
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller.welcomeMessageController,
+              decoration: InputDecoration(
+                labelText: 'prompts_welcome_message'.tr,
+                border: const OutlineInputBorder(),
+                alignLabelWithHint: true,
+              ),
+              maxLines: 3,
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: controller.promptController,
@@ -313,38 +322,41 @@ class PromptsAddPage extends GetView<PromptsController> {
               maxLines: 15,
             ),
             const SizedBox(height: 24),
-            Obx(() => controller.error.value != null
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Text(
-                      controller.error.value!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  )
-                : const SizedBox.shrink()),
-            Obx(() => ElevatedButton(
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : () async {
-                          final success =
-                              await controller.createPromptFromForm();
-                          if (success) {
-                            Get.back();
-                            Get.snackbar(
-                              'prompts_title'.tr,
-                              'prompts_add_success'.tr,
-                              snackPosition: SnackPosition.BOTTOM,
-                            );
-                          }
-                        },
-                  child: controller.isLoading.value
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text('prompts_save'.tr),
-                )),
+            Obx(
+              () => controller.error.value != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        controller.error.value!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            Obx(
+              () => ElevatedButton(
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () async {
+                        final success = await controller.createPromptFromForm();
+                        if (success) {
+                          Get.back();
+                          Get.snackbar(
+                            'prompts_title'.tr,
+                            'prompts_add_success'.tr,
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        }
+                      },
+                child: controller.isLoading.value
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text('prompts_save'.tr),
+              ),
+            ),
           ],
         ),
       ),
@@ -358,9 +370,7 @@ class PromptsEditPage extends GetView<PromptsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('prompts_edit'.tr),
-      ),
+      appBar: AppBar(title: Text('prompts_edit'.tr)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -374,24 +384,38 @@ class PromptsEditPage extends GetView<PromptsController> {
               ),
             ),
             const SizedBox(height: 16),
-            Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedType.value,
-                  decoration: InputDecoration(
-                    labelText: 'prompts_type'.tr,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: controller.availableTypes
-                      .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: Text('prompts_type_$type'.tr),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      controller.selectedType.value = value;
-                    }
-                  },
-                )),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                initialValue: controller.selectedType.value,
+                decoration: InputDecoration(
+                  labelText: 'prompts_type'.tr,
+                  border: const OutlineInputBorder(),
+                ),
+                items: controller.availableTypes
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Text('prompts_type_$type'.tr),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedType.value = value;
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller.welcomeMessageController,
+              decoration: InputDecoration(
+                labelText: 'prompts_welcome_message'.tr,
+                border: const OutlineInputBorder(),
+                alignLabelWithHint: true,
+              ),
+              maxLines: 3,
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: controller.promptController,
@@ -403,38 +427,41 @@ class PromptsEditPage extends GetView<PromptsController> {
               maxLines: 15,
             ),
             const SizedBox(height: 24),
-            Obx(() => controller.error.value != null
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Text(
-                      controller.error.value!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  )
-                : const SizedBox.shrink()),
-            Obx(() => ElevatedButton(
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : () async {
-                          final success =
-                              await controller.updatePromptFromForm();
-                          if (success) {
-                            Get.back();
-                            Get.snackbar(
-                              'prompts_title'.tr,
-                              'prompts_update_success'.tr,
-                              snackPosition: SnackPosition.BOTTOM,
-                            );
-                          }
-                        },
-                  child: controller.isLoading.value
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text('prompts_save'.tr),
-                )),
+            Obx(
+              () => controller.error.value != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        controller.error.value!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            Obx(
+              () => ElevatedButton(
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () async {
+                        final success = await controller.updatePromptFromForm();
+                        if (success) {
+                          Get.back();
+                          Get.snackbar(
+                            'prompts_title'.tr,
+                            'prompts_update_success'.tr,
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        }
+                      },
+                child: controller.isLoading.value
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text('prompts_save'.tr),
+              ),
+            ),
           ],
         ),
       ),
@@ -475,10 +502,7 @@ class PromptsDetailPage extends GetView<PromptsController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildInfoCard(
-                title: 'prompts_name'.tr,
-                content: prompt.name,
-              ),
+              _buildInfoCard(title: 'prompts_name'.tr, content: prompt.name),
               const SizedBox(height: 16),
               _buildInfoCard(
                 title: 'prompts_type'.tr,
@@ -493,6 +517,38 @@ class PromptsDetailPage extends GetView<PromptsController> {
               _buildInfoCard(
                 title: 'prompts_updated'.tr,
                 content: _formatDate(prompt.updatedAt),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'prompts_welcome_message'.tr,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: SelectableText(
+                  prompt.welcomeMessage.isEmpty
+                      ? 'prompts_no_welcome_message'.tr
+                      : prompt.welcomeMessage,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: prompt.welcomeMessage.isEmpty
+                        ? FontStyle.italic
+                        : FontStyle.normal,
+                    color: prompt.welcomeMessage.isEmpty
+                        ? Colors.grey
+                        : Colors.black,
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -513,10 +569,7 @@ class PromptsDetailPage extends GetView<PromptsController> {
                 ),
                 child: SelectableText(
                   prompt.prompt,
-                  style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
                 ),
               ),
             ],
@@ -539,10 +592,7 @@ class PromptsDetailPage extends GetView<PromptsController> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          content,
-          style: const TextStyle(fontSize: 16),
-        ),
+        Text(content, style: const TextStyle(fontSize: 16)),
       ],
     );
   }

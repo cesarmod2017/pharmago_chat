@@ -52,8 +52,8 @@ class _ChatContentState extends State<ChatContent> {
         userName: 'Administrador',
         userEmail: 'admin@pharmago.com.br',
         useStreaming: true,
-        client: 'farmago',
-        agentName: 'Assistente PharmaGO',
+        client: 'Linx Farma Inventário +',
+        agentName: 'Sofia Martinez',
         erpName: null,
         language: 'pt-BR',
         type: 'farmago',
@@ -803,7 +803,7 @@ ChatEnvironment.configure(
 
 // Ou usar configuracao padrao
 // Debug: localhost:5144 (sem TLS)
-// Release: chat.pharmago.com.br:443 (com TLS)''',
+// Release: chat-grpc.appfarmago.com:443 (com TLS)''',
                   ),
                   const SizedBox(height: 24),
                   _buildSectionTitle('2. Criando o Provider'),

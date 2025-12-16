@@ -17,6 +17,8 @@ class PromptsController extends GetxController {
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
+  final TextEditingController welcomeMessageController =
+      TextEditingController();
   final selectedType = 'farmago'.obs;
 
   // Available prompt types
@@ -25,7 +27,7 @@ class PromptsController extends GetxController {
     'linx',
     'aotech',
     'alpha7',
-    'pharmatec',
+    'inovafarma',
     'default',
   ];
 
@@ -39,21 +41,16 @@ class PromptsController extends GetxController {
   void onClose() {
     nameController.dispose();
     promptController.dispose();
+    welcomeMessageController.dispose();
     super.onClose();
   }
 
-  Future<void> loadPrompts({
-    int limit = 50,
-    int offset = 0,
-  }) async {
+  Future<void> loadPrompts({int limit = 50, int offset = 0}) async {
     isLoading.value = true;
     error.value = null;
 
     try {
-      final response = await provider.listPrompts(
-        limit: limit,
-        offset: offset,
-      );
+      final response = await provider.listPrompts(limit: limit, offset: offset);
 
       if (offset == 0) {
         prompts.clear();
@@ -114,6 +111,7 @@ class PromptsController extends GetxController {
     required String name,
     required String type,
     required String prompt,
+    required String welcomeMessage,
   }) async {
     isLoading.value = true;
     error.value = null;
@@ -123,6 +121,7 @@ class PromptsController extends GetxController {
         name: name,
         type: type,
         prompt: prompt,
+        welcomeMessage: welcomeMessage,
       );
       await refreshPrompts();
       return true;
@@ -137,6 +136,7 @@ class PromptsController extends GetxController {
   Future<bool> createPromptFromForm() async {
     final name = nameController.text.trim();
     final prompt = promptController.text.trim();
+    final welcomeMessage = welcomeMessageController.text.trim();
 
     if (name.isEmpty || prompt.isEmpty) {
       error.value = 'prompts_error_required_fields'.tr;
@@ -147,6 +147,7 @@ class PromptsController extends GetxController {
       name: name,
       type: selectedType.value,
       prompt: prompt,
+      welcomeMessage: welcomeMessage,
     );
 
     if (success) {
@@ -161,6 +162,7 @@ class PromptsController extends GetxController {
     required String name,
     required String type,
     required String prompt,
+    required String welcomeMessage,
   }) async {
     isLoading.value = true;
     error.value = null;
@@ -171,6 +173,7 @@ class PromptsController extends GetxController {
         name: name,
         type: type,
         prompt: prompt,
+        welcomeMessage: welcomeMessage,
       );
       if (response.success) {
         await refreshPrompts();
@@ -194,6 +197,7 @@ class PromptsController extends GetxController {
 
     final name = nameController.text.trim();
     final prompt = promptController.text.trim();
+    final welcomeMessage = welcomeMessageController.text.trim();
 
     if (name.isEmpty || prompt.isEmpty) {
       error.value = 'prompts_error_required_fields'.tr;
@@ -205,6 +209,7 @@ class PromptsController extends GetxController {
       name: name,
       type: selectedType.value,
       prompt: prompt,
+      welcomeMessage: welcomeMessage,
     );
 
     if (success) {
@@ -241,6 +246,7 @@ class PromptsController extends GetxController {
     selectedPrompt.value = prompt;
     nameController.text = prompt.name;
     promptController.text = prompt.prompt;
+    welcomeMessageController.text = prompt.welcomeMessage;
     selectedType.value = prompt.type;
   }
 
@@ -252,6 +258,7 @@ class PromptsController extends GetxController {
   void clearForm() {
     nameController.clear();
     promptController.clear();
+    welcomeMessageController.clear();
     selectedType.value = 'farmago';
   }
 }

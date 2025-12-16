@@ -217,6 +217,4 @@ public class SessionSettings
     public int MaxIdleMinutes { get; set; } = 30;
     public int MaxSessionDurationMinutes { get; set; } = 120;
     public int MaxHistoryMessages { get; set; } = 50;
-    public string WelcomeMessage { get; set; } = "Olá! Sou o assistente virtual da PharmaGO. Como posso ajudá-lo hoje?";
-    public string SystemPrompt { get; set; } = "Você é um assistente virtual amigável e profissional da PharmaGO, um sistema de gestão para farmácias. Responda de forma clara, concisa e útil. Se não souber a resposta, seja honesto e sugira entrar em contato com o suporte humano.";
 }

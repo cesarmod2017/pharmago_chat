@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pharmago_chat_ui/modules/prompts/prompts_module.dart';
 
@@ -197,9 +198,7 @@ class _PromptsContentState extends State<PromptsContent> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.1),
-          ),
+          bottom: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
         ),
       ),
       child: Row(
@@ -208,7 +207,9 @@ class _PromptsContentState extends State<PromptsContent> {
             child: Container(
               height: 44,
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
@@ -287,11 +288,7 @@ class _PromptsContentState extends State<PromptsContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: colorScheme.error,
-          ),
+          Icon(Icons.error_outline, size: 48, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(_controller!.error.value!),
           const SizedBox(height: 16),
@@ -351,9 +348,7 @@ class _PromptsContentState extends State<PromptsContent> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: colorScheme.outline.withValues(alpha: 0.1),
-        ),
+        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
       ),
       child: InkWell(
         onTap: () => _showEditPromptDialog(prompt),
@@ -397,7 +392,9 @@ class _PromptsContentState extends State<PromptsContent> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: _getTypeColor(prompt.type).withValues(alpha: 0.1),
+                            color: _getTypeColor(
+                              prompt.type,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -424,10 +421,7 @@ class _PromptsContentState extends State<PromptsContent> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        _buildInfoChip(
-                          Icons.category_outlined,
-                          prompt.type,
-                        ),
+                        _buildInfoChip(Icons.category_outlined, prompt.type),
                         const SizedBox(width: 12),
                         _buildInfoChip(
                           Icons.calendar_today_outlined,
@@ -515,7 +509,7 @@ class _PromptsContentState extends State<PromptsContent> {
         return Colors.orange;
       case 'alpha7':
         return Colors.green;
-      case 'pharmatec':
+      case 'inovafarma':
         return Colors.teal;
       case 'default':
         return Colors.grey;
@@ -534,7 +528,7 @@ class _PromptsContentState extends State<PromptsContent> {
         return Icons.computer;
       case 'alpha7':
         return Icons.apartment;
-      case 'pharmatec':
+      case 'inovafarma':
         return Icons.science;
       case 'default':
         return Icons.text_snippet;
@@ -571,10 +565,8 @@ class _PromptsContentState extends State<PromptsContent> {
   void _showPromptFormDialog({required bool isEdit}) {
     showDialog(
       context: context,
-      builder: (context) => _PromptFormDialog(
-        controller: _controller!,
-        isEdit: isEdit,
-      ),
+      builder: (context) =>
+          _PromptFormDialog(controller: _controller!, isEdit: isEdit),
     );
   }
 
@@ -595,7 +587,7 @@ class _PromptsContentState extends State<PromptsContent> {
               await _controller!.deletePrompt(prompt.id);
               Get.snackbar(
                 'Sucesso',
-                'Prompt excluido',
+                'Prompt excluído',
                 snackPosition: SnackPosition.BOTTOM,
               );
             },
@@ -612,17 +604,37 @@ class _PromptFormDialog extends StatelessWidget {
   final PromptsController controller;
   final bool isEdit;
 
-  const _PromptFormDialog({
-    required this.controller,
-    required this.isEdit,
-  });
+  const _PromptFormDialog({required this.controller, required this.isEdit});
+
+  static const List<Map<String, String>> _dynamicVariables = [
+    {'tag': '{appName}', 'description': 'Nome do aplicativo'},
+    {'tag': '{client}', 'description': 'Flavor do app'},
+    {'tag': '{agentName}', 'description': 'Agente atual'},
+    {'tag': '{type}', 'description': 'Tipo do prompt'},
+    {'tag': '{userName}', 'description': 'Nome do usuário'},
+    {'tag': '{userEmail}', 'description': 'E-mail do usuário'},
+    {'tag': '{language}', 'description': 'Idioma do usuário'},
+  ];
+
+  void _copyToClipboard(BuildContext context, String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Copiado: $text'),
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+        constraints: const BoxConstraints(maxWidth: 900, maxHeight: 800),
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -648,6 +660,7 @@ class _PromptFormDialog extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
                       controller: controller.nameController,
@@ -659,7 +672,7 @@ class _PromptFormDialog extends StatelessWidget {
                     const SizedBox(height: 16),
                     Obx(
                       () => DropdownButtonFormField<String>(
-                        value: controller.selectedType.value,
+                        initialValue: controller.selectedType.value,
                         decoration: const InputDecoration(
                           labelText: 'Tipo',
                           border: OutlineInputBorder(),
@@ -679,13 +692,86 @@ class _PromptFormDialog extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: controller.promptController,
+                      controller: controller.welcomeMessageController,
                       decoration: const InputDecoration(
-                        labelText: 'Conteudo do Prompt',
+                        labelText: 'Mensagem de Boas-vindas',
                         border: OutlineInputBorder(),
                         alignLabelWithHint: true,
                       ),
-                      maxLines: 10,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Variáveis Dinâmicas',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _dynamicVariables.map((variable) {
+                        return Tooltip(
+                          message: variable['description']!,
+                          child: InkWell(
+                            onTap: () =>
+                                _copyToClipboard(context, variable['tag']!),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer.withValues(
+                                  alpha: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    variable['tag']!,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: colorScheme.primary,
+                                      fontFamily: 'monospace',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.copy,
+                                    size: 14,
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller.promptController,
+                      decoration: const InputDecoration(
+                        labelText: 'Conteúdo do Prompt',
+                        border: OutlineInputBorder(),
+                        alignLabelWithHint: true,
+                      ),
+                      maxLines: 12,
                     ),
                   ],
                 ),
@@ -726,9 +812,7 @@ class _PromptFormDialog extends StatelessWidget {
                               Navigator.pop(context);
                               Get.snackbar(
                                 'Sucesso',
-                                isEdit
-                                    ? 'Prompt atualizado'
-                                    : 'Prompt criado',
+                                isEdit ? 'Prompt atualizado' : 'Prompt criado',
                                 snackPosition: SnackPosition.BOTTOM,
                               );
                             }
@@ -760,10 +844,10 @@ class _PromptFormDialog extends StatelessWidget {
         return 'AOTech';
       case 'alpha7':
         return 'Alpha7';
-      case 'pharmatec':
-        return 'PharmaTec';
+      case 'inovafarma':
+        return 'Inova Farma';
       case 'default':
-        return 'Padrao';
+        return 'Padrão';
       default:
         return type;
     }

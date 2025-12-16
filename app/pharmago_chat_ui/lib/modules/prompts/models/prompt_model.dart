@@ -5,6 +5,7 @@ class PromptModel {
   final String name;
   final String type;
   final String prompt;
+  final String welcomeMessage;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -13,6 +14,7 @@ class PromptModel {
     required this.name,
     required this.type,
     required this.prompt,
+    required this.welcomeMessage,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -23,6 +25,7 @@ class PromptModel {
       name: proto.name,
       type: proto.type,
       prompt: proto.prompt,
+      welcomeMessage: proto.welcomeMessage,
       createdAt: proto.hasCreatedAt()
           ? proto.createdAt.toDateTime()
           : DateTime.now(),
@@ -37,6 +40,7 @@ class PromptModel {
     String? name,
     String? type,
     String? prompt,
+    String? welcomeMessage,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -45,6 +49,7 @@ class PromptModel {
       name: name ?? this.name,
       type: type ?? this.type,
       prompt: prompt ?? this.prompt,
+      welcomeMessage: welcomeMessage ?? this.welcomeMessage,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -60,10 +65,10 @@ class PromptModel {
         return 'AOTech';
       case 'alpha7':
         return 'Alpha7';
-      case 'pharmatec':
-        return 'PharmaTec';
+      case 'inovafarma':
+        return 'Inova Farma';
       case 'default':
-        return 'Padrao';
+        return 'Padrão';
       default:
         return type;
     }

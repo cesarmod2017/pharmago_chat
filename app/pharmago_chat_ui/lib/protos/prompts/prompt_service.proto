@@ -37,6 +37,7 @@ message CreatePromptRequest {
   string name = 1;
   string type = 2;
   string prompt = 3;
+  string welcome_message = 4;
 }
 
 message CreatePromptResponse {
@@ -49,6 +50,7 @@ message UpdatePromptRequest {
   string name = 2;
   string type = 3;
   string prompt = 4;
+  string welcome_message = 5;
 }
 
 message UpdatePromptResponse {
@@ -89,6 +91,7 @@ message PromptInfo {
   string name = 2;
   string type = 3;
   string prompt = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
+  string welcome_message = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }

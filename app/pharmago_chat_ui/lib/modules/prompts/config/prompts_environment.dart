@@ -5,10 +5,10 @@ class PromptsEnvironment {
   PromptsEnvironment._();
 
   static const String _debugHost = 'localhost';
-  static const int _debugPort = 5144;
+  static const int _debugPort = 5003;
   static const bool _debugUseTls = false;
 
-  static String _releaseHost = 'chat.pharmago.com.br';
+  static String _releaseHost = 'chat-grpc.appfarmago.com';
   static const int _releasePort = 443;
   static const bool _releaseUseTls = true;
 
@@ -19,15 +19,13 @@ class PromptsEnvironment {
   static bool get isDebug => kDebugMode;
   static bool get isRelease => kReleaseMode;
 
-  static String get host => _customHost ?? (isDebug ? _debugHost : _releaseHost);
+  static String get host =>
+      _customHost ?? (isDebug ? _debugHost : _releaseHost);
   static int get port => _customPort ?? (isDebug ? _debugPort : _releasePort);
-  static bool get useTls => _customUseTls ?? (isDebug ? _debugUseTls : _releaseUseTls);
+  static bool get useTls =>
+      _customUseTls ?? (isDebug ? _debugUseTls : _releaseUseTls);
 
-  static void configure({
-    String? host,
-    int? port,
-    bool? useTls,
-  }) {
+  static void configure({String? host, int? port, bool? useTls}) {
     _customHost = host;
     _customPort = port;
     _customUseTls = useTls;

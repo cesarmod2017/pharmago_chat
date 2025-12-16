@@ -6,6 +6,7 @@ using PharmaGo.Chat.Grpc.Data.Context;
 using PharmaGo.Chat.Grpc.Models.Entities;
 using PharmaGo.Chat.Grpc.Protos;
 using PharmaGo.Chat.Grpc.Services.AI;
+using PharmaGo.Chat.Grpc.Services.Prompts;
 using PharmaGo.Chat.Grpc.Services.RAG;
 using System.Text.Json;
 
@@ -16,6 +17,7 @@ public class ChatGrpcService : ChatService.ChatServiceBase
     private readonly IChatCacheService _cacheService;
     private readonly IAIServiceFactory _aiServiceFactory;
     private readonly IRagService _ragService;
+    private readonly IPromptCacheService _promptCacheService;
     private readonly ChatDbContext _dbContext;
     private readonly SessionSettings _sessionSettings;
     private readonly ILogger<ChatGrpcService> _logger;
@@ -24,6 +26,7 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         IChatCacheService cacheService,
         IAIServiceFactory aiServiceFactory,
         IRagService ragService,
+        IPromptCacheService promptCacheService,
         ChatDbContext dbContext,
         ChatSettings settings,
         ILogger<ChatGrpcService> logger)
@@ -31,6 +34,7 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         _cacheService = cacheService;
         _aiServiceFactory = aiServiceFactory;
         _ragService = ragService;
+        _promptCacheService = promptCacheService;
         _dbContext = dbContext;
         _sessionSettings = settings.Session;
         _logger = logger;
@@ -41,6 +45,19 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         var sessionId = Guid.NewGuid().ToString();
         var metadata = request.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         var language = string.IsNullOrEmpty(request.Language) ? "pt-BR" : request.Language;
+
+        // Get prompt configuration by type from Redis/DB
+        var promptData = await _promptCacheService.GetPromptByTypeAsync(request.Type);
+
+        // Create variable replacement context from request
+        var variableContext = PromptVariableReplacer.FromCreateSessionRequest(
+            request.Name,
+            request.Email,
+            request.Client,
+            request.AgentName,
+            string.IsNullOrEmpty(request.ErpName) ? null : request.ErpName,
+            language,
+            request.Type);
 
         // Create session in Redis cache with new parameters
         await _cacheService.CreateSessionAsync(
@@ -70,22 +87,26 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         _dbContext.Sessions.Add(session);
         await _dbContext.SaveChangesAsync();
 
-        // Add system message with welcome
+        // Add system message with prompt from database (with variable replacement)
+        var systemPrompt = PromptVariableReplacer.Replace(promptData?.SystemPrompt, variableContext);
         var systemMessage = new AIMessage
         {
             Role = "system",
-            Content = _sessionSettings.SystemPrompt
+            Content = systemPrompt
         };
         await _cacheService.AddMessageAsync(sessionId, systemMessage);
 
         _logger.LogInformation("Created session {SessionId} for user {UserName}, Client='{Client}', Type='{Type}'",
             sessionId, request.Name, request.Client, request.Type);
 
+        // Replace variables in welcome message
+        var welcomeMessage = PromptVariableReplacer.Replace(promptData?.WelcomeMessage, variableContext);
+
         return new ChatCreateSessionResponse
         {
             SessionId = sessionId,
             CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow),
-            WelcomeMessage = _sessionSettings.WelcomeMessage
+            WelcomeMessage = welcomeMessage
         };
     }
 
@@ -97,6 +118,12 @@ public class ChatGrpcService : ChatService.ChatServiceBase
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Session not found"));
         }
+
+        // Get prompt configuration by session type from Redis/DB
+        var promptData = await _promptCacheService.GetPromptByTypeAsync(sessionData.Type);
+
+        // Create variable replacement context from session data
+        var variableContext = PromptVariableReplacer.FromSessionCacheData(sessionData);
 
         // Get history
         var history = await _cacheService.GetHistoryAsync(request.SessionId, _sessionSettings.MaxHistoryMessages);
@@ -118,11 +145,12 @@ public class ChatGrpcService : ChatService.ChatServiceBase
             sources = searchResults.Select(r => r.Title).Distinct().ToList();
         }
 
-        // Get AI service and generate response
+        // Get AI service and generate response (with variable replacement in system prompt)
+        var systemPrompt = PromptVariableReplacer.Replace(promptData?.SystemPrompt, variableContext);
         var aiService = _aiServiceFactory.GetService(request.PreferredModel);
         var aiRequest = new AIRequest
         {
-            SystemPrompt = _sessionSettings.SystemPrompt,
+            SystemPrompt = systemPrompt,
             Messages = history,
             Context = ragContext,
             MaxTokens = 4096,
@@ -169,6 +197,12 @@ public class ChatGrpcService : ChatService.ChatServiceBase
             throw new RpcException(new Status(StatusCode.NotFound, "Session not found"));
         }
 
+        // Get prompt configuration by session type from Redis/DB
+        var promptData = await _promptCacheService.GetPromptByTypeAsync(sessionData.Type);
+
+        // Create variable replacement context from session data
+        var variableContext = PromptVariableReplacer.FromSessionCacheData(sessionData);
+
         // Get history
         var history = await _cacheService.GetHistoryAsync(request.SessionId, _sessionSettings.MaxHistoryMessages);
 
@@ -189,11 +223,12 @@ public class ChatGrpcService : ChatService.ChatServiceBase
             sources = searchResults.Select(r => r.Title).Distinct().ToList();
         }
 
-        // Get AI service
+        // Get AI service (with variable replacement in system prompt)
+        var systemPrompt = PromptVariableReplacer.Replace(promptData?.SystemPrompt, variableContext);
         var aiService = _aiServiceFactory.GetService(request.PreferredModel);
         var aiRequest = new AIRequest
         {
-            SystemPrompt = _sessionSettings.SystemPrompt,
+            SystemPrompt = systemPrompt,
             Messages = history,
             Context = ragContext,
             MaxTokens = 4096,

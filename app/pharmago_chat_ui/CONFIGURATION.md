@@ -47,7 +47,7 @@ static const int _debugPort = 5144;
 static const bool _debugUseTls = false;
 
 // Configuracao padrao RELEASE (producao)
-static String _releaseHost = 'chat.pharmago.com.br';
+static String _releaseHost = 'chat-grpc.appfarmago.com';
 static const int _releasePort = 443;
 static const bool _releaseUseTls = true;
 ```
@@ -76,7 +76,7 @@ ChatEnvironment.reset();
 ```dart
 print(ChatEnvironment.description);
 // Saida: [DEBUG] localhost:5144 (insecure)
-// Ou:    [RELEASE] chat.pharmago.com.br:443 (TLS)
+// Ou:    [RELEASE] chat-grpc.appfarmago.com:443 (TLS)
 ```
 
 ## Configuracao do Backend

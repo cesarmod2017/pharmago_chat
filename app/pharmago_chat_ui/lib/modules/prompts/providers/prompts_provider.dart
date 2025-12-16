@@ -29,12 +29,14 @@ class PromptsProvider {
     required String name,
     required String type,
     required String prompt,
+    required String welcomeMessage,
   }) async {
     final grpcClient = await client;
     final request = CreatePromptRequest(
       name: name,
       type: type,
       prompt: prompt,
+      welcomeMessage: welcomeMessage,
     );
     return grpcClient.createPrompt(request);
   }
@@ -44,6 +46,7 @@ class PromptsProvider {
     required String name,
     required String type,
     required String prompt,
+    required String welcomeMessage,
   }) async {
     final grpcClient = await client;
     final request = UpdatePromptRequest(
@@ -51,6 +54,7 @@ class PromptsProvider {
       name: name,
       type: type,
       prompt: prompt,
+      welcomeMessage: welcomeMessage,
     );
     return grpcClient.updatePrompt(request);
   }

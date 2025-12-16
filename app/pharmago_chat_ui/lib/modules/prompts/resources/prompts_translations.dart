@@ -37,8 +37,10 @@ abstract class PromptsTranslations {
     'prompts_type_linx': 'Linx',
     'prompts_type_aotech': 'AOTech',
     'prompts_type_alpha7': 'Alpha7',
-    'prompts_type_pharmatec': 'PharmaTec',
+    'prompts_type_pharmatec': 'Inova Farma',
     'prompts_type_default': 'Default',
+    'prompts_welcome_message': 'Welcome Message',
+    'prompts_no_welcome_message': 'No welcome message defined',
   };
 
   static const Map<String, String> ptBR = {
@@ -52,7 +54,7 @@ abstract class PromptsTranslations {
     'prompts_updated': 'Atualizado em',
     'prompts_no_prompts': 'Nenhum prompt encontrado',
     'prompts_delete_confirm': 'Tem certeza que deseja excluir este prompt?',
-    'prompts_delete_success': 'Prompt excluido com sucesso',
+    'prompts_delete_success': 'Prompt excluído com sucesso',
     'prompts_add_success': 'Prompt adicionado com sucesso',
     'prompts_update_success': 'Prompt atualizado com sucesso',
     'prompts_error_load': 'Falha ao carregar prompts',
@@ -60,7 +62,7 @@ abstract class PromptsTranslations {
     'prompts_error_create': 'Falha ao criar prompt',
     'prompts_error_update': 'Falha ao atualizar prompt',
     'prompts_error_delete': 'Falha ao excluir prompt',
-    'prompts_error_required_fields': 'Nome e prompt sao obrigatorios',
+    'prompts_error_required_fields': 'Nome e prompt são obrigatórios',
     'prompts_error_no_selection': 'Nenhum prompt selecionado',
     'prompts_save': 'Salvar',
     'prompts_cancel': 'Cancelar',
@@ -73,8 +75,10 @@ abstract class PromptsTranslations {
     'prompts_type_linx': 'Linx',
     'prompts_type_aotech': 'AOTech',
     'prompts_type_alpha7': 'Alpha7',
-    'prompts_type_pharmatec': 'PharmaTec',
-    'prompts_type_default': 'Padrao',
+    'prompts_type_pharmatec': 'Inova Farma',
+    'prompts_type_default': 'Padrão',
+    'prompts_welcome_message': 'Mensagem de Boas-vindas',
+    'prompts_no_welcome_message': 'Nenhuma mensagem de boas-vindas definida',
   };
 
   static const Map<String, String> esES = {
@@ -87,7 +91,7 @@ abstract class PromptsTranslations {
     'prompts_created': 'Creado',
     'prompts_updated': 'Actualizado',
     'prompts_no_prompts': 'No se encontraron prompts',
-    'prompts_delete_confirm': 'Esta seguro de que desea eliminar este prompt?',
+    'prompts_delete_confirm': '¿Está seguro de que desea eliminar este prompt?',
     'prompts_delete_success': 'Prompt eliminado correctamente',
     'prompts_add_success': 'Prompt agregado correctamente',
     'prompts_update_success': 'Prompt actualizado correctamente',
@@ -97,7 +101,7 @@ abstract class PromptsTranslations {
     'prompts_error_update': 'Error al actualizar prompt',
     'prompts_error_delete': 'Error al eliminar prompt',
     'prompts_error_required_fields': 'Nombre y prompt son obligatorios',
-    'prompts_error_no_selection': 'Ningun prompt seleccionado',
+    'prompts_error_no_selection': 'Ningún prompt seleccionado',
     'prompts_save': 'Guardar',
     'prompts_cancel': 'Cancelar',
     'prompts_delete': 'Eliminar',
@@ -109,7 +113,9 @@ abstract class PromptsTranslations {
     'prompts_type_linx': 'Linx',
     'prompts_type_aotech': 'AOTech',
     'prompts_type_alpha7': 'Alpha7',
-    'prompts_type_pharmatec': 'PharmaTec',
+    'prompts_type_pharmatec': 'Inova Farma',
     'prompts_type_default': 'Por defecto',
+    'prompts_welcome_message': 'Mensaje de Bienvenida',
+    'prompts_no_welcome_message': 'Ningún mensaje de bienvenida definido',
   };
 }

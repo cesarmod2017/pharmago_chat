@@ -18,7 +18,7 @@ class ChatEnvironment {
 
   /// Release mode production configuration
   /// Configure this URL before deploying to production
-  static String _releaseHost = 'chat.pharmago.com.br';
+  static String _releaseHost = 'chat-grpc.appfarmago.com';
   static const int _releasePort = 443;
   static const bool _releaseUseTls = true;
 

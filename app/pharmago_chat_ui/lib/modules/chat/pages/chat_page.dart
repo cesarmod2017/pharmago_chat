@@ -95,7 +95,8 @@ class ChatPage extends GetView<ChatController> {
               controller: controller.messageController,
               focusNode: controller.messageFocusNode,
               onSend: controller.sendMessage,
-              enabled: !controller.isLoading.value &&
+              enabled:
+                  !controller.isLoading.value &&
                   !controller.isTyping.value &&
                   controller.sessionId.value.isNotEmpty,
               theme: chatTheme,
@@ -238,7 +239,8 @@ class ChatPageWidget extends StatelessWidget {
             controller: controller.messageController,
             focusNode: controller.messageFocusNode,
             onSend: controller.sendMessage,
-            enabled: !controller.isLoading.value &&
+            enabled:
+                !controller.isLoading.value &&
                 !controller.isTyping.value &&
                 controller.sessionId.value.isNotEmpty,
             theme: chatTheme,

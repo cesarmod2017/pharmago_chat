@@ -10,13 +10,16 @@ namespace PharmaGo.Chat.Grpc.Services.Prompts;
 public class PromptGrpcService : PromptService.PromptServiceBase
 {
     private readonly ChatDbContext _dbContext;
+    private readonly IPromptCacheService _promptCacheService;
     private readonly ILogger<PromptGrpcService> _logger;
 
     public PromptGrpcService(
         ChatDbContext dbContext,
+        IPromptCacheService promptCacheService,
         ILogger<PromptGrpcService> logger)
     {
         _dbContext = dbContext;
+        _promptCacheService = promptCacheService;
         _logger = logger;
     }
 
@@ -27,6 +30,7 @@ public class PromptGrpcService : PromptService.PromptServiceBase
             Name = request.Name,
             Type = request.Type,
             Prompt = request.Prompt,
+            WelcomeMessage = request.WelcomeMessage,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -34,7 +38,17 @@ public class PromptGrpcService : PromptService.PromptServiceBase
         _dbContext.ChatPrompts.Add(entity);
         await _dbContext.SaveChangesAsync();
 
-        _logger.LogInformation("Created prompt {Id}: {Name} ({Type})", entity.Id, entity.Name, entity.Type);
+        // Sync cache with newly created prompt
+        await _promptCacheService.SetCacheAsync(entity.Type.ToLowerInvariant(), new PromptCacheData
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            Type = entity.Type,
+            SystemPrompt = entity.Prompt,
+            WelcomeMessage = entity.WelcomeMessage
+        });
+
+        _logger.LogInformation("Created prompt {Id}: {Name} ({Type}) and synced to Redis cache", entity.Id, entity.Name, entity.Type);
 
         return new CreatePromptResponse
         {
@@ -57,14 +71,32 @@ public class PromptGrpcService : PromptService.PromptServiceBase
             throw new RpcException(new Status(StatusCode.NotFound, "Prompt not found"));
         }
 
+        var oldType = entity.Type;
         entity.Name = request.Name;
         entity.Type = request.Type;
         entity.Prompt = request.Prompt;
+        entity.WelcomeMessage = request.WelcomeMessage;
         entity.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
 
-        _logger.LogInformation("Updated prompt {Id}: {Name} ({Type})", entity.Id, entity.Name, entity.Type);
+        // If type changed, invalidate old type cache
+        if (oldType != entity.Type)
+        {
+            await _promptCacheService.InvalidateCacheAsync(oldType.ToLowerInvariant());
+        }
+
+        // Sync cache with updated prompt data
+        await _promptCacheService.SetCacheAsync(entity.Type.ToLowerInvariant(), new PromptCacheData
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            Type = entity.Type,
+            SystemPrompt = entity.Prompt,
+            WelcomeMessage = entity.WelcomeMessage
+        });
+
+        _logger.LogInformation("Updated prompt {Id}: {Name} ({Type}) and synced to Redis cache", entity.Id, entity.Name, entity.Type);
 
         return new UpdatePromptResponse
         {
@@ -87,8 +119,12 @@ public class PromptGrpcService : PromptService.PromptServiceBase
             throw new RpcException(new Status(StatusCode.NotFound, "Prompt not found"));
         }
 
+        var type = entity.Type;
         _dbContext.ChatPrompts.Remove(entity);
         await _dbContext.SaveChangesAsync();
+
+        // Invalidate cache for this type
+        await _promptCacheService.InvalidateCacheAsync(type);
 
         _logger.LogInformation("Deleted prompt {Id}", promptId);
 
@@ -171,6 +207,7 @@ public class PromptGrpcService : PromptService.PromptServiceBase
             Name = entity.Name,
             Type = entity.Type,
             Prompt = entity.Prompt,
+            WelcomeMessage = entity.WelcomeMessage ?? string.Empty,
             CreatedAt = Timestamp.FromDateTime(entity.CreatedAt.ToUniversalTime()),
             UpdatedAt = Timestamp.FromDateTime(entity.UpdatedAt.ToUniversalTime())
         };

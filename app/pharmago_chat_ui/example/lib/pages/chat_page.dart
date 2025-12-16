@@ -175,6 +175,12 @@ class _ChatPageState extends State<ChatPage> {
           // On mobile (Android/iOS), Enter never sends - only the send button does
           sendOnEnter: true,
           // sendButtonIcon: Icons.arrow_upward, // Custom send button icon
+          //
+          // Input field color customization (overrides theme values):
+          // inputBackgroundColor: Colors.grey.shade100, // Background color
+          // inputBorderColor: Colors.blue.shade200,     // Border color
+          // inputHintColor: Colors.grey.shade400,       // Hint/placeholder color
+          // inputTextColor: Colors.black87,             // Text color
         ),
       ),
     );

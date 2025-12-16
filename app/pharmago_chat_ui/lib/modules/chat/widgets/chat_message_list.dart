@@ -53,22 +53,40 @@ class ChatMessageList extends StatelessWidget {
           );
     }
 
+    // Filter out empty assistant messages when typing (streaming in progress)
+    final displayMessages = messages.where((m) {
+      // Hide empty assistant bubbles when typing is active
+      if (isTyping && !m.isUser && m.content.isEmpty) {
+        return false;
+      }
+      return true;
+    }).toList();
+
+    // Show typing indicator only when isTyping is true AND the last assistant message is empty or doesn't exist
+    final lastAssistantMessage = messages.isNotEmpty && !messages.last.isUser
+        ? messages.last
+        : null;
+    final showTypingIndicator = isTyping &&
+        (lastAssistantMessage == null || lastAssistantMessage.content.isEmpty);
+
     return ListView.builder(
       controller: scrollController,
       padding: padding ?? const EdgeInsets.symmetric(vertical: 8),
-      itemCount: messages.length + (isTyping ? 1 : 0),
+      itemCount: displayMessages.length + (showTypingIndicator ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == messages.length && isTyping) {
+        if (index == displayMessages.length && showTypingIndicator) {
           return ChatTypingIndicator(theme: chatTheme);
         }
 
-        final message = messages[index];
-        final isLastUserMessage = index == messages.length - 1 && message.isUser;
+        final message = displayMessages[index];
+        final isLastUserMessage =
+            index == displayMessages.length - 1 && message.isUser;
 
         return ChatBubble(
           message: message,
           theme: chatTheme,
-          onRetry: isLastUserMessage && message.hasError ? onRetryLastMessage : null,
+          onRetry:
+              isLastUserMessage && message.hasError ? onRetryLastMessage : null,
         );
       },
     );

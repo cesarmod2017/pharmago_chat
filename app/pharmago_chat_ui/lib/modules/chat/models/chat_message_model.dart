@@ -38,6 +38,19 @@ class ChatMessageModel {
     );
   }
 
+  factory ChatMessageModel.fromHistoryProto(ChatHistoryMessage proto) {
+    return ChatMessageModel(
+      id: proto.messageId,
+      role: _parseRole(proto.role),
+      content: proto.content,
+      timestamp: proto.hasTimestamp()
+          ? proto.timestamp.toDateTime()
+          : DateTime.now(),
+      modelUsed: proto.hasModelUsed() ? proto.modelUsed : null,
+      tokensUsed: proto.hasTokensUsed() ? proto.tokensUsed : null,
+    );
+  }
+
   factory ChatMessageModel.user({
     required String id,
     required String content,

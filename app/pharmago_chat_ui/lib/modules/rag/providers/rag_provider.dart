@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:fixnum/fixnum.dart';
+import 'package:grpc/grpc.dart';
 import 'package:pharmago_chat_ui/src/grpc/grpc_exports.dart';
 import 'package:pharmago_chat_ui/modules/chat/providers/chat_provider.dart'
     show GrpcChannelFactory;
@@ -152,5 +155,44 @@ class RagProvider {
       filter: filter,
     );
     return grpcClient.searchEmbeddingDocuments(request);
+  }
+
+  // ============================================================================
+  // Batch File Upload (Server Streaming)
+  // ============================================================================
+
+  /// Uploads multiple files in batch and streams progress notifications.
+  /// Returns a Stream of [RagUploadFileProgress] for each file's progress.
+  Stream<RagUploadFileProgress> uploadFilesBatch({
+    required List<RagUploadFile> files,
+  }) async* {
+    final grpcClient = await client;
+    final request = RagUploadFilesBatchRequest(files: files);
+
+    final responseStream = grpcClient.uploadFilesBatch(request);
+
+    await for (final progress in responseStream) {
+      yield progress;
+    }
+  }
+
+  /// Creates a [RagUploadFile] from file data.
+  /// Helper method for creating upload file objects.
+  RagUploadFile createUploadFile({
+    required String fileName,
+    required String content,
+    String? documentType,
+    String? type,
+    Map<String, String>? metadata,
+    List<String>? tags,
+  }) {
+    return RagUploadFile(
+      fileName: fileName,
+      content: content,
+      documentType: documentType ?? '',
+      type: type ?? '',
+      metadata: metadata,
+      tags: tags,
+    );
   }
 }

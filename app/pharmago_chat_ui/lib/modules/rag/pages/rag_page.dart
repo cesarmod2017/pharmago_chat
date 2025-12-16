@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -62,10 +66,23 @@ class RagPage extends GetView<RagController> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.toNamed('/rag/add'),
-        tooltip: 'rag_add_document'.tr,
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'batch_upload',
+            onPressed: () => Get.toNamed(RagRoutes.ragBatchUpload),
+            tooltip: 'rag_batch_upload'.tr,
+            child: const Icon(Icons.upload_file),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'add_document',
+            onPressed: () => Get.toNamed('/rag/add'),
+            tooltip: 'rag_add_document'.tr,
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.documents.isEmpty) {
@@ -179,7 +196,7 @@ class RagDocumentListTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${document.documentTypeLabel} - ${document.chunkCount} ${'rag_document_chunks'.tr.toLowerCase()}',
+              '${document.documentTypeLabel} - ${document.chunkCount} ${'rag_document_chunks'.tr.toLowerCase()}${document.type.isNotEmpty ? ' - ${document.type}' : ''}',
               style: const TextStyle(fontSize: 12),
             ),
             if (document.tags.isNotEmpty)
@@ -391,6 +408,13 @@ class RagDocumentDetailPage extends GetView<RagController> {
                 title: 'rag_document_type'.tr,
                 content: document.documentTypeLabel,
               ),
+              if (document.type.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _buildInfoCard(
+                  title: 'rag_document_type_filter'.tr,
+                  content: document.type,
+                ),
+              ],
               const SizedBox(height: 16),
               _buildInfoCard(
                 title: 'rag_document_chunks'.tr,
@@ -511,24 +535,41 @@ class RagAddDocumentPage extends GetView<RagController> {
               ),
             ),
             const SizedBox(height: 16),
-            Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedDocumentType.value,
-                  decoration: InputDecoration(
-                    labelText: 'rag_document_type'.tr,
-                    border: const OutlineInputBorder(),
+            Row(
+              children: [
+                Expanded(
+                  child: Obx(() => DropdownButtonFormField<String>(
+                        value: controller.selectedDocumentType.value,
+                        decoration: InputDecoration(
+                          labelText: 'rag_document_type'.tr,
+                          border: const OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'text', child: Text('Texto')),
+                          DropdownMenuItem(value: 'markdown', child: Text('Markdown')),
+                          DropdownMenuItem(value: 'pdf_text', child: Text('PDF')),
+                          DropdownMenuItem(value: 'html', child: Text('HTML')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            controller.selectedDocumentType.value = value;
+                          }
+                        },
+                      )),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: controller.typeController,
+                    decoration: InputDecoration(
+                      labelText: 'rag_document_type_filter'.tr,
+                      hintText: 'rag_type_hint'.tr,
+                      border: const OutlineInputBorder(),
+                    ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'text', child: Text('Texto')),
-                    DropdownMenuItem(value: 'markdown', child: Text('Markdown')),
-                    DropdownMenuItem(value: 'pdf_text', child: Text('PDF')),
-                    DropdownMenuItem(value: 'html', child: Text('HTML')),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      controller.selectedDocumentType.value = value;
-                    }
-                  },
-                )),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: controller.contentController,
@@ -858,5 +899,492 @@ class RagEmbeddingSearchResultTile extends StatelessWidget {
     if (score >= 0.9) return Colors.green;
     if (score >= 0.7) return Colors.orange;
     return Colors.red;
+  }
+}
+
+// ============================================================================
+// Batch Upload Page
+// ============================================================================
+
+class RagBatchUploadPage extends GetView<RagController> {
+  const RagBatchUploadPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('rag_batch_upload'.tr),
+        actions: [
+          Obx(() => controller.batchUploadFiles.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.delete_sweep),
+                  onPressed: controller.clearBatchUpload,
+                  tooltip: 'rag_batch_clear'.tr,
+                )
+              : const SizedBox.shrink()),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Info card
+          Card(
+            margin: const EdgeInsets.all(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'rag_batch_info'.tr,
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Type field
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              onChanged: (value) => controller.batchUploadType.value = value,
+              decoration: InputDecoration(
+                labelText: 'rag_document_type_filter'.tr,
+                hintText: 'rag_type_hint'.tr,
+                prefixIcon: const Icon(Icons.category_outlined),
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // File picker button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Obx(() => ElevatedButton.icon(
+                  onPressed: controller.isBatchUploading.value
+                      ? null
+                      : () => _pickFiles(context),
+                  icon: const Icon(Icons.folder_open),
+                  label: Text('rag_batch_select_files'.tr),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                )),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Progress summary
+          Obx(() {
+            if (controller.batchUploadFiles.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            final summary = controller.batchUploadSummary;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  LinearProgressIndicator(
+                    value: summary.progressPercent,
+                    backgroundColor: Colors.grey.shade200,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${'rag_batch_total'.tr}: ${summary.totalFiles}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      Text(
+                        '${'rag_batch_completed'.tr}: ${summary.completedFiles}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.green,
+                        ),
+                      ),
+                      if (summary.hasErrors)
+                        Text(
+                          '${'rag_batch_failed'.tr}: ${summary.failedFiles}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.red,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
+
+          const SizedBox(height: 8),
+
+          // File list
+          Expanded(
+            child: Obx(() {
+              if (controller.batchUploadFiles.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.upload_file,
+                        size: 64,
+                        color: Colors.grey.shade400,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'rag_batch_no_files'.tr,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'rag_batch_supported_formats'.tr,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: controller.batchUploadFiles.length,
+                itemBuilder: (context, index) {
+                  final file = controller.batchUploadFiles[index];
+                  return _BatchUploadFileCard(
+                    file: file,
+                    index: index,
+                    onRemove: controller.isBatchUploading.value
+                        ? null
+                        : () => controller.removeFileFromBatch(index),
+                  );
+                },
+              );
+            }),
+          ),
+
+          // Error message
+          Obx(() {
+            if (controller.error.value != null) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.red.shade50,
+                child: Row(
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        controller.error.value!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+
+          // Action buttons
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Obx(() {
+                final summary = controller.batchUploadSummary;
+
+                if (summary.isComplete && summary.hasErrors) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            controller.clearBatchUpload();
+                            Get.back();
+                          },
+                          icon: const Icon(Icons.close),
+                          label: Text('rag_batch_done'.tr),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: controller.retryFailedUploads,
+                          icon: const Icon(Icons.refresh),
+                          label: Text('rag_batch_retry'.tr),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                if (summary.isComplete) {
+                  return ElevatedButton.icon(
+                    onPressed: () {
+                      controller.clearBatchUpload();
+                      Get.back();
+                      Get.snackbar(
+                        'rag_title'.tr,
+                        'rag_batch_success'.tr,
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    },
+                    icon: const Icon(Icons.check),
+                    label: Text('rag_batch_done'.tr),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+
+                if (controller.isBatchUploading.value) {
+                  return ElevatedButton.icon(
+                    onPressed: controller.cancelBatchUpload,
+                    icon: const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    ),
+                    label: Text('rag_batch_uploading'.tr),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                  );
+                }
+
+                return ElevatedButton.icon(
+                  onPressed: controller.batchUploadFiles.isEmpty
+                      ? null
+                      : controller.startBatchUpload,
+                  icon: const Icon(Icons.cloud_upload),
+                  label: Text('rag_batch_start'.tr),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickFiles(BuildContext context) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['md', 'txt'],
+        allowMultiple: true,
+        withData: kIsWeb,
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final files = <RagUploadFileModel>[];
+
+      for (final platformFile in result.files) {
+        String content;
+
+        if (kIsWeb) {
+          // Web: use bytes
+          if (platformFile.bytes != null) {
+            content = String.fromCharCodes(platformFile.bytes!);
+          } else {
+            continue;
+          }
+        } else {
+          // Desktop/Mobile: read from file path
+          if (platformFile.path != null) {
+            content = await File(platformFile.path!).readAsString();
+          } else {
+            continue;
+          }
+        }
+
+        final fileName = platformFile.name;
+        final documentType = RagUploadFileModel.detectDocumentType(fileName);
+
+        files.add(RagUploadFileModel(
+          fileName: fileName,
+          content: content,
+          fileSize: platformFile.size,
+          documentType: documentType,
+        ));
+      }
+
+      if (files.isNotEmpty) {
+        controller.addFilesToBatch(files);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'rag_title'.tr,
+        'rag_batch_error_pick'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+      );
+    }
+  }
+}
+
+class _BatchUploadFileCard extends StatelessWidget {
+  final RagUploadFileModel file;
+  final int index;
+  final VoidCallback? onRemove;
+
+  const _BatchUploadFileCard({
+    required this.file,
+    required this.index,
+    this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: _buildStatusIcon(),
+        title: Text(
+          file.fileName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  file.documentTypeLabel,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  file.fileSizeFormatted,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+            if (file.statusMessage != null)
+              Text(
+                file.statusMessage!,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: _getStatusColor(),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            if (file.error != null)
+              Text(
+                file.error!,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.red,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
+        trailing: onRemove != null
+            ? IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: onRemove,
+                color: Colors.grey,
+              )
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildStatusIcon() {
+    switch (file.status) {
+      case RagFileUploadStatus.pending:
+        return CircleAvatar(
+          backgroundColor: Colors.grey.shade200,
+          child: Icon(
+            Icons.schedule,
+            color: Colors.grey.shade600,
+          ),
+        );
+      case RagFileUploadStatus.received:
+        return CircleAvatar(
+          backgroundColor: Colors.blue.shade100,
+          child: const Icon(
+            Icons.download_done,
+            color: Colors.blue,
+          ),
+        );
+      case RagFileUploadStatus.processing:
+        return CircleAvatar(
+          backgroundColor: Colors.orange.shade100,
+          child: const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.orange,
+            ),
+          ),
+        );
+      case RagFileUploadStatus.completed:
+        return CircleAvatar(
+          backgroundColor: Colors.green.shade100,
+          child: const Icon(
+            Icons.check_circle,
+            color: Colors.green,
+          ),
+        );
+      case RagFileUploadStatus.failed:
+        return CircleAvatar(
+          backgroundColor: Colors.red.shade100,
+          child: const Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
+        );
+    }
+  }
+
+  Color _getStatusColor() {
+    switch (file.status) {
+      case RagFileUploadStatus.pending:
+        return Colors.grey;
+      case RagFileUploadStatus.received:
+        return Colors.blue;
+      case RagFileUploadStatus.processing:
+        return Colors.orange;
+      case RagFileUploadStatus.completed:
+        return Colors.green;
+      case RagFileUploadStatus.failed:
+        return Colors.red;
+    }
   }
 }

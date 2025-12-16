@@ -439,8 +439,57 @@ public class ChatGrpcService : ChatService.ChatServiceBase
             session.MessageCount += 2;
             session.TotalTokens += aiResponse.TokensUsed;
             session.LastActivity = DateTime.UtcNow;
+
+            // Save to Redis user history (180 days TTL)
+            var userHistoryMessage = new UserHistoryMessage
+            {
+                Role = "user",
+                Content = userMessage.Content,
+                Timestamp = DateTime.UtcNow
+            };
+            await _cacheService.AddMessageToUserHistoryAsync(session.UserEmail, sessionId, userHistoryMessage);
+
+            var assistantHistoryMessage = new UserHistoryMessage
+            {
+                Role = "assistant",
+                Content = aiResponse.Content,
+                Timestamp = DateTime.UtcNow,
+                ModelUsed = aiResponse.ModelUsed,
+                TokensUsed = aiResponse.TokensUsed
+            };
+            await _cacheService.AddMessageToUserHistoryAsync(session.UserEmail, sessionId, assistantHistoryMessage);
         }
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public override async Task<ChatGetHistoryByEmailResponse> GetHistoryByEmail(ChatGetHistoryByEmailRequest request, ServerCallContext context)
+    {
+        var limit = request.Limit > 0 ? request.Limit : 10;
+        var messages = await _cacheService.GetUserHistoryAsync(request.UserEmail, limit);
+
+        var response = new ChatGetHistoryByEmailResponse
+        {
+            TotalCount = messages.Count
+        };
+
+        foreach (var msg in messages)
+        {
+            response.Messages.Add(new ChatHistoryMessage
+            {
+                MessageId = msg.MessageId,
+                Role = msg.Role,
+                Content = msg.Content,
+                Timestamp = Timestamp.FromDateTime(msg.Timestamp.ToUniversalTime()),
+                ModelUsed = msg.ModelUsed ?? string.Empty,
+                TokensUsed = msg.TokensUsed,
+                SessionId = msg.SessionId
+            });
+        }
+
+        _logger.LogDebug("Retrieved {Count} messages from user history for email {UserEmail}",
+            messages.Count, request.UserEmail);
+
+        return response;
     }
 }

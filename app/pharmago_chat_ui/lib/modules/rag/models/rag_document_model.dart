@@ -4,6 +4,7 @@ class RagDocumentModel {
   final String documentId;
   final String title;
   final String documentType;
+  final String type;
   final int chunkCount;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -15,6 +16,7 @@ class RagDocumentModel {
     required this.documentId,
     required this.title,
     required this.documentType,
+    required this.type,
     required this.chunkCount,
     required this.createdAt,
     required this.updatedAt,
@@ -28,6 +30,7 @@ class RagDocumentModel {
       documentId: proto.documentId,
       title: proto.title,
       documentType: proto.documentType,
+      type: proto.type,
       chunkCount: proto.chunkCount,
       createdAt: proto.hasCreatedAt()
           ? proto.createdAt.toDateTime()
@@ -45,6 +48,7 @@ class RagDocumentModel {
     String? documentId,
     String? title,
     String? documentType,
+    String? type,
     int? chunkCount,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -56,6 +60,7 @@ class RagDocumentModel {
       documentId: documentId ?? this.documentId,
       title: title ?? this.title,
       documentType: documentType ?? this.documentType,
+      type: type ?? this.type,
       chunkCount: chunkCount ?? this.chunkCount,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -181,4 +186,130 @@ class RagEmbeddingSearchResultModel {
     if (content.length <= 150) return content;
     return '${content.substring(0, 150)}...';
   }
+}
+
+// ============================================================================
+// Batch File Upload Models
+// ============================================================================
+
+/// Status of a file upload in batch
+enum RagFileUploadStatus {
+  pending,
+  received,
+  processing,
+  completed,
+  failed,
+}
+
+/// Model representing a file selected for batch upload
+class RagUploadFileModel {
+  final String fileName;
+  final String content;
+  final int fileSize;
+  final String documentType;
+  final RagFileUploadStatus status;
+  final String? statusMessage;
+  final int? documentId;
+  final String? error;
+
+  const RagUploadFileModel({
+    required this.fileName,
+    required this.content,
+    required this.fileSize,
+    required this.documentType,
+    this.status = RagFileUploadStatus.pending,
+    this.statusMessage,
+    this.documentId,
+    this.error,
+  });
+
+  RagUploadFileModel copyWith({
+    String? fileName,
+    String? content,
+    int? fileSize,
+    String? documentType,
+    RagFileUploadStatus? status,
+    String? statusMessage,
+    int? documentId,
+    String? error,
+  }) {
+    return RagUploadFileModel(
+      fileName: fileName ?? this.fileName,
+      content: content ?? this.content,
+      fileSize: fileSize ?? this.fileSize,
+      documentType: documentType ?? this.documentType,
+      status: status ?? this.status,
+      statusMessage: statusMessage ?? this.statusMessage,
+      documentId: documentId ?? this.documentId,
+      error: error ?? this.error,
+    );
+  }
+
+  /// Detects document type from file extension
+  static String detectDocumentType(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'md':
+        return 'markdown';
+      case 'txt':
+        return 'text';
+      case 'html':
+      case 'htm':
+        return 'html';
+      default:
+        return 'text';
+    }
+  }
+
+  /// Returns formatted file size string
+  String get fileSizeFormatted {
+    if (fileSize < 1024) {
+      return '$fileSize B';
+    } else if (fileSize < 1024 * 1024) {
+      return '${(fileSize / 1024).toStringAsFixed(1)} KB';
+    } else {
+      return '${(fileSize / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
+  }
+
+  /// Returns the document type label for display
+  String get documentTypeLabel {
+    switch (documentType.toLowerCase()) {
+      case 'text':
+        return 'Texto';
+      case 'markdown':
+        return 'Markdown';
+      case 'html':
+        return 'HTML';
+      default:
+        return documentType;
+    }
+  }
+
+  /// Returns true if the file upload is in a terminal state
+  bool get isTerminal =>
+      status == RagFileUploadStatus.completed ||
+      status == RagFileUploadStatus.failed;
+}
+
+/// Model for batch upload summary
+class RagBatchUploadSummary {
+  final int totalFiles;
+  final int completedFiles;
+  final int failedFiles;
+  final int pendingFiles;
+
+  const RagBatchUploadSummary({
+    required this.totalFiles,
+    required this.completedFiles,
+    required this.failedFiles,
+    required this.pendingFiles,
+  });
+
+  double get progressPercent =>
+      totalFiles > 0 ? (completedFiles + failedFiles) / totalFiles : 0.0;
+
+  bool get isComplete => pendingFiles == 0 && totalFiles > 0;
+
+  bool get hasErrors => failedFiles > 0;
 }

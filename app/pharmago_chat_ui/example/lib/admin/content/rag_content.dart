@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pharmago_chat_ui/modules/rag/rag_module.dart';
@@ -219,6 +220,12 @@ class _RagContentState extends State<RagContent> {
             label: const Text('Adicionar'),
           ),
           const SizedBox(width: 8),
+          FilledButton.tonalIcon(
+            onPressed: () => _showBatchUploadDialog(),
+            icon: const Icon(Icons.upload_file, size: 20),
+            label: const Text('Upload'),
+          ),
+          const SizedBox(width: 8),
           IconButton.outlined(
             onPressed: _controller!.refreshDocuments,
             icon: const Icon(Icons.refresh),
@@ -380,6 +387,13 @@ class _RagContentState extends State<RagContent> {
                           Icons.description_outlined,
                           document.documentTypeLabel,
                         ),
+                        if (document.type.isNotEmpty) ...[
+                          const SizedBox(width: 12),
+                          _buildInfoChip(
+                            Icons.category_outlined,
+                            document.type,
+                          ),
+                        ],
                       ],
                     ),
                   ],
@@ -488,6 +502,14 @@ class _RagContentState extends State<RagContent> {
       ),
     );
   }
+
+  void _showBatchUploadDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _BatchUploadDialog(controller: _controller!),
+    );
+  }
 }
 
 class _AddDocumentDialog extends StatelessWidget {
@@ -531,25 +553,42 @@ class _AddDocumentDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Obx(
-              () => DropdownButtonFormField<String>(
-                value: controller.selectedDocumentType.value,
-                decoration: InputDecoration(
-                  labelText: 'rag_document_type'.tr,
-                  border: const OutlineInputBorder(),
+            Row(
+              children: [
+                Expanded(
+                  child: Obx(
+                    () => DropdownButtonFormField<String>(
+                      value: controller.selectedDocumentType.value,
+                      decoration: InputDecoration(
+                        labelText: 'rag_document_type'.tr,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'text', child: Text('Texto')),
+                        DropdownMenuItem(value: 'markdown', child: Text('Markdown')),
+                        DropdownMenuItem(value: 'pdf_text', child: Text('PDF')),
+                        DropdownMenuItem(value: 'html', child: Text('HTML')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.selectedDocumentType.value = value;
+                        }
+                      },
+                    ),
+                  ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'text', child: Text('Texto')),
-                  DropdownMenuItem(value: 'markdown', child: Text('Markdown')),
-                  DropdownMenuItem(value: 'pdf_text', child: Text('PDF')),
-                  DropdownMenuItem(value: 'html', child: Text('HTML')),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.selectedDocumentType.value = value;
-                  }
-                },
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: controller.typeController,
+                    decoration: InputDecoration(
+                      labelText: 'rag_document_type_filter'.tr,
+                      hintText: 'rag_type_hint'.tr,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             TextField(
@@ -663,6 +702,8 @@ class _DocumentDetailDialog extends StatelessWidget {
             const SizedBox(height: 24),
             _buildInfoRow('rag_document_title'.tr, document.title),
             _buildInfoRow('rag_document_type'.tr, document.documentTypeLabel),
+            if (document.type.isNotEmpty)
+              _buildInfoRow('rag_document_type_filter'.tr, document.type),
             _buildInfoRow('rag_document_chunks'.tr, document.chunkCount.toString()),
             _buildInfoRow('rag_document_created'.tr, _formatDate(document.createdAt)),
             _buildInfoRow('rag_document_updated'.tr, _formatDate(document.updatedAt)),
@@ -714,5 +755,643 @@ class _DocumentDetailDialog extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _BatchUploadDialog extends StatefulWidget {
+  final RagController controller;
+
+  const _BatchUploadDialog({required this.controller});
+
+  @override
+  State<_BatchUploadDialog> createState() => _BatchUploadDialogState();
+}
+
+class _BatchUploadDialogState extends State<_BatchUploadDialog> {
+  bool _isPickingFiles = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Clear any previous batch upload state after the current frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller.clearBatchUpload();
+    });
+  }
+
+  Future<void> _pickFiles() async {
+    if (_isPickingFiles) return;
+
+    setState(() {
+      _isPickingFiles = true;
+    });
+
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['md', 'txt'],
+        allowMultiple: true,
+        withData: true,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final files = <RagUploadFileModel>[];
+
+        for (final file in result.files) {
+          if (file.bytes != null) {
+            final content = String.fromCharCodes(file.bytes!);
+            final fileName = file.name;
+            final documentType = RagUploadFileModel.detectDocumentType(fileName);
+
+            files.add(RagUploadFileModel(
+              fileName: fileName,
+              content: content,
+              fileSize: file.size,
+              documentType: documentType,
+            ));
+          }
+        }
+
+        widget.controller.addFilesToBatch(files);
+      }
+    } catch (e) {
+      widget.controller.error.value = 'rag_batch_error_pick'.tr;
+    } finally {
+      setState(() {
+        _isPickingFiles = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 600),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeader(colorScheme),
+            const SizedBox(height: 16),
+            _buildInfoSection(colorScheme),
+            const SizedBox(height: 16),
+            Flexible(child: _buildFilesList(colorScheme)),
+            const SizedBox(height: 16),
+            _buildProgressSummary(colorScheme),
+            const SizedBox(height: 16),
+            _buildActions(colorScheme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(ColorScheme colorScheme) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.upload_file,
+            color: colorScheme.onPrimaryContainer,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'rag_batch_upload'.tr,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                'rag_batch_supported_formats'.tr,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Obx(() => widget.controller.isBatchUploading.value
+            ? const SizedBox.shrink()
+            : IconButton(
+                onPressed: () {
+                  widget.controller.clearBatchUpload();
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.close),
+              )),
+      ],
+    );
+  }
+
+  Widget _buildInfoSection(ColorScheme colorScheme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info_outline,
+                size: 20,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'rag_batch_info'.tr,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colorScheme.onSurface.withValues(alpha: 0.8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          onChanged: (value) => widget.controller.batchUploadType.value = value,
+          decoration: InputDecoration(
+            labelText: 'rag_document_type_filter'.tr,
+            hintText: 'rag_type_hint'.tr,
+            prefixIcon: const Icon(Icons.category_outlined),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilesList(ColorScheme colorScheme) {
+    return Obx(() {
+      final files = widget.controller.batchUploadFiles;
+
+      if (files.isEmpty) {
+        return _buildEmptyState(colorScheme);
+      }
+
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Row com botões "Limpar Tudo" (esquerda) e "Selecionar Arquivos" (direita)
+          Obx(() => widget.controller.isBatchUploading.value
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () => widget.controller.clearBatchUpload(),
+                        icon: const Icon(Icons.delete_outline, size: 18),
+                        label: Text('rag_batch_clear'.tr),
+                      ),
+                      FilledButton.tonalIcon(
+                        onPressed: _isPickingFiles ? null : _pickFiles,
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text('rag_batch_select_files'.tr),
+                      ),
+                    ],
+                  ),
+                )),
+          // Lista de arquivos com scroll
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.2),
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: files.length,
+                separatorBuilder: (_, __) => Divider(
+                  height: 1,
+                  color: colorScheme.outline.withValues(alpha: 0.1),
+                ),
+                itemBuilder: (context, index) {
+                  final file = files[index];
+                  return _buildFileItem(file, index, colorScheme);
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildEmptyState(ColorScheme colorScheme) {
+    return InkWell(
+      onTap: _isPickingFiles ? null : _pickFiles,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: colorScheme.outline.withValues(alpha: 0.3),
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.cloud_upload_outlined,
+                size: 48,
+                color: colorScheme.primary.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'rag_batch_no_files'.tr,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (_isPickingFiles)
+                const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: _pickFiles,
+                  icon: const Icon(Icons.folder_open, size: 18),
+                  label: Text('rag_batch_select_files'.tr),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFileItem(
+      RagUploadFileModel file, int index, ColorScheme colorScheme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      child: Row(
+        children: [
+          _buildFileStatusIcon(file, colorScheme),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  file.fileName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(
+                      file.fileSizeFormatted,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        file.documentTypeLabel,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ),
+                    if (file.statusMessage != null) ...[
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          file.statusMessage!,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: _getStatusColor(file.status, colorScheme),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                if (file.error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      file.error!,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colorScheme.error,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Obx(() => widget.controller.isBatchUploading.value
+              ? const SizedBox.shrink()
+              : IconButton(
+                  onPressed: () => widget.controller.removeFileFromBatch(index),
+                  icon: Icon(
+                    Icons.close,
+                    size: 18,
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFileStatusIcon(RagUploadFileModel file, ColorScheme colorScheme) {
+    switch (file.status) {
+      case RagFileUploadStatus.pending:
+        return Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.description_outlined,
+            size: 18,
+            color: colorScheme.onSurface.withValues(alpha: 0.5),
+          ),
+        );
+      case RagFileUploadStatus.received:
+        return Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(
+            Icons.cloud_done_outlined,
+            size: 18,
+            color: Colors.blue,
+          ),
+        );
+      case RagFileUploadStatus.processing:
+        return Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const SizedBox(
+            width: 18,
+            height: 18,
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.orange,
+              ),
+            ),
+          ),
+        );
+      case RagFileUploadStatus.completed:
+        return Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: Colors.green.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(
+            Icons.check_circle_outline,
+            size: 18,
+            color: Colors.green,
+          ),
+        );
+      case RagFileUploadStatus.failed:
+        return Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: colorScheme.error.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.error_outline,
+            size: 18,
+            color: colorScheme.error,
+          ),
+        );
+    }
+  }
+
+  Color _getStatusColor(RagFileUploadStatus status, ColorScheme colorScheme) {
+    switch (status) {
+      case RagFileUploadStatus.pending:
+        return colorScheme.onSurface.withValues(alpha: 0.5);
+      case RagFileUploadStatus.received:
+        return Colors.blue;
+      case RagFileUploadStatus.processing:
+        return Colors.orange;
+      case RagFileUploadStatus.completed:
+        return Colors.green;
+      case RagFileUploadStatus.failed:
+        return colorScheme.error;
+    }
+  }
+
+  Widget _buildProgressSummary(ColorScheme colorScheme) {
+    return Obx(() {
+      final files = widget.controller.batchUploadFiles;
+      if (files.isEmpty) return const SizedBox.shrink();
+
+      final summary = widget.controller.batchUploadSummary;
+
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildSummaryItem(
+                  'rag_batch_total'.tr,
+                  summary.totalFiles.toString(),
+                  colorScheme.primary,
+                ),
+                _buildSummaryItem(
+                  'rag_batch_completed'.tr,
+                  summary.completedFiles.toString(),
+                  Colors.green,
+                ),
+                _buildSummaryItem(
+                  'rag_batch_failed'.tr,
+                  summary.failedFiles.toString(),
+                  colorScheme.error,
+                ),
+              ],
+            ),
+            if (widget.controller.isBatchUploading.value) ...[
+              const SizedBox(height: 12),
+              LinearProgressIndicator(
+                value: summary.progressPercent,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildSummaryItem(String label, String value, Color color) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: color.withValues(alpha: 0.8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActions(ColorScheme colorScheme) {
+    return Obx(() {
+      final isUploading = widget.controller.isBatchUploading.value;
+      final files = widget.controller.batchUploadFiles;
+      final summary = widget.controller.batchUploadSummary;
+
+      // Upload complete
+      if (summary.isComplete && files.isNotEmpty) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (summary.hasErrors)
+              TextButton.icon(
+                onPressed: () => widget.controller.retryFailedUploads(),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: Text('rag_batch_retry'.tr),
+              ),
+            const SizedBox(width: 12),
+            FilledButton(
+              onPressed: () {
+                widget.controller.clearBatchUpload();
+                Navigator.pop(context);
+              },
+              child: Text('rag_batch_done'.tr),
+            ),
+          ],
+        );
+      }
+
+      // Uploading - mostra apenas indicador de progresso
+      if (isUploading) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'rag_batch_uploading'.tr,
+              style: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        );
+      }
+
+      // Rodapé com apenas "Cancelar" e "Iniciar Upload"
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+            onPressed: () {
+              widget.controller.clearBatchUpload();
+              Navigator.pop(context);
+            },
+            child: Text('rag_cancel'.tr),
+          ),
+          const SizedBox(width: 12),
+          FilledButton.icon(
+            onPressed: files.isEmpty ? null : () => widget.controller.startBatchUpload(),
+            icon: const Icon(Icons.cloud_upload, size: 18),
+            label: Text('rag_batch_start'.tr),
+          ),
+        ],
+      );
+    });
   }
 }

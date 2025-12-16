@@ -56,17 +56,17 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      if (contact.isOnline) ...[
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: chatTheme.onlineIndicatorColor,
-                            shape: BoxShape.circle,
-                          ),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: contact.isOnline
+                              ? chatTheme.onlineIndicatorColor
+                              : chatTheme.offlineIndicatorColor,
+                          shape: BoxShape.circle,
                         ),
-                        const SizedBox(width: 4),
-                      ],
+                      ),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           contact.subtitle!,

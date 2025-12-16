@@ -23,6 +23,18 @@ class ChatInput extends StatelessWidget {
   /// Custom icon for the send button.
   final IconData? sendButtonIcon;
 
+  /// Override for the input background color (takes precedence over theme).
+  final Color? inputBackgroundColor;
+
+  /// Override for the input border color (takes precedence over theme).
+  final Color? inputBorderColor;
+
+  /// Override for the input hint/placeholder color (takes precedence over theme).
+  final Color? inputHintColor;
+
+  /// Override for the input text color (takes precedence over theme).
+  final Color? inputTextColor;
+
   const ChatInput({
     super.key,
     required this.controller,
@@ -36,6 +48,10 @@ class ChatInput extends StatelessWidget {
     this.trailing,
     this.sendOnEnter = true,
     this.sendButtonIcon,
+    this.inputBackgroundColor,
+    this.inputBorderColor,
+    this.inputHintColor,
+    this.inputTextColor,
   });
 
   bool get _isMobile =>
@@ -91,6 +107,14 @@ class ChatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatTheme = theme ?? ChatThemeData.fromTheme(Theme.of(context));
 
+    // Apply color overrides (direct parameters take precedence over theme)
+    final effectiveBackgroundColor =
+        inputBackgroundColor ?? chatTheme.inputBackgroundColor;
+    final effectiveBorderColor =
+        inputBorderColor ?? chatTheme.inputBorderColor;
+    final effectiveHintColor = inputHintColor ?? chatTheme.inputHintColor;
+    final effectiveTextColor = inputTextColor ?? chatTheme.inputTextColor;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
@@ -115,8 +139,12 @@ class ChatInput extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: chatTheme.inputBackgroundColor,
+                  color: effectiveBackgroundColor,
                   borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: effectiveBorderColor,
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -125,42 +153,49 @@ class ChatInput extends StatelessWidget {
                       child: KeyboardListener(
                         focusNode: FocusNode(),
                         onKeyEvent: _handleKeyEvent,
-                        child: TextField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          enabled: enabled,
-                          maxLines: maxLines,
-                          minLines: 1,
-                          textCapitalization: TextCapitalization.sentences,
-                          textInputAction: _isMobile
-                              ? TextInputAction.newline
-                              : (sendOnEnter
-                                  ? TextInputAction.send
-                                  : TextInputAction.newline),
-                          keyboardType: TextInputType.multiline,
-                          style: TextStyle(
-                            color: chatTheme.inputTextColor,
-                            fontSize: 16,
+                        child: TextSelectionTheme(
+                          data: TextSelectionThemeData(
+                            cursorColor: chatTheme.inputCursorColor,
+                            selectionColor: chatTheme.inputSelectionColor,
+                            selectionHandleColor: chatTheme.inputCursorColor,
                           ),
-                          decoration: InputDecoration(
-                            hintText: hintText ?? 'Digite uma mensagem...',
-                            hintStyle: TextStyle(
-                              color: chatTheme.inputTextColor
-                                  .withValues(alpha: 0.5),
+                          child: TextField(
+                            controller: controller,
+                            focusNode: focusNode,
+                            enabled: enabled,
+                            maxLines: maxLines,
+                            minLines: 1,
+                            textCapitalization: TextCapitalization.sentences,
+                            textInputAction: _isMobile
+                                ? TextInputAction.newline
+                                : (sendOnEnter
+                                    ? TextInputAction.send
+                                    : TextInputAction.newline),
+                            keyboardType: TextInputType.multiline,
+                            cursorColor: chatTheme.inputCursorColor,
+                            style: TextStyle(
+                              color: effectiveTextColor,
                               fontSize: 16,
                             ),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                            decoration: InputDecoration(
+                              hintText: hintText ?? 'Digite uma mensagem...',
+                              hintStyle: TextStyle(
+                                color: effectiveHintColor,
+                                fontSize: 16,
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                             ),
+                            onSubmitted: (_) {
+                              // onSubmitted is called when textInputAction is send
+                              if (enabled && _isDesktopOrWeb && sendOnEnter) {
+                                onSend();
+                              }
+                            },
                           ),
-                          onSubmitted: (_) {
-                            // onSubmitted is called when textInputAction is send
-                            if (enabled && _isDesktopOrWeb && sendOnEnter) {
-                              onSend();
-                            }
-                          },
                         ),
                       ),
                     ),

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pharmago_chat_ui/src/grpc/grpc_exports.dart';
 
 import '../models/rag_document_model.dart';
 import '../providers/rag_provider.dart';
@@ -20,6 +23,7 @@ class RagController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
 
   final selectedDocumentType = 'text'.obs;
   final selectedTags = <String>[].obs;
@@ -30,6 +34,12 @@ class RagController extends GetxController {
   final isUploadingEmbedding = false.obs;
   final TextEditingController embeddingContentController = TextEditingController();
   final TextEditingController embeddingSearchController = TextEditingController();
+
+  // Batch upload state
+  final batchUploadFiles = <RagUploadFileModel>[].obs;
+  final isBatchUploading = false.obs;
+  final batchUploadType = ''.obs;
+  StreamSubscription<RagUploadFileProgress>? _uploadSubscription;
 
   @override
   void onInit() {
@@ -42,8 +52,10 @@ class RagController extends GetxController {
     searchController.dispose();
     titleController.dispose();
     contentController.dispose();
+    typeController.dispose();
     embeddingContentController.dispose();
     embeddingSearchController.dispose();
+    _uploadSubscription?.cancel();
     super.onClose();
   }
 
@@ -104,6 +116,7 @@ class RagController extends GetxController {
     required String title,
     required String content,
     required String documentType,
+    String? type,
     Map<String, String>? metadata,
     List<String>? tags,
   }) async {
@@ -115,6 +128,7 @@ class RagController extends GetxController {
         title: title,
         content: content,
         documentType: documentType,
+        type: type,
         metadata: metadata,
         tags: tags,
       );
@@ -131,6 +145,7 @@ class RagController extends GetxController {
   Future<bool> addDocumentFromForm() async {
     final title = titleController.text.trim();
     final content = contentController.text.trim();
+    final type = typeController.text.trim();
 
     if (title.isEmpty || content.isEmpty) {
       error.value = 'rag_error_required_fields'.tr;
@@ -141,6 +156,7 @@ class RagController extends GetxController {
       title: title,
       content: content,
       documentType: selectedDocumentType.value,
+      type: type.isNotEmpty ? type : null,
       tags: selectedTags.isNotEmpty ? selectedTags.toList() : null,
     );
 
@@ -218,6 +234,7 @@ class RagController extends GetxController {
   void clearForm() {
     titleController.clear();
     contentController.clear();
+    typeController.clear();
     selectedDocumentType.value = 'text';
     selectedTags.clear();
   }
@@ -356,5 +373,161 @@ class RagController extends GetxController {
 
   void clearEmbeddingForm() {
     embeddingContentController.clear();
+  }
+
+  // ============================================================================
+  // Batch File Upload methods
+  // ============================================================================
+
+  /// Adds files to the batch upload queue
+  void addFilesToBatch(List<RagUploadFileModel> files) {
+    batchUploadFiles.addAll(files);
+  }
+
+  /// Removes a file from the batch upload queue by index
+  void removeFileFromBatch(int index) {
+    if (index >= 0 && index < batchUploadFiles.length) {
+      batchUploadFiles.removeAt(index);
+    }
+  }
+
+  /// Clears all files from the batch upload queue
+  void clearBatchUpload() {
+    batchUploadFiles.clear();
+    isBatchUploading.value = false;
+    error.value = null;
+  }
+
+  /// Gets the current batch upload summary
+  RagBatchUploadSummary get batchUploadSummary {
+    final total = batchUploadFiles.length;
+    final completed = batchUploadFiles
+        .where((f) => f.status == RagFileUploadStatus.completed)
+        .length;
+    final failed = batchUploadFiles
+        .where((f) => f.status == RagFileUploadStatus.failed)
+        .length;
+    final pending = batchUploadFiles
+        .where((f) => !f.isTerminal)
+        .length;
+
+    return RagBatchUploadSummary(
+      totalFiles: total,
+      completedFiles: completed,
+      failedFiles: failed,
+      pendingFiles: pending,
+    );
+  }
+
+  /// Starts the batch upload process
+  Future<void> startBatchUpload() async {
+    if (batchUploadFiles.isEmpty) {
+      error.value = 'rag_batch_no_files'.tr;
+      return;
+    }
+
+    if (isBatchUploading.value) {
+      return;
+    }
+
+    isBatchUploading.value = true;
+    error.value = null;
+
+    try {
+      // Create upload file objects for gRPC
+      final uploadFiles = batchUploadFiles.map((file) {
+        return provider.createUploadFile(
+          fileName: file.fileName,
+          content: file.content,
+          documentType: file.documentType,
+          type: batchUploadType.value.isNotEmpty ? batchUploadType.value : null,
+        );
+      }).toList();
+
+      // Subscribe to the upload progress stream
+      final stream = provider.uploadFilesBatch(files: uploadFiles);
+
+      await for (final progress in stream) {
+        _handleUploadProgress(progress);
+      }
+
+      // Refresh documents list after successful uploads
+      await refreshDocuments();
+    } catch (e) {
+      error.value = 'rag_batch_error'.tr;
+    } finally {
+      isBatchUploading.value = false;
+    }
+  }
+
+  /// Handles progress updates from the server
+  void _handleUploadProgress(RagUploadFileProgress progress) {
+    final index = progress.fileIndex;
+    if (index < 0 || index >= batchUploadFiles.length) return;
+
+    final currentFile = batchUploadFiles[index];
+
+    // Map proto status to model status
+    RagFileUploadStatus status;
+    switch (progress.status) {
+      case RagUploadStatus.UPLOAD_STATUS_RECEIVED:
+        status = RagFileUploadStatus.received;
+        break;
+      case RagUploadStatus.UPLOAD_STATUS_PROCESSING:
+        status = RagFileUploadStatus.processing;
+        break;
+      case RagUploadStatus.UPLOAD_STATUS_COMPLETED:
+        status = RagFileUploadStatus.completed;
+        break;
+      case RagUploadStatus.UPLOAD_STATUS_FAILED:
+        status = RagFileUploadStatus.failed;
+        break;
+      default:
+        status = RagFileUploadStatus.pending;
+    }
+
+    // Update the file in the list
+    batchUploadFiles[index] = currentFile.copyWith(
+      status: status,
+      statusMessage: progress.message,
+      documentId: progress.documentId > 0 ? progress.documentId.toInt() : null,
+      error: progress.error.isNotEmpty ? progress.error : null,
+    );
+  }
+
+  /// Cancels the ongoing batch upload
+  void cancelBatchUpload() {
+    _uploadSubscription?.cancel();
+    _uploadSubscription = null;
+    isBatchUploading.value = false;
+  }
+
+  /// Retries failed uploads
+  Future<void> retryFailedUploads() async {
+    // Get failed files
+    final failedFiles = batchUploadFiles
+        .where((f) => f.status == RagFileUploadStatus.failed)
+        .toList();
+
+    if (failedFiles.isEmpty) return;
+
+    // Reset their status to pending
+    for (var i = 0; i < batchUploadFiles.length; i++) {
+      if (batchUploadFiles[i].status == RagFileUploadStatus.failed) {
+        batchUploadFiles[i] = batchUploadFiles[i].copyWith(
+          status: RagFileUploadStatus.pending,
+          error: null,
+          statusMessage: null,
+        );
+      }
+    }
+
+    // Remove completed files and restart upload
+    batchUploadFiles.removeWhere(
+        (f) => f.status == RagFileUploadStatus.completed);
+
+    if (batchUploadFiles.isNotEmpty) {
+      await startBatchUpload();
+    }
   }
 }

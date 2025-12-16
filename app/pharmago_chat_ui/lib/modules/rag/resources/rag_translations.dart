@@ -57,6 +57,26 @@ abstract class RagTranslations {
     'rag_embedding_error_search': 'Embedding search failed',
     'rag_embedding_tab_documents': 'Documents',
     'rag_embedding_tab_embeddings': 'Embeddings',
+    // Batch upload translations
+    'rag_batch_upload': 'Batch Upload',
+    'rag_batch_info': 'Select multiple .md or .txt files to upload at once. Each file will be processed and added to the knowledge base.',
+    'rag_batch_select_files': 'Select Files',
+    'rag_batch_no_files': 'No files selected',
+    'rag_batch_supported_formats': 'Supported formats: .md, .txt',
+    'rag_batch_clear': 'Clear All',
+    'rag_batch_total': 'Total',
+    'rag_batch_completed': 'Completed',
+    'rag_batch_failed': 'Failed',
+    'rag_batch_start': 'Start Upload',
+    'rag_batch_uploading': 'Uploading...',
+    'rag_batch_done': 'Done',
+    'rag_batch_retry': 'Retry Failed',
+    'rag_batch_success': 'All files uploaded successfully',
+    'rag_batch_error': 'Upload failed',
+    'rag_batch_error_pick': 'Failed to select files',
+    // Type filter translations
+    'rag_document_type_filter': 'Category',
+    'rag_type_hint': 'e.g., farmago, linx, aotech',
   };
 
   static const Map<String, String> ptBR = {
@@ -111,6 +131,26 @@ abstract class RagTranslations {
     'rag_embedding_error_search': 'Falha na busca de embeddings',
     'rag_embedding_tab_documents': 'Documentos',
     'rag_embedding_tab_embeddings': 'Embeddings',
+    // Batch upload translations
+    'rag_batch_upload': 'Upload em Lote',
+    'rag_batch_info': 'Selecione multiplos arquivos .md ou .txt para fazer upload de uma vez. Cada arquivo sera processado e adicionado a base de conhecimento.',
+    'rag_batch_select_files': 'Selecionar Arquivos',
+    'rag_batch_no_files': 'Nenhum arquivo selecionado',
+    'rag_batch_supported_formats': 'Formatos suportados: .md, .txt',
+    'rag_batch_clear': 'Limpar Tudo',
+    'rag_batch_total': 'Total',
+    'rag_batch_completed': 'Concluidos',
+    'rag_batch_failed': 'Falharam',
+    'rag_batch_start': 'Iniciar Upload',
+    'rag_batch_uploading': 'Enviando...',
+    'rag_batch_done': 'Concluir',
+    'rag_batch_retry': 'Tentar Novamente',
+    'rag_batch_success': 'Todos os arquivos enviados com sucesso',
+    'rag_batch_error': 'Falha no upload',
+    'rag_batch_error_pick': 'Falha ao selecionar arquivos',
+    // Type filter translations
+    'rag_document_type_filter': 'Categoria',
+    'rag_type_hint': 'ex: farmago, linx, aotech',
   };
 
   static const Map<String, String> esES = {
@@ -165,5 +205,25 @@ abstract class RagTranslations {
     'rag_embedding_error_search': 'Error en la busqueda de embeddings',
     'rag_embedding_tab_documents': 'Documentos',
     'rag_embedding_tab_embeddings': 'Embeddings',
+    // Batch upload translations
+    'rag_batch_upload': 'Subida en Lote',
+    'rag_batch_info': 'Seleccione multiples archivos .md o .txt para subir de una vez. Cada archivo sera procesado y agregado a la base de conocimiento.',
+    'rag_batch_select_files': 'Seleccionar Archivos',
+    'rag_batch_no_files': 'Ningun archivo seleccionado',
+    'rag_batch_supported_formats': 'Formatos soportados: .md, .txt',
+    'rag_batch_clear': 'Limpiar Todo',
+    'rag_batch_total': 'Total',
+    'rag_batch_completed': 'Completados',
+    'rag_batch_failed': 'Fallidos',
+    'rag_batch_start': 'Iniciar Subida',
+    'rag_batch_uploading': 'Subiendo...',
+    'rag_batch_done': 'Finalizar',
+    'rag_batch_retry': 'Reintentar Fallidos',
+    'rag_batch_success': 'Todos los archivos subidos correctamente',
+    'rag_batch_error': 'Error en la subida',
+    'rag_batch_error_pick': 'Error al seleccionar archivos',
+    // Type filter translations
+    'rag_document_type_filter': 'Categoria',
+    'rag_type_hint': 'ej: farmago, linx, aotech',
   };
 }

@@ -27,6 +27,21 @@ public interface IChatCacheService
     // Pub/Sub for real-time messaging
     Task PublishMessageAsync(string channel, string message);
     IAsyncEnumerable<string> SubscribeAsync(string channel, CancellationToken cancellationToken);
+
+    // User email-based history (180 days TTL)
+    Task AddMessageToUserHistoryAsync(string userEmail, string sessionId, UserHistoryMessage message);
+    Task<List<UserHistoryMessage>> GetUserHistoryAsync(string userEmail, int limit = 10);
+}
+
+public class UserHistoryMessage
+{
+    public string MessageId { get; set; } = Guid.NewGuid().ToString();
+    public string Role { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public string? ModelUsed { get; set; }
+    public int TokensUsed { get; set; }
+    public string SessionId { get; set; } = string.Empty;
 }
 
 public class SessionCacheData

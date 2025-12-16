@@ -18,6 +18,10 @@ service RAGService {
   // Add multiple documents in batch with embeddings
   rpc AddDocumentsBatch (RagAddDocumentsBatchRequest) returns (RagAddDocumentsBatchResponse);
 
+  // Upload multiple files in batch with streaming progress notifications
+  // Client sends files, server streams back progress for each file
+  rpc UploadFilesBatch (RagUploadFilesBatchRequest) returns (stream RagUploadFileProgress);
+
   // Delete a document from RAG base
   rpc DeleteDocument (RagDeleteDocumentRequest) returns (RagDeleteDocumentResponse);
 
@@ -130,4 +134,44 @@ message RagSearchResult {
   float similarity_score = 5;
   map<string, string> metadata = 6;
   repeated string tags = 7;
+}
+
+// ============================================================================
+// Batch File Upload Messages (Server Streaming)
+// ============================================================================
+
+// File to be uploaded in batch
+message RagUploadFile {
+  string file_name = 1;        // Original file name (e.g., "document.md")
+  string content = 2;          // File content as text
+  string document_type = 3;    // text, markdown (auto-detected from extension if empty)
+  string type = 4;             // Client/agent filter: farmago, linx, aotech, etc.
+  map<string, string> metadata = 5;
+  repeated string tags = 6;
+}
+
+// Request to upload multiple files
+message RagUploadFilesBatchRequest {
+  repeated RagUploadFile files = 1;
+}
+
+// Progress status for file upload
+enum RagUploadStatus {
+  UPLOAD_STATUS_UNKNOWN = 0;
+  UPLOAD_STATUS_RECEIVED = 1;      // File received by server
+  UPLOAD_STATUS_PROCESSING = 2;    // Processing/embedding generation started
+  UPLOAD_STATUS_COMPLETED = 3;     // Successfully processed and saved
+  UPLOAD_STATUS_FAILED = 4;        // Processing failed
+}
+
+// Progress notification for each file (streamed back to client)
+message RagUploadFileProgress {
+  string file_name = 1;            // Which file this progress is for
+  int32 file_index = 2;            // Index in the batch (0-based)
+  int32 total_files = 3;           // Total files in batch
+  RagUploadStatus status = 4;      // Current status
+  string message = 5;              // Human-readable status message
+  int64 document_id = 6;           // Document ID if completed successfully
+  string error = 7;                // Error message if failed
+  google.protobuf.Timestamp timestamp = 8;
 }

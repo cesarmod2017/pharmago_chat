@@ -30,6 +30,9 @@ service ChatService {
 
   // List active sessions (for admin/support)
   rpc ListActiveSessions (ChatListActiveSessionsRequest) returns (ChatListActiveSessionsResponse);
+
+  // Get chat history by user email (persisted in Redis with 180 days TTL)
+  rpc GetHistoryByEmail (ChatGetHistoryByEmailRequest) returns (ChatGetHistoryByEmailResponse);
 }
 
 // ============================================================================
@@ -141,4 +144,28 @@ message ChatListActiveSessionsRequest {
 message ChatListActiveSessionsResponse {
   repeated ChatSessionInfo sessions = 1;
   int32 total_count = 2;
+}
+
+// ============================================================================
+// History by Email Messages (Redis-persisted with 180 days TTL)
+// ============================================================================
+
+message ChatGetHistoryByEmailRequest {
+  string user_email = 1;
+  int32 limit = 2; // Default: 10, 0 = all
+}
+
+message ChatGetHistoryByEmailResponse {
+  repeated ChatHistoryMessage messages = 1;
+  int32 total_count = 2;
+}
+
+message ChatHistoryMessage {
+  string message_id = 1;
+  string role = 2; // user, assistant
+  string content = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string model_used = 5;
+  int32 tokens_used = 6;
+  string session_id = 7; // Reference to original session
 }

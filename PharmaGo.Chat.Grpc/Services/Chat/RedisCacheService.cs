@@ -16,6 +16,8 @@ public class RedisCacheService : IChatCacheService
     private const string SessionPrefix = "chat:session:";
     private const string HistoryPrefix = "chat:history:";
     private const string ChannelPrefix = "chat:channel:";
+    private const string UserHistoryPrefix = "chat:user_history:";
+    private const int UserHistoryExpirationDays = 180;
 
     public RedisCacheService(
         IConnectionMultiplexer redis,
@@ -231,5 +233,49 @@ public class RedisCacheService : IChatCacheService
         {
             await subscriber.UnsubscribeAsync(channelKey);
         }
+    }
+
+    public async Task AddMessageToUserHistoryAsync(string userEmail, string sessionId, UserHistoryMessage message)
+    {
+        var key = UserHistoryPrefix + userEmail.ToLowerInvariant();
+        message.SessionId = sessionId;
+
+        var json = JsonSerializer.Serialize(message);
+        var expiry = TimeSpan.FromDays(UserHistoryExpirationDays);
+
+        await _db.ListRightPushAsync(key, json);
+        await _db.KeyExpireAsync(key, expiry);
+
+        _logger.LogDebug("Added message to user history for email {UserEmail}, session {SessionId}",
+            userEmail, sessionId);
+    }
+
+    public async Task<List<UserHistoryMessage>> GetUserHistoryAsync(string userEmail, int limit = 10)
+    {
+        var key = UserHistoryPrefix + userEmail.ToLowerInvariant();
+        var messages = new List<UserHistoryMessage>();
+
+        // Get last N messages (negative index means from the end)
+        var effectiveLimit = limit > 0 ? limit : -1;
+        var values = effectiveLimit > 0
+            ? await _db.ListRangeAsync(key, -effectiveLimit, -1)
+            : await _db.ListRangeAsync(key);
+
+        foreach (var value in values)
+        {
+            if (!value.IsNullOrEmpty)
+            {
+                var message = JsonSerializer.Deserialize<UserHistoryMessage>(value!.ToString().AsSpan());
+                if (message != null)
+                {
+                    messages.Add(message);
+                }
+            }
+        }
+
+        _logger.LogDebug("Retrieved {Count} messages from user history for email {UserEmail}",
+            messages.Count, userEmail);
+
+        return messages;
     }
 }

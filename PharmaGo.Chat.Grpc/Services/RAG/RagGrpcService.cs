@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -16,6 +17,122 @@ public class RagGrpcService : RAGService.RAGServiceBase
     {
         _ragService = ragService;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Upload multiple files with streaming progress notifications.
+    /// Server streams back progress for each file as it's processed.
+    /// </summary>
+    public override async Task UploadFilesBatch(
+        RagUploadFilesBatchRequest request,
+        IServerStreamWriter<RagUploadFileProgress> responseStream,
+        ServerCallContext context)
+    {
+        var totalFiles = request.Files.Count;
+        _logger.LogInformation("Starting batch upload of {TotalFiles} files", totalFiles);
+
+        for (var i = 0; i < request.Files.Count; i++)
+        {
+            var file = request.Files[i];
+            var fileName = file.FileName;
+
+            // Send RECEIVED status
+            await responseStream.WriteAsync(new RagUploadFileProgress
+            {
+                FileName = fileName,
+                FileIndex = i,
+                TotalFiles = totalFiles,
+                Status = RagUploadStatus.UploadStatusReceived,
+                Message = $"File '{fileName}' received",
+                Timestamp = Timestamp.FromDateTime(DateTime.UtcNow)
+            });
+
+            // Send PROCESSING status
+            await responseStream.WriteAsync(new RagUploadFileProgress
+            {
+                FileName = fileName,
+                FileIndex = i,
+                TotalFiles = totalFiles,
+                Status = RagUploadStatus.UploadStatusProcessing,
+                Message = $"Processing '{fileName}'...",
+                Timestamp = Timestamp.FromDateTime(DateTime.UtcNow)
+            });
+
+            try
+            {
+                // Auto-detect document type from extension if not specified
+                var documentType = file.DocumentType;
+                if (string.IsNullOrEmpty(documentType))
+                {
+                    documentType = DetectDocumentType(fileName);
+                }
+
+                // Extract title from filename (without extension)
+                var title = Path.GetFileNameWithoutExtension(fileName);
+
+                // Process the file
+                var metadata = file.Metadata.Count > 0
+                    ? file.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                    : null;
+                var tags = file.Tags.Count > 0 ? file.Tags.ToArray() : null;
+
+                var document = await _ragService.AddDocumentAsync(
+                    title,
+                    file.Content,
+                    documentType,
+                    string.IsNullOrEmpty(file.Type) ? null : file.Type,
+                    metadata,
+                    tags);
+
+                // Send COMPLETED status
+                await responseStream.WriteAsync(new RagUploadFileProgress
+                {
+                    FileName = fileName,
+                    FileIndex = i,
+                    TotalFiles = totalFiles,
+                    Status = RagUploadStatus.UploadStatusCompleted,
+                    Message = $"File '{fileName}' processed successfully",
+                    DocumentId = document.Id,
+                    Timestamp = Timestamp.FromDateTime(DateTime.UtcNow)
+                });
+
+                _logger.LogInformation("Processed file {Index}/{Total}: {FileName} -> Document {DocumentId}",
+                    i + 1, totalFiles, fileName, document.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to process file {FileName}", fileName);
+
+                // Send FAILED status
+                await responseStream.WriteAsync(new RagUploadFileProgress
+                {
+                    FileName = fileName,
+                    FileIndex = i,
+                    TotalFiles = totalFiles,
+                    Status = RagUploadStatus.UploadStatusFailed,
+                    Message = $"Failed to process '{fileName}'",
+                    Error = ex.Message,
+                    Timestamp = Timestamp.FromDateTime(DateTime.UtcNow)
+                });
+            }
+        }
+
+        _logger.LogInformation("Batch upload completed for {TotalFiles} files", totalFiles);
+    }
+
+    /// <summary>
+    /// Detects document type from file extension.
+    /// </summary>
+    private static string DetectDocumentType(string fileName)
+    {
+        var extension = Path.GetExtension(fileName)?.ToLowerInvariant();
+        return extension switch
+        {
+            ".md" => "markdown",
+            ".txt" => "text",
+            ".html" or ".htm" => "html",
+            _ => "text"
+        };
     }
 
     public override async Task<RagAddDocumentResponse> AddDocument(RagAddDocumentRequest request, ServerCallContext context)

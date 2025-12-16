@@ -130,4 +130,32 @@ class ChatProvider {
     );
     return grpcClient.listActiveSessions(request);
   }
+
+  /// Checks if the gRPC service is reachable by attempting a minimal operation.
+  /// Returns true if the service is online, false otherwise.
+  Future<bool> checkHealth() async {
+    try {
+      final grpcClient = await client;
+      // Use ListActiveSessions with limit 0 as a lightweight health check
+      final request = ChatListActiveSessionsRequest(limit: 0, offset: 0);
+      await grpcClient.listActiveSessions(request);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Get chat history by user email from Redis (180 days TTL).
+  /// Returns the last [limit] messages (default: 10).
+  Future<ChatGetHistoryByEmailResponse> getHistoryByEmail({
+    required String userEmail,
+    int limit = 10,
+  }) async {
+    final grpcClient = await client;
+    final request = ChatGetHistoryByEmailRequest(
+      userEmail: userEmail,
+      limit: limit,
+    );
+    return grpcClient.getHistoryByEmail(request);
+  }
 }

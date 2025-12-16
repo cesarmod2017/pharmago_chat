@@ -24,6 +24,18 @@ class ChatPage extends GetView<ChatController> {
   /// Custom icon for the send button.
   final IconData? sendButtonIcon;
 
+  /// Override for the input background color (takes precedence over theme).
+  final Color? inputBackgroundColor;
+
+  /// Override for the input border color (takes precedence over theme).
+  final Color? inputBorderColor;
+
+  /// Override for the input hint/placeholder color (takes precedence over theme).
+  final Color? inputHintColor;
+
+  /// Override for the input text color (takes precedence over theme).
+  final Color? inputTextColor;
+
   const ChatPage({
     super.key,
     this.contact,
@@ -34,6 +46,10 @@ class ChatPage extends GetView<ChatController> {
     this.inputHintText,
     this.sendOnEnter = true,
     this.sendButtonIcon,
+    this.inputBackgroundColor,
+    this.inputBorderColor,
+    this.inputHintColor,
+    this.inputTextColor,
   });
 
   @override
@@ -86,6 +102,10 @@ class ChatPage extends GetView<ChatController> {
               hintText: inputHintText,
               sendOnEnter: sendOnEnter,
               sendButtonIcon: sendButtonIcon,
+              inputBackgroundColor: inputBackgroundColor,
+              inputBorderColor: inputBorderColor,
+              inputHintColor: inputHintColor,
+              inputTextColor: inputTextColor,
             ),
           ),
         ],
@@ -141,6 +161,18 @@ class ChatPageWidget extends StatelessWidget {
   /// Custom icon for the send button.
   final IconData? sendButtonIcon;
 
+  /// Override for the input background color (takes precedence over theme).
+  final Color? inputBackgroundColor;
+
+  /// Override for the input border color (takes precedence over theme).
+  final Color? inputBorderColor;
+
+  /// Override for the input hint/placeholder color (takes precedence over theme).
+  final Color? inputHintColor;
+
+  /// Override for the input text color (takes precedence over theme).
+  final Color? inputTextColor;
+
   const ChatPageWidget({
     super.key,
     required this.controller,
@@ -153,6 +185,10 @@ class ChatPageWidget extends StatelessWidget {
     this.showAppBar = true,
     this.sendOnEnter = true,
     this.sendButtonIcon,
+    this.inputBackgroundColor,
+    this.inputBorderColor,
+    this.inputHintColor,
+    this.inputTextColor,
   });
 
   @override
@@ -209,6 +245,10 @@ class ChatPageWidget extends StatelessWidget {
             hintText: inputHintText,
             sendOnEnter: sendOnEnter,
             sendButtonIcon: sendButtonIcon,
+            inputBackgroundColor: inputBackgroundColor,
+            inputBorderColor: inputBorderColor,
+            inputHintColor: inputHintColor,
+            inputTextColor: inputTextColor,
           ),
         ),
       ],

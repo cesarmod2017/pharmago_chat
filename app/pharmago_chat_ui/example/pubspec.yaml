@@ -38,6 +38,9 @@ dependencies:
   # GetX for state management
   get: ^4.7.3
 
+  # File picker for batch upload
+  file_picker: ^8.1.7
+
   # Reference to the parent package
   pharmago_chat_ui:
     path: ../

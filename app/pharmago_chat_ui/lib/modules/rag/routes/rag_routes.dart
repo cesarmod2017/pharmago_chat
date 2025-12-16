@@ -11,6 +11,8 @@ abstract class RagRoutes {
   // EmbeddingDocument routes
   static const ragEmbeddingAdd = '/rag/embedding/add';
   static const ragEmbeddingSearch = '/rag/embedding/search';
+  // Batch upload route
+  static const ragBatchUpload = '/rag/batch-upload';
 }
 
 class RagPages {
@@ -61,6 +63,14 @@ class RagPages {
       GetPage(
         name: RagRoutes.ragEmbeddingSearch,
         page: () => const RagEmbeddingSearchPage(),
+        binding: bindingFactory.create(),
+        transition: transition ?? Transition.rightToLeft,
+        preventDuplicates: true,
+      ),
+      // Batch upload page
+      GetPage(
+        name: RagRoutes.ragBatchUpload,
+        page: () => const RagBatchUploadPage(),
         binding: bindingFactory.create(),
         transition: transition ?? Transition.rightToLeft,
         preventDuplicates: true,

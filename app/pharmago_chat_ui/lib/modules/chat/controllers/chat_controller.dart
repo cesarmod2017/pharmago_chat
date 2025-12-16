@@ -47,13 +47,16 @@ class ChatController extends GetxController {
   final streamingContent = ''.obs;
 
   final contact = ChatContactModel.defaultBot().obs;
+  final isOnline = true.obs;
 
   StreamSubscription? _streamSubscription;
+  Timer? _healthCheckTimer;
 
   @override
   void onInit() {
     super.onInit();
     _initSession();
+    _startHealthCheck();
   }
 
   @override
@@ -62,6 +65,7 @@ class ChatController extends GetxController {
     scrollController.dispose();
     messageFocusNode.dispose();
     _streamSubscription?.cancel();
+    _healthCheckTimer?.cancel();
     _endSessionSilently();
     super.onClose();
   }
@@ -70,11 +74,40 @@ class ChatController extends GetxController {
     contact.value = newContact;
   }
 
+  void _startHealthCheck() {
+    _checkHealth();
+    _healthCheckTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _checkHealth(),
+    );
+  }
+
+  Future<void> _checkHealth() async {
+    final online = await provider.checkHealth();
+    if (isOnline.value != online) {
+      isOnline.value = online;
+      _updateContactStatus();
+    }
+  }
+
+  void _updateContactStatus() {
+    final statusText = isOnline.value ? 'chat_online'.tr : 'chat_offline'.tr;
+    contact.value = ChatContactModel(
+      name: contact.value.name,
+      avatarUrl: contact.value.avatarUrl,
+      subtitle: statusText,
+      isOnline: isOnline.value,
+    );
+  }
+
   Future<void> _initSession() async {
     isLoading.value = true;
     error.value = null;
 
     try {
+      // Load existing history by email from Redis (180 days TTL)
+      await _loadHistoryByEmail();
+
       final response = await provider.createSession(
         name: userName,
         email: userEmail,
@@ -87,8 +120,11 @@ class ChatController extends GetxController {
       );
 
       sessionId.value = response.sessionId;
+      isOnline.value = true;
+      _updateContactStatus();
 
-      if (response.welcomeMessage.isNotEmpty) {
+      // Only show welcome message if no history was loaded
+      if (response.welcomeMessage.isNotEmpty && messages.isEmpty) {
         final welcomeMessage = ChatMessageModel.assistant(
           id: const Uuid().v4(),
           content: response.welcomeMessage,
@@ -100,9 +136,31 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       error.value = 'chat_error_init_session'.tr;
+      isOnline.value = false;
+      _updateContactStatus();
       _addErrorMessage('chat_error_connection'.tr);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> _loadHistoryByEmail() async {
+    try {
+      final response = await provider.getHistoryByEmail(
+        userEmail: userEmail,
+        limit: 10,
+      );
+
+      if (response.messages.isNotEmpty) {
+        messages.clear();
+        for (final proto in response.messages) {
+          messages.add(ChatMessageModel.fromHistoryProto(proto));
+        }
+        _scrollToBottom();
+      }
+    } catch (e) {
+      // Silently ignore errors when loading history
+      // The chat will start fresh if history cannot be loaded
     }
   }
 

@@ -92,9 +92,7 @@ class ChatController extends GetxController {
 
   void _updateContactStatus() {
     final statusText = isOnline.value ? 'chat_online'.tr : 'chat_offline'.tr;
-    contact.value = ChatContactModel(
-      name: contact.value.name,
-      avatarUrl: contact.value.avatarUrl,
+    contact.value = contact.value.copyWith(
       subtitle: statusText,
       isOnline: isOnline.value,
     );

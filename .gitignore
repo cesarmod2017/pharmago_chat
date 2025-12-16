@@ -72,10 +72,10 @@ doc/api/
 *.g.dart
 *.freezed.dart
 *.mocks.dart
-*.pb.dart
-*.pbenum.dart
-*.pbgrpc.dart
-*.pbjson.dart
+# *.pb.dart
+# *.pbenum.dart
+# *.pbgrpc.dart
+# *.pbjson.dart
 
 ## Flutter test
 .test_coverage.dart

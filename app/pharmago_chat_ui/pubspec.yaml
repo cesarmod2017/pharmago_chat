@@ -28,7 +28,7 @@ dependencies:
   get: ^4.7.3
   grpc: ^4.1.0
   flutter_svg: ^2.0.17
-  file_picker: ^8.1.7
+  file_picker: ^10.3.7
 
 dev_dependencies:
   flutter_test:

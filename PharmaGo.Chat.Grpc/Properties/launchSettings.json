@@ -33,18 +33,15 @@
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
         "ASPNETCORE_ENVIRONMENT": "Production",
         "ENVIRONMENT": "local"
       },
       "publishAllPorts": true,
-      "useSSL": true,
-      "httpPort": 5003,
-      "sslPort": 5004
+      "useSSL": false,
+      "httpPort": 5003
     }
   }
 }

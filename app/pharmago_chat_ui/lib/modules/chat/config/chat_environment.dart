@@ -13,7 +13,7 @@ class ChatEnvironment {
 
   /// Debug mode localhost configuration
   static const String _debugHost = 'localhost';
-  static const int _debugPort = 5144;
+  static const int _debugPort = 5003;
   static const bool _debugUseTls = false;
 
   /// Release mode production configuration
@@ -34,20 +34,18 @@ class ChatEnvironment {
   static bool get isRelease => kReleaseMode;
 
   /// Current host based on environment
-  static String get host => _customHost ?? (isDebug ? _debugHost : _releaseHost);
+  static String get host =>
+      _customHost ?? (isDebug ? _debugHost : _releaseHost);
 
   /// Current port based on environment
   static int get port => _customPort ?? (isDebug ? _debugPort : _releasePort);
 
   /// Whether to use TLS based on environment
-  static bool get useTls => _customUseTls ?? (isDebug ? _debugUseTls : _releaseUseTls);
+  static bool get useTls =>
+      _customUseTls ?? (isDebug ? _debugUseTls : _releaseUseTls);
 
   /// Configure custom connection settings (useful for testing or staging)
-  static void configure({
-    String? host,
-    int? port,
-    bool? useTls,
-  }) {
+  static void configure({String? host, int? port, bool? useTls}) {
     _customHost = host;
     _customPort = port;
     _customUseTls = useTls;

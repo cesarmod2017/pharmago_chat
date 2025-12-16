@@ -68,7 +68,8 @@ class ChatInput extends StatelessWidget {
     if (event is! KeyDownEvent) return;
     if (!enabled) return;
 
-    final isEnterKey = event.logicalKey == LogicalKeyboardKey.enter ||
+    final isEnterKey =
+        event.logicalKey == LogicalKeyboardKey.enter ||
         event.logicalKey == LogicalKeyboardKey.numpadEnter;
     if (!isEnterKey) return;
 
@@ -110,8 +111,7 @@ class ChatInput extends StatelessWidget {
     // Apply color overrides (direct parameters take precedence over theme)
     final effectiveBackgroundColor =
         inputBackgroundColor ?? chatTheme.inputBackgroundColor;
-    final effectiveBorderColor =
-        inputBorderColor ?? chatTheme.inputBorderColor;
+    final effectiveBorderColor = inputBorderColor ?? chatTheme.inputBorderColor;
     final effectiveHintColor = inputHintColor ?? chatTheme.inputHintColor;
     final effectiveTextColor = inputTextColor ?? chatTheme.inputTextColor;
 
@@ -132,75 +132,77 @@ class ChatInput extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            if (leading != null) ...[
-              leading!,
-              const SizedBox(width: 8),
-            ],
+            if (leading != null) ...[leading!, const SizedBox(width: 8)],
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: effectiveBackgroundColor,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: effectiveBorderColor,
-                    width: 1,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: effectiveBackgroundColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: effectiveBorderColor, width: 0),
                   ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: KeyboardListener(
-                        focusNode: FocusNode(),
-                        onKeyEvent: _handleKeyEvent,
-                        child: TextSelectionTheme(
-                          data: TextSelectionThemeData(
-                            cursorColor: chatTheme.inputCursorColor,
-                            selectionColor: chatTheme.inputSelectionColor,
-                            selectionHandleColor: chatTheme.inputCursorColor,
-                          ),
-                          child: TextField(
-                            controller: controller,
-                            focusNode: focusNode,
-                            enabled: enabled,
-                            maxLines: maxLines,
-                            minLines: 1,
-                            textCapitalization: TextCapitalization.sentences,
-                            textInputAction: _isMobile
-                                ? TextInputAction.newline
-                                : (sendOnEnter
-                                    ? TextInputAction.send
-                                    : TextInputAction.newline),
-                            keyboardType: TextInputType.multiline,
-                            cursorColor: chatTheme.inputCursorColor,
-                            style: TextStyle(
-                              color: effectiveTextColor,
-                              fontSize: 16,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: KeyboardListener(
+                          focusNode: FocusNode(),
+                          onKeyEvent: _handleKeyEvent,
+                          child: TextSelectionTheme(
+                            data: TextSelectionThemeData(
+                              cursorColor: chatTheme.inputCursorColor,
+                              selectionColor: chatTheme.inputSelectionColor,
+                              selectionHandleColor: chatTheme.inputCursorColor,
                             ),
-                            decoration: InputDecoration(
-                              hintText: hintText ?? 'Digite uma mensagem...',
-                              hintStyle: TextStyle(
-                                color: effectiveHintColor,
+                            child: TextField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              enabled: enabled,
+                              maxLines: maxLines,
+                              minLines: 1,
+                              textCapitalization: TextCapitalization.sentences,
+                              textInputAction: _isMobile
+                                  ? TextInputAction.newline
+                                  : (sendOnEnter
+                                        ? TextInputAction.send
+                                        : TextInputAction.newline),
+                              keyboardType: TextInputType.multiline,
+                              cursorColor: chatTheme.inputCursorColor,
+                              style: TextStyle(
+                                color: effectiveTextColor,
                                 fontSize: 16,
                               ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
+                              decoration: InputDecoration(
+                                hintText: hintText ?? 'Digite uma mensagem...',
+                                hintStyle: TextStyle(
+                                  color: effectiveHintColor,
+                                  fontSize: 16,
+                                ),
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                focusedErrorBorder: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                               ),
+                              onSubmitted: (_) {
+                                // onSubmitted is called when textInputAction is send
+                                if (enabled && _isDesktopOrWeb && sendOnEnter) {
+                                  onSend();
+                                }
+                              },
                             ),
-                            onSubmitted: (_) {
-                              // onSubmitted is called when textInputAction is send
-                              if (enabled && _isDesktopOrWeb && sendOnEnter) {
-                                onSend();
-                              }
-                            },
                           ),
                         ),
                       ),
-                    ),
-                    if (trailing != null) ...trailing!,
-                  ],
+                      if (trailing != null) ...trailing!,
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -222,11 +224,7 @@ class _SendButton extends StatelessWidget {
   final ChatThemeData theme;
   final IconData? icon;
 
-  const _SendButton({
-    required this.onPressed,
-    required this.theme,
-    this.icon,
-  });
+  const _SendButton({required this.onPressed, required this.theme, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -244,8 +242,9 @@ class _SendButton extends StatelessWidget {
           alignment: Alignment.center,
           child: Icon(
             icon ?? Icons.send,
-            color: theme.sendButtonIconColor
-                .withValues(alpha: onPressed != null ? 1.0 : 0.5),
+            color: theme.sendButtonIconColor.withValues(
+              alpha: onPressed != null ? 1.0 : 0.5,
+            ),
             size: 22,
           ),
         ),

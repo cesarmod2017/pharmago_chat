@@ -1,6 +1,6 @@
 name: pharmago_chat_ui
 description: "PharmaGO Chat UI components - A Flutter package for building chat interfaces in PharmaGO applications."
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/PharmaGO/pharmago_chat
 repository: https://github.com/PharmaGO/pharmago_chat
 issue_tracker: https://github.com/PharmaGO/pharmago_chat/issues

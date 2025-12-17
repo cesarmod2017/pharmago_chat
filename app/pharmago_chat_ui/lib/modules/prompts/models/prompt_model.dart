@@ -57,18 +57,14 @@ class PromptModel {
 
   String get typeLabel {
     switch (type.toLowerCase()) {
-      case 'linx':
-        return 'Linx';
-      case 'farmago':
-        return 'FarmaGO';
-      case 'aotech':
-        return 'AOTech';
-      case 'alpha7':
-        return 'Alpha7';
-      case 'inovafarma':
-        return 'Inova Farma';
-      case 'default':
-        return 'Padrão';
+      case 'support_app':
+        return 'Suporte Aplicativo';
+      case 'support_manager':
+        return 'Suporte Painel Administrativo';
+      case 'support_sales':
+        return 'Suporte Aplicativo de Vendas';
+      case 'other':
+        return 'Outros';
       default:
         return type;
     }

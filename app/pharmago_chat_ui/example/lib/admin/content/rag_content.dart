@@ -181,9 +181,7 @@ class _RagContentState extends State<RagContent> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.1),
-          ),
+          bottom: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
         ),
       ),
       child: Row(
@@ -192,7 +190,9 @@ class _RagContentState extends State<RagContent> {
             child: Container(
               height: 44,
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
@@ -271,11 +271,7 @@ class _RagContentState extends State<RagContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: colorScheme.error,
-          ),
+          Icon(Icons.error_outline, size: 48, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(_controller!.error.value!),
           const SizedBox(height: 16),
@@ -335,9 +331,7 @@ class _RagContentState extends State<RagContent> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: colorScheme.outline.withValues(alpha: 0.1),
-        ),
+        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
       ),
       child: InkWell(
         onTap: () {
@@ -353,8 +347,9 @@ class _RagContentState extends State<RagContent> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: _getDocumentTypeColor(document.documentType)
-                      .withValues(alpha: 0.1),
+                  color: _getDocumentTypeColor(
+                    document.documentType,
+                  ).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -558,14 +553,17 @@ class _AddDocumentDialog extends StatelessWidget {
                 Expanded(
                   child: Obx(
                     () => DropdownButtonFormField<String>(
-                      value: controller.selectedDocumentType.value,
+                      initialValue: controller.selectedDocumentType.value,
                       decoration: InputDecoration(
                         labelText: 'rag_document_type'.tr,
                         border: const OutlineInputBorder(),
                       ),
                       items: const [
                         DropdownMenuItem(value: 'text', child: Text('Texto')),
-                        DropdownMenuItem(value: 'markdown', child: Text('Markdown')),
+                        DropdownMenuItem(
+                          value: 'markdown',
+                          child: Text('Markdown'),
+                        ),
                         DropdownMenuItem(value: 'pdf_text', child: Text('PDF')),
                         DropdownMenuItem(value: 'html', child: Text('HTML')),
                       ],
@@ -579,12 +577,24 @@ class _AddDocumentDialog extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    controller: controller.typeController,
-                    decoration: InputDecoration(
-                      labelText: 'rag_document_type_filter'.tr,
-                      hintText: 'rag_type_hint'.tr,
-                      border: const OutlineInputBorder(),
+                  child: Obx(
+                    () => DropdownButtonFormField<String>(
+                      value: controller.selectedCategory.value,
+                      decoration: InputDecoration(
+                        labelText: 'rag_document_type_filter'.tr,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: controller.availableCategories.map((category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text('rag_category_$category'.tr),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.selectedCategory.value = value;
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -625,8 +635,8 @@ class _AddDocumentDialog extends StatelessWidget {
                     onPressed: controller.isLoading.value
                         ? null
                         : () async {
-                            final success =
-                                await controller.addDocumentFromForm();
+                            final success = await controller
+                                .addDocumentFromForm();
                             if (success && context.mounted) {
                               Navigator.pop(context);
                               Get.snackbar(
@@ -658,10 +668,7 @@ class _DocumentDetailDialog extends StatelessWidget {
   final RagDocumentModel document;
   final VoidCallback onDelete;
 
-  const _DocumentDetailDialog({
-    required this.document,
-    required this.onDelete,
-  });
+  const _DocumentDetailDialog({required this.document, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -704,9 +711,18 @@ class _DocumentDetailDialog extends StatelessWidget {
             _buildInfoRow('rag_document_type'.tr, document.documentTypeLabel),
             if (document.type.isNotEmpty)
               _buildInfoRow('rag_document_type_filter'.tr, document.type),
-            _buildInfoRow('rag_document_chunks'.tr, document.chunkCount.toString()),
-            _buildInfoRow('rag_document_created'.tr, _formatDate(document.createdAt)),
-            _buildInfoRow('rag_document_updated'.tr, _formatDate(document.updatedAt)),
+            _buildInfoRow(
+              'rag_document_chunks'.tr,
+              document.chunkCount.toString(),
+            ),
+            _buildInfoRow(
+              'rag_document_created'.tr,
+              _formatDate(document.createdAt),
+            ),
+            _buildInfoRow(
+              'rag_document_updated'.tr,
+              _formatDate(document.updatedAt),
+            ),
             if (document.tags.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
@@ -801,14 +817,18 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
           if (file.bytes != null) {
             final content = String.fromCharCodes(file.bytes!);
             final fileName = file.name;
-            final documentType = RagUploadFileModel.detectDocumentType(fileName);
+            final documentType = RagUploadFileModel.detectDocumentType(
+              fileName,
+            );
 
-            files.add(RagUploadFileModel(
-              fileName: fileName,
-              content: content,
-              fileSize: file.size,
-              documentType: documentType,
-            ));
+            files.add(
+              RagUploadFileModel(
+                fileName: fileName,
+                content: content,
+                fileSize: file.size,
+                documentType: documentType,
+              ),
+            );
           }
         }
 
@@ -889,15 +909,17 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
             ],
           ),
         ),
-        Obx(() => widget.controller.isBatchUploading.value
-            ? const SizedBox.shrink()
-            : IconButton(
-                onPressed: () {
-                  widget.controller.clearBatchUpload();
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.close),
-              )),
+        Obx(
+          () => widget.controller.isBatchUploading.value
+              ? const SizedBox.shrink()
+              : IconButton(
+                  onPressed: () {
+                    widget.controller.clearBatchUpload();
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+        ),
       ],
     );
   }
@@ -914,11 +936,7 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
           ),
           child: Row(
             children: [
-              Icon(
-                Icons.info_outline,
-                size: 20,
-                color: colorScheme.primary,
-              ),
+              Icon(Icons.info_outline, size: 20, color: colorScheme.primary),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -933,19 +951,29 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
           ),
         ),
         const SizedBox(height: 12),
-        TextField(
-          onChanged: (value) => widget.controller.batchUploadType.value = value,
-          decoration: InputDecoration(
-            labelText: 'rag_document_type_filter'.tr,
-            hintText: 'rag_type_hint'.tr,
-            prefixIcon: const Icon(Icons.category_outlined),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+        Obx(
+          () => DropdownButtonFormField<String>(
+            value: widget.controller.batchUploadCategory.value,
+            decoration: InputDecoration(
+              labelText: 'rag_document_type_filter'.tr,
+              prefixIcon: const Icon(Icons.category_outlined),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+            items: widget.controller.availableCategories.map((category) {
+              return DropdownMenuItem(
+                value: category,
+                child: Text('rag_category_$category'.tr),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                widget.controller.batchUploadCategory.value = value;
+              }
+            },
           ),
         ),
       ],
@@ -964,26 +992,28 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Row com botões "Limpar Tudo" (esquerda) e "Selecionar Arquivos" (direita)
-          Obx(() => widget.controller.isBatchUploading.value
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton.icon(
-                        onPressed: () => widget.controller.clearBatchUpload(),
-                        icon: const Icon(Icons.delete_outline, size: 18),
-                        label: Text('rag_batch_clear'.tr),
-                      ),
-                      FilledButton.tonalIcon(
-                        onPressed: _isPickingFiles ? null : _pickFiles,
-                        icon: const Icon(Icons.add, size: 18),
-                        label: Text('rag_batch_select_files'.tr),
-                      ),
-                    ],
+          Obx(
+            () => widget.controller.isBatchUploading.value
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () => widget.controller.clearBatchUpload(),
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: Text('rag_batch_clear'.tr),
+                        ),
+                        FilledButton.tonalIcon(
+                          onPressed: _isPickingFiles ? null : _pickFiles,
+                          icon: const Icon(Icons.add, size: 18),
+                          label: Text('rag_batch_select_files'.tr),
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+          ),
           // Lista de arquivos com scroll
           Flexible(
             child: Container(
@@ -1064,7 +1094,10 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
   }
 
   Widget _buildFileItem(
-      RagUploadFileModel file, int index, ColorScheme colorScheme) {
+    RagUploadFileModel file,
+    int index,
+    ColorScheme colorScheme,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: Row(
@@ -1131,33 +1164,36 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       file.error!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colorScheme.error,
-                      ),
+                      style: TextStyle(fontSize: 11, color: colorScheme.error),
                     ),
                   ),
               ],
             ),
           ),
-          Obx(() => widget.controller.isBatchUploading.value
-              ? const SizedBox.shrink()
-              : IconButton(
-                  onPressed: () => widget.controller.removeFileFromBatch(index),
-                  icon: Icon(
-                    Icons.close,
-                    size: 18,
-                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+          Obx(
+            () => widget.controller.isBatchUploading.value
+                ? const SizedBox.shrink()
+                : IconButton(
+                    onPressed: () =>
+                        widget.controller.removeFileFromBatch(index),
+                    icon: Icon(
+                      Icons.close,
+                      size: 18,
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                )),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildFileStatusIcon(RagUploadFileModel file, ColorScheme colorScheme) {
+  Widget _buildFileStatusIcon(
+    RagUploadFileModel file,
+    ColorScheme colorScheme,
+  ) {
     switch (file.status) {
       case RagFileUploadStatus.pending:
         return Container(
@@ -1229,11 +1265,7 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
             color: colorScheme.error.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            Icons.error_outline,
-            size: 18,
-            color: colorScheme.error,
-          ),
+          child: Icon(Icons.error_outline, size: 18, color: colorScheme.error),
         );
     }
   }
@@ -1314,10 +1346,7 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: color.withValues(alpha: 0.8),
-          ),
+          style: TextStyle(fontSize: 12, color: color.withValues(alpha: 0.8)),
         ),
       ],
     );
@@ -1386,7 +1415,9 @@ class _BatchUploadDialogState extends State<_BatchUploadDialog> {
           ),
           const SizedBox(width: 12),
           FilledButton.icon(
-            onPressed: files.isEmpty ? null : () => widget.controller.startBatchUpload(),
+            onPressed: files.isEmpty
+                ? null
+                : () => widget.controller.startBatchUpload(),
             icon: const Icon(Icons.cloud_upload, size: 18),
             label: Text('rag_batch_start'.tr),
           ),

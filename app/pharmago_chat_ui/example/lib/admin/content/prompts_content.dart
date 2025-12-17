@@ -836,18 +836,14 @@ class _PromptFormDialog extends StatelessWidget {
 
   String _getTypeLabel(String type) {
     switch (type.toLowerCase()) {
-      case 'linx':
-        return 'Linx';
-      case 'farmago':
-        return 'FarmaGO';
-      case 'aotech':
-        return 'AOTech';
-      case 'alpha7':
-        return 'Alpha7';
-      case 'inovafarma':
-        return 'Inova Farma';
-      case 'default':
-        return 'Padrão';
+      case 'support_app':
+        return 'prompts_type_support_app'.tr;
+      case 'support_manager':
+        return 'prompts_type_support_manager'.tr;
+      case 'support_sales':
+        return 'prompts_type_support_sales'.tr;
+      case 'other':
+        return 'prompts_type_other'.tr;
       default:
         return type;
     }

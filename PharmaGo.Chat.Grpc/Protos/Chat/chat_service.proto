@@ -153,11 +153,13 @@ message ChatListActiveSessionsResponse {
 message ChatGetHistoryByEmailRequest {
   string user_email = 1;
   int32 limit = 2; // Default: 10, 0 = all
+  string type = 3; // Type for filtering prompts (required for welcome message)
 }
 
 message ChatGetHistoryByEmailResponse {
   repeated ChatHistoryMessage messages = 1;
   int32 total_count = 2;
+  bool welcome_message_inserted = 3; // True if welcome message was added due to > 60 min inactivity
 }
 
 message ChatHistoryMessage {

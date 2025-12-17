@@ -19,16 +19,14 @@ class PromptsController extends GetxController {
   final TextEditingController promptController = TextEditingController();
   final TextEditingController welcomeMessageController =
       TextEditingController();
-  final selectedType = 'farmago'.obs;
+  final selectedType = 'support_app'.obs;
 
   // Available prompt types
   final List<String> availableTypes = [
-    'farmago',
-    'linx',
-    'aotech',
-    'alpha7',
-    'inovafarma',
-    'default',
+    'support_app',
+    'support_manager',
+    'support_sales',
+    'other',
   ];
 
   @override
@@ -259,6 +257,6 @@ class PromptsController extends GetxController {
     nameController.clear();
     promptController.clear();
     welcomeMessageController.clear();
-    selectedType.value = 'farmago';
+    selectedType.value = 'support_app';
   }
 }

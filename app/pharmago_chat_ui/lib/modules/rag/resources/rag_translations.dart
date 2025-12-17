@@ -77,6 +77,11 @@ abstract class RagTranslations {
     // Type filter translations
     'rag_document_type_filter': 'Category',
     'rag_type_hint': 'e.g., farmago, linx, aotech',
+    // Category labels
+    'rag_category_support_app': 'App Support',
+    'rag_category_support_manager': 'Admin Panel Support',
+    'rag_category_support_sales': 'Sales App Support',
+    'rag_category_other': 'Other',
   };
 
   static const Map<String, String> ptBR = {
@@ -151,6 +156,11 @@ abstract class RagTranslations {
     // Type filter translations
     'rag_document_type_filter': 'Categoria',
     'rag_type_hint': 'ex: farmago, linx, aotech',
+    // Category labels
+    'rag_category_support_app': 'Suporte Aplicativo',
+    'rag_category_support_manager': 'Suporte Painel Administrativo',
+    'rag_category_support_sales': 'Suporte Aplicativo de Vendas',
+    'rag_category_other': 'Outros',
   };
 
   static const Map<String, String> esES = {
@@ -225,5 +235,10 @@ abstract class RagTranslations {
     // Type filter translations
     'rag_document_type_filter': 'Categoria',
     'rag_type_hint': 'ej: farmago, linx, aotech',
+    // Category labels
+    'rag_category_support_app': 'Soporte Aplicación',
+    'rag_category_support_manager': 'Soporte Panel Administrativo',
+    'rag_category_support_sales': 'Soporte Aplicación de Ventas',
+    'rag_category_other': 'Otros',
   };
 }

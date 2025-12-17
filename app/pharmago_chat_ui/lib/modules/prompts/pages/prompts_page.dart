@@ -226,25 +226,21 @@ class PromptListTile extends StatelessWidget {
     Color color;
 
     switch (prompt.type.toLowerCase()) {
-      case 'farmago':
-        icon = Icons.local_pharmacy;
+      case 'support_app':
+        icon = Icons.phone_android;
         color = Colors.green;
         break;
-      case 'linx':
-        icon = Icons.link;
+      case 'support_manager':
+        icon = Icons.admin_panel_settings;
         color = Colors.blue;
         break;
-      case 'aotech':
-        icon = Icons.settings;
+      case 'support_sales':
+        icon = Icons.point_of_sale;
         color = Colors.orange;
         break;
-      case 'alpha7':
-        icon = Icons.star;
+      case 'other':
+        icon = Icons.category;
         color = Colors.purple;
-        break;
-      case 'inovafarma':
-        icon = Icons.biotech;
-        color = Colors.teal;
         break;
       default:
         icon = Icons.edit_note;

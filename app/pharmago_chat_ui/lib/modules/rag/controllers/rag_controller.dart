@@ -26,7 +26,16 @@ class RagController extends GetxController {
   final TextEditingController typeController = TextEditingController();
 
   final selectedDocumentType = 'text'.obs;
+  final selectedCategory = 'support_app'.obs;
   final selectedTags = <String>[].obs;
+
+  // Available category types (shared with Prompts module)
+  final List<String> availableCategories = [
+    'support_app',
+    'support_manager',
+    'support_sales',
+    'other',
+  ];
 
   // EmbeddingDocument state
   final embeddingDocuments = <RagEmbeddingDocumentModel>[].obs;
@@ -38,7 +47,7 @@ class RagController extends GetxController {
   // Batch upload state
   final batchUploadFiles = <RagUploadFileModel>[].obs;
   final isBatchUploading = false.obs;
-  final batchUploadType = ''.obs;
+  final batchUploadCategory = 'support_app'.obs;
   StreamSubscription<RagUploadFileProgress>? _uploadSubscription;
 
   @override
@@ -145,7 +154,6 @@ class RagController extends GetxController {
   Future<bool> addDocumentFromForm() async {
     final title = titleController.text.trim();
     final content = contentController.text.trim();
-    final type = typeController.text.trim();
 
     if (title.isEmpty || content.isEmpty) {
       error.value = 'rag_error_required_fields'.tr;
@@ -156,7 +164,7 @@ class RagController extends GetxController {
       title: title,
       content: content,
       documentType: selectedDocumentType.value,
-      type: type.isNotEmpty ? type : null,
+      type: selectedCategory.value,
       tags: selectedTags.isNotEmpty ? selectedTags.toList() : null,
     );
 
@@ -236,6 +244,7 @@ class RagController extends GetxController {
     contentController.clear();
     typeController.clear();
     selectedDocumentType.value = 'text';
+    selectedCategory.value = 'support_app';
     selectedTags.clear();
   }
 
@@ -395,6 +404,7 @@ class RagController extends GetxController {
   void clearBatchUpload() {
     batchUploadFiles.clear();
     isBatchUploading.value = false;
+    batchUploadCategory.value = 'support_app';
     error.value = null;
   }
 
@@ -440,7 +450,7 @@ class RagController extends GetxController {
           fileName: file.fileName,
           content: file.content,
           documentType: file.documentType,
-          type: batchUploadType.value.isNotEmpty ? batchUploadType.value : null,
+          type: batchUploadCategory.value,
         );
       }).toList();
 

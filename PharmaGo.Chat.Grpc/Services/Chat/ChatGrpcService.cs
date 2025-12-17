@@ -505,7 +505,8 @@ public class ChatGrpcService : ChatService.ChatServiceBase
 
         var response = new ChatGetHistoryByEmailResponse
         {
-            TotalCount = messages.Count
+            TotalCount = messages.Count,
+            WelcomeMessageInserted = false
         };
 
         foreach (var msg in messages)
@@ -520,6 +521,51 @@ public class ChatGrpcService : ChatService.ChatServiceBase
                 TokensUsed = msg.TokensUsed,
                 SessionId = msg.SessionId
             });
+        }
+
+        // Check if we need to insert a welcome message (> 60 minutes since last message)
+        if (messages.Count > 0 && !string.IsNullOrEmpty(request.Type))
+        {
+            var lastMessage = messages[^1]; // Last message (most recent)
+            var timeSinceLastMessage = DateTime.UtcNow - lastMessage.Timestamp.ToUniversalTime();
+
+            if (timeSinceLastMessage.TotalMinutes > 60)
+            {
+                // Get welcome message from prompt cache
+                var promptData = await _promptCacheService.GetPromptByTypeAsync(request.Type);
+
+                if (promptData != null && !string.IsNullOrEmpty(promptData.WelcomeMessage))
+                {
+                    // Create variable context for replacement (using available info from request)
+                    var variableContext = new PromptVariableContext
+                    {
+                        Type = request.Type,
+                        UserEmail = request.UserEmail
+                    };
+
+                    var welcomeMessage = PromptVariableReplacer.Replace(promptData.WelcomeMessage, variableContext);
+
+                    // Insert welcome message at the end of the history
+                    response.Messages.Add(new ChatHistoryMessage
+                    {
+                        MessageId = Guid.NewGuid().ToString(),
+                        Role = "assistant",
+                        Content = welcomeMessage,
+                        Timestamp = Timestamp.FromDateTime(DateTime.UtcNow),
+                        ModelUsed = string.Empty,
+                        TokensUsed = 0,
+                        SessionId = string.Empty // No session association for auto-inserted message
+                    });
+
+                    response.WelcomeMessageInserted = true;
+                    response.TotalCount++;
+
+                    _logger.LogInformation(
+                        "Inserted welcome message for user {UserEmail} due to {Minutes} minutes of inactivity",
+                        request.UserEmail,
+                        (int)timeSinceLastMessage.TotalMinutes);
+                }
+            }
         }
 
         _logger.LogDebug("Retrieved {Count} messages from user history for email {UserEmail}",

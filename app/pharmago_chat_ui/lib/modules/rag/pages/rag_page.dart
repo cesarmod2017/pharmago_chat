@@ -559,14 +559,26 @@ class RagAddDocumentPage extends GetView<RagController> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    controller: controller.typeController,
-                    decoration: InputDecoration(
-                      labelText: 'rag_document_type_filter'.tr,
-                      hintText: 'rag_type_hint'.tr,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
+                  child: Obx(() => DropdownButtonFormField<String>(
+                        value: controller.selectedCategory.value,
+                        decoration: InputDecoration(
+                          labelText: 'rag_document_type_filter'.tr,
+                          border: const OutlineInputBorder(),
+                        ),
+                        items: controller.availableCategories
+                            .map(
+                              (category) => DropdownMenuItem(
+                                value: category,
+                                child: Text('rag_category_$category'.tr),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            controller.selectedCategory.value = value;
+                          }
+                        },
+                      )),
                 ),
               ],
             ),
@@ -951,18 +963,30 @@ class RagBatchUploadPage extends GetView<RagController> {
             ),
           ),
 
-          // Type field
+          // Category dropdown
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              onChanged: (value) => controller.batchUploadType.value = value,
-              decoration: InputDecoration(
-                labelText: 'rag_document_type_filter'.tr,
-                hintText: 'rag_type_hint'.tr,
-                prefixIcon: const Icon(Icons.category_outlined),
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            child: Obx(() => DropdownButtonFormField<String>(
+                  value: controller.batchUploadCategory.value,
+                  decoration: InputDecoration(
+                    labelText: 'rag_document_type_filter'.tr,
+                    prefixIcon: const Icon(Icons.category_outlined),
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: controller.availableCategories
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category,
+                          child: Text('rag_category_$category'.tr),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.batchUploadCategory.value = value;
+                    }
+                  },
+                )),
           ),
 
           const SizedBox(height: 16),

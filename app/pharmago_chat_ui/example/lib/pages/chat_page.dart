@@ -40,7 +40,7 @@ class _ChatPageState extends State<ChatPage> {
           agentName: 'Sofia Martinez',
           erpName: null,
           language: 'pt-BR',
-          type: 'farmago',
+          type: 'support_app',
           useStreaming: true,
           metadata: {
             'source': 'chat_app',
@@ -191,7 +191,7 @@ class _MockChatController extends ChatController {
         userEmail: 'test@example.com',
         client: 'Farma GO',
         agentName: 'Assistente Demo',
-        type: 'farmago',
+        type: 'support_app',
         useStreaming: false,
       );
 

@@ -56,7 +56,7 @@ class _ChatContentState extends State<ChatContent> {
         agentName: 'Sofia Martinez',
         erpName: null,
         language: 'pt-BR',
-        type: 'farmago',
+        type: 'support_app',
         metadata: {
           'source': 'admin_panel',
           'platform': defaultTargetPlatform.name,
@@ -843,7 +843,7 @@ final provider = ChatProvider(
   userEmail: 'usuario@email.com',
   client: 'nome_do_cliente',       // Identificador do cliente
   agentName: 'Assistente Virtual', // Nome do bot
-  type: 'tipo_chat',               // Tipo de atendimento
+  type: 'support_app',               // Tipo de atendimento
   language: 'pt-BR',               // Idioma
   useStreaming: true,              // Respostas em streaming
   metadata: {                      // Metadados adicionais
@@ -888,7 +888,7 @@ final binding = bindingFactory.create(
   userEmail: 'usuario@email.com',
   client: 'farmago',
   agentName: 'Assistente',
-  type: 'suporte',
+  type: 'support_app',
 );''',
                   ),
                   const SizedBox(height: 24),
@@ -913,7 +913,7 @@ GetMaterialApp(
       userEmail: 'usuario@email.com',
       client: 'farmago',
       agentName: 'Assistente',
-      type: 'suporte',
+      type: 'support_app',
     ),
     // Outras rotas...
   ],
@@ -1006,7 +1006,7 @@ class _MyChatScreenState extends State<MyChatScreen> {
       userEmail: 'usuario@email.com',
       client: 'farmago',
       agentName: 'Assistente',
-      type: 'suporte',
+      type: 'support_app',
     );
     Get.put<ChatController>(_controller);
   }

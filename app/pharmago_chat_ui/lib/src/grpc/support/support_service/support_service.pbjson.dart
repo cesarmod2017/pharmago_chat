@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: support/support_service.proto
-//
-// @dart = 2.12
+// Generated from support/support_service.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -24,10 +26,11 @@ const SupportRequestTransferRequest$json = {
 };
 
 /// Descriptor for `SupportRequestTransferRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportRequestTransferRequestDescriptor = $convert.base64Decode(
-    'Ch1TdXBwb3J0UmVxdWVzdFRyYW5zZmVyUmVxdWVzdBIdCgpzZXNzaW9uX2lkGAEgASgJUglzZX'
-    'NzaW9uSWQSFgoGcmVhc29uGAIgASgJUgZyZWFzb24SGgoIcHJpb3JpdHkYAyABKAVSCHByaW9y'
-    'aXR5');
+final $typed_data.Uint8List supportRequestTransferRequestDescriptor =
+    $convert.base64Decode(
+        'Ch1TdXBwb3J0UmVxdWVzdFRyYW5zZmVyUmVxdWVzdBIdCgpzZXNzaW9uX2lkGAEgASgJUglzZX'
+        'NzaW9uSWQSFgoGcmVhc29uGAIgASgJUgZyZWFzb24SGgoIcHJpb3JpdHkYAyABKAVSCHByaW9y'
+        'aXR5');
 
 @$core.Deprecated('Use supportRequestTransferResponseDescriptor instead')
 const SupportRequestTransferResponse$json = {
@@ -36,16 +39,24 @@ const SupportRequestTransferResponse$json = {
     {'1': 'transfer_id', '3': 1, '4': 1, '5': 9, '10': 'transferId'},
     {'1': 'queue_position', '3': 2, '4': 1, '5': 5, '10': 'queuePosition'},
     {'1': 'estimated_wait', '3': 3, '4': 1, '5': 9, '10': 'estimatedWait'},
-    {'1': 'requested_at', '3': 4, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'requestedAt'},
+    {
+      '1': 'requested_at',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'requestedAt'
+    },
   ],
 };
 
 /// Descriptor for `SupportRequestTransferResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportRequestTransferResponseDescriptor = $convert.base64Decode(
-    'Ch5TdXBwb3J0UmVxdWVzdFRyYW5zZmVyUmVzcG9uc2USHwoLdHJhbnNmZXJfaWQYASABKAlSCn'
-    'RyYW5zZmVySWQSJQoOcXVldWVfcG9zaXRpb24YAiABKAVSDXF1ZXVlUG9zaXRpb24SJQoOZXN0'
-    'aW1hdGVkX3dhaXQYAyABKAlSDWVzdGltYXRlZFdhaXQSPQoMcmVxdWVzdGVkX2F0GAQgASgLMh'
-    'ouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFILcmVxdWVzdGVkQXQ=');
+final $typed_data.Uint8List supportRequestTransferResponseDescriptor =
+    $convert.base64Decode(
+        'Ch5TdXBwb3J0UmVxdWVzdFRyYW5zZmVyUmVzcG9uc2USHwoLdHJhbnNmZXJfaWQYASABKAlSCn'
+        'RyYW5zZmVySWQSJQoOcXVldWVfcG9zaXRpb24YAiABKAVSDXF1ZXVlUG9zaXRpb24SJQoOZXN0'
+        'aW1hdGVkX3dhaXQYAyABKAlSDWVzdGltYXRlZFdhaXQSPQoMcmVxdWVzdGVkX2F0GAQgASgLMh'
+        'ouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFILcmVxdWVzdGVkQXQ=');
 
 @$core.Deprecated('Use supportAcceptTransferRequestDescriptor instead')
 const SupportAcceptTransferRequest$json = {
@@ -58,10 +69,11 @@ const SupportAcceptTransferRequest$json = {
 };
 
 /// Descriptor for `SupportAcceptTransferRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportAcceptTransferRequestDescriptor = $convert.base64Decode(
-    'ChxTdXBwb3J0QWNjZXB0VHJhbnNmZXJSZXF1ZXN0Eh8KC3RyYW5zZmVyX2lkGAEgASgJUgp0cm'
-    'Fuc2ZlcklkEh8KC29wZXJhdG9yX2lkGAIgASgJUgpvcGVyYXRvcklkEiMKDW9wZXJhdG9yX25h'
-    'bWUYAyABKAlSDG9wZXJhdG9yTmFtZQ==');
+final $typed_data.Uint8List supportAcceptTransferRequestDescriptor =
+    $convert.base64Decode(
+        'ChxTdXBwb3J0QWNjZXB0VHJhbnNmZXJSZXF1ZXN0Eh8KC3RyYW5zZmVyX2lkGAEgASgJUgp0cm'
+        'Fuc2ZlcklkEh8KC29wZXJhdG9yX2lkGAIgASgJUgpvcGVyYXRvcklkEiMKDW9wZXJhdG9yX25h'
+        'bWUYAyABKAlSDG9wZXJhdG9yTmFtZQ==');
 
 @$core.Deprecated('Use supportAcceptTransferResponseDescriptor instead')
 const SupportAcceptTransferResponse$json = {
@@ -71,8 +83,22 @@ const SupportAcceptTransferResponse$json = {
     {'1': 'session_id', '3': 2, '4': 1, '5': 9, '10': 'sessionId'},
     {'1': 'user_name', '3': 3, '4': 1, '5': 9, '10': 'userName'},
     {'1': 'user_email', '3': 4, '4': 1, '5': 9, '10': 'userEmail'},
-    {'1': 'history', '3': 5, '4': 3, '5': 11, '6': '.chat.SupportChatMessage', '10': 'history'},
-    {'1': 'accepted_at', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'acceptedAt'},
+    {
+      '1': 'history',
+      '3': 5,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.SupportChatMessage',
+      '10': 'history'
+    },
+    {
+      '1': 'accepted_at',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'acceptedAt'
+    },
   ],
 };
 
@@ -96,27 +122,42 @@ const SupportEndSupportSessionRequest$json = {
 };
 
 /// Descriptor for `SupportEndSupportSessionRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportEndSupportSessionRequestDescriptor = $convert.base64Decode(
-    'Ch9TdXBwb3J0RW5kU3VwcG9ydFNlc3Npb25SZXF1ZXN0Eh0KCnNlc3Npb25faWQYASABKAlSCX'
-    'Nlc3Npb25JZBIfCgtvcGVyYXRvcl9pZBgCIAEoCVIKb3BlcmF0b3JJZBIeCgpyZXNvbHV0aW9u'
-    'GAMgASgJUgpyZXNvbHV0aW9uEhQKBW5vdGVzGAQgASgJUgVub3Rlcw==');
+final $typed_data.Uint8List supportEndSupportSessionRequestDescriptor =
+    $convert.base64Decode(
+        'Ch9TdXBwb3J0RW5kU3VwcG9ydFNlc3Npb25SZXF1ZXN0Eh0KCnNlc3Npb25faWQYASABKAlSCX'
+        'Nlc3Npb25JZBIfCgtvcGVyYXRvcl9pZBgCIAEoCVIKb3BlcmF0b3JJZBIeCgpyZXNvbHV0aW9u'
+        'GAMgASgJUgpyZXNvbHV0aW9uEhQKBW5vdGVzGAQgASgJUgVub3Rlcw==');
 
 @$core.Deprecated('Use supportEndSupportSessionResponseDescriptor instead')
 const SupportEndSupportSessionResponse$json = {
   '1': 'SupportEndSupportSessionResponse',
   '2': [
     {'1': 'success', '3': 1, '4': 1, '5': 8, '10': 'success'},
-    {'1': 'ended_at', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'endedAt'},
-    {'1': 'support_duration_seconds', '3': 3, '4': 1, '5': 5, '10': 'supportDurationSeconds'},
+    {
+      '1': 'ended_at',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'endedAt'
+    },
+    {
+      '1': 'support_duration_seconds',
+      '3': 3,
+      '4': 1,
+      '5': 5,
+      '10': 'supportDurationSeconds'
+    },
   ],
 };
 
 /// Descriptor for `SupportEndSupportSessionResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportEndSupportSessionResponseDescriptor = $convert.base64Decode(
-    'CiBTdXBwb3J0RW5kU3VwcG9ydFNlc3Npb25SZXNwb25zZRIYCgdzdWNjZXNzGAEgASgIUgdzdW'
-    'NjZXNzEjUKCGVuZGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHZW5k'
-    'ZWRBdBI4ChhzdXBwb3J0X2R1cmF0aW9uX3NlY29uZHMYAyABKAVSFnN1cHBvcnREdXJhdGlvbl'
-    'NlY29uZHM=');
+final $typed_data.Uint8List supportEndSupportSessionResponseDescriptor =
+    $convert.base64Decode(
+        'CiBTdXBwb3J0RW5kU3VwcG9ydFNlc3Npb25SZXNwb25zZRIYCgdzdWNjZXNzGAEgASgIUgdzdW'
+        'NjZXNzEjUKCGVuZGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHZW5k'
+        'ZWRBdBI4ChhzdXBwb3J0X2R1cmF0aW9uX3NlY29uZHMYAyABKAVSFnN1cHBvcnREdXJhdGlvbl'
+        'NlY29uZHM=');
 
 @$core.Deprecated('Use supportSendSupportMessageRequestDescriptor instead')
 const SupportSendSupportMessageRequest$json = {
@@ -130,26 +171,35 @@ const SupportSendSupportMessageRequest$json = {
 };
 
 /// Descriptor for `SupportSendSupportMessageRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportSendSupportMessageRequestDescriptor = $convert.base64Decode(
-    'CiBTdXBwb3J0U2VuZFN1cHBvcnRNZXNzYWdlUmVxdWVzdBIdCgpzZXNzaW9uX2lkGAEgASgJUg'
-    'lzZXNzaW9uSWQSGwoJc2VuZGVyX2lkGAIgASgJUghzZW5kZXJJZBIfCgtzZW5kZXJfdHlwZRgD'
-    'IAEoCVIKc2VuZGVyVHlwZRIYCgdtZXNzYWdlGAQgASgJUgdtZXNzYWdl');
+final $typed_data.Uint8List supportSendSupportMessageRequestDescriptor =
+    $convert.base64Decode(
+        'CiBTdXBwb3J0U2VuZFN1cHBvcnRNZXNzYWdlUmVxdWVzdBIdCgpzZXNzaW9uX2lkGAEgASgJUg'
+        'lzZXNzaW9uSWQSGwoJc2VuZGVyX2lkGAIgASgJUghzZW5kZXJJZBIfCgtzZW5kZXJfdHlwZRgD'
+        'IAEoCVIKc2VuZGVyVHlwZRIYCgdtZXNzYWdlGAQgASgJUgdtZXNzYWdl');
 
 @$core.Deprecated('Use supportSendSupportMessageResponseDescriptor instead')
 const SupportSendSupportMessageResponse$json = {
   '1': 'SupportSendSupportMessageResponse',
   '2': [
     {'1': 'message_id', '3': 1, '4': 1, '5': 9, '10': 'messageId'},
-    {'1': 'timestamp', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
     {'1': 'delivered', '3': 3, '4': 1, '5': 8, '10': 'delivered'},
   ],
 };
 
 /// Descriptor for `SupportSendSupportMessageResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportSendSupportMessageResponseDescriptor = $convert.base64Decode(
-    'CiFTdXBwb3J0U2VuZFN1cHBvcnRNZXNzYWdlUmVzcG9uc2USHQoKbWVzc2FnZV9pZBgBIAEoCV'
-    'IJbWVzc2FnZUlkEjgKCXRpbWVzdGFtcBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3Rh'
-    'bXBSCXRpbWVzdGFtcBIcCglkZWxpdmVyZWQYAyABKAhSCWRlbGl2ZXJlZA==');
+final $typed_data.Uint8List supportSendSupportMessageResponseDescriptor =
+    $convert.base64Decode(
+        'CiFTdXBwb3J0U2VuZFN1cHBvcnRNZXNzYWdlUmVzcG9uc2USHQoKbWVzc2FnZV9pZBgBIAEoCV'
+        'IJbWVzc2FnZUlkEjgKCXRpbWVzdGFtcBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3Rh'
+        'bXBSCXRpbWVzdGFtcBIcCglkZWxpdmVyZWQYAyABKAhSCWRlbGl2ZXJlZA==');
 
 @$core.Deprecated('Use supportStreamSupportMessagesRequestDescriptor instead')
 const SupportStreamSupportMessagesRequest$json = {
@@ -161,9 +211,10 @@ const SupportStreamSupportMessagesRequest$json = {
 };
 
 /// Descriptor for `SupportStreamSupportMessagesRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportStreamSupportMessagesRequestDescriptor = $convert.base64Decode(
-    'CiNTdXBwb3J0U3RyZWFtU3VwcG9ydE1lc3NhZ2VzUmVxdWVzdBIdCgpzZXNzaW9uX2lkGAEgAS'
-    'gJUglzZXNzaW9uSWQSIwoNc3Vic2NyaWJlcl9pZBgCIAEoCVIMc3Vic2NyaWJlcklk');
+final $typed_data.Uint8List supportStreamSupportMessagesRequestDescriptor =
+    $convert.base64Decode(
+        'CiNTdXBwb3J0U3RyZWFtU3VwcG9ydE1lc3NhZ2VzUmVxdWVzdBIdCgpzZXNzaW9uX2lkGAEgAS'
+        'gJUglzZXNzaW9uSWQSIwoNc3Vic2NyaWJlcl9pZBgCIAEoCVIMc3Vic2NyaWJlcklk');
 
 @$core.Deprecated('Use supportMessageDescriptor instead')
 const SupportMessage$json = {
@@ -175,7 +226,14 @@ const SupportMessage$json = {
     {'1': 'sender_type', '3': 4, '4': 1, '5': 9, '10': 'senderType'},
     {'1': 'sender_name', '3': 5, '4': 1, '5': 9, '10': 'senderName'},
     {'1': 'content', '3': 6, '4': 1, '5': 9, '10': 'content'},
-    {'1': 'timestamp', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
     {'1': 'message_type', '3': 8, '4': 1, '5': 9, '10': 'messageType'},
   ],
 };
@@ -199,24 +257,33 @@ const SupportListPendingTransfersRequest$json = {
 };
 
 /// Descriptor for `SupportListPendingTransfersRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportListPendingTransfersRequestDescriptor = $convert.base64Decode(
-    'CiJTdXBwb3J0TGlzdFBlbmRpbmdUcmFuc2ZlcnNSZXF1ZXN0EhQKBWxpbWl0GAEgASgFUgVsaW'
-    '1pdBIWCgZvZmZzZXQYAiABKAVSBm9mZnNldA==');
+final $typed_data.Uint8List supportListPendingTransfersRequestDescriptor =
+    $convert.base64Decode(
+        'CiJTdXBwb3J0TGlzdFBlbmRpbmdUcmFuc2ZlcnNSZXF1ZXN0EhQKBWxpbWl0GAEgASgFUgVsaW'
+        '1pdBIWCgZvZmZzZXQYAiABKAVSBm9mZnNldA==');
 
 @$core.Deprecated('Use supportListPendingTransfersResponseDescriptor instead')
 const SupportListPendingTransfersResponse$json = {
   '1': 'SupportListPendingTransfersResponse',
   '2': [
-    {'1': 'transfers', '3': 1, '4': 3, '5': 11, '6': '.chat.SupportTransferRequest', '10': 'transfers'},
+    {
+      '1': 'transfers',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.SupportTransferRequest',
+      '10': 'transfers'
+    },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
   ],
 };
 
 /// Descriptor for `SupportListPendingTransfersResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List supportListPendingTransfersResponseDescriptor = $convert.base64Decode(
-    'CiNTdXBwb3J0TGlzdFBlbmRpbmdUcmFuc2ZlcnNSZXNwb25zZRI6Cgl0cmFuc2ZlcnMYASADKA'
-    'syHC5jaGF0LlN1cHBvcnRUcmFuc2ZlclJlcXVlc3RSCXRyYW5zZmVycxIfCgt0b3RhbF9jb3Vu'
-    'dBgCIAEoBVIKdG90YWxDb3VudA==');
+final $typed_data.Uint8List supportListPendingTransfersResponseDescriptor =
+    $convert.base64Decode(
+        'CiNTdXBwb3J0TGlzdFBlbmRpbmdUcmFuc2ZlcnNSZXNwb25zZRI6Cgl0cmFuc2ZlcnMYASADKA'
+        'syHC5jaGF0LlN1cHBvcnRUcmFuc2ZlclJlcXVlc3RSCXRyYW5zZmVycxIfCgt0b3RhbF9jb3Vu'
+        'dBgCIAEoBVIKdG90YWxDb3VudA==');
 
 @$core.Deprecated('Use supportTransferRequestDescriptor instead')
 const SupportTransferRequest$json = {
@@ -228,7 +295,14 @@ const SupportTransferRequest$json = {
     {'1': 'user_email', '3': 4, '4': 1, '5': 9, '10': 'userEmail'},
     {'1': 'reason', '3': 5, '4': 1, '5': 9, '10': 'reason'},
     {'1': 'priority', '3': 6, '4': 1, '5': 5, '10': 'priority'},
-    {'1': 'requested_at', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'requestedAt'},
+    {
+      '1': 'requested_at',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'requestedAt'
+    },
     {'1': 'wait_time_seconds', '3': 8, '4': 1, '5': 5, '10': 'waitTimeSeconds'},
     {'1': 'last_message', '3': 9, '4': 1, '5': 9, '10': 'lastMessage'},
   ],
@@ -248,10 +322,34 @@ final $typed_data.Uint8List supportTransferRequestDescriptor = $convert.base64De
 const SupportQueueStatusResponse$json = {
   '1': 'SupportQueueStatusResponse',
   '2': [
-    {'1': 'pending_transfers', '3': 1, '4': 1, '5': 5, '10': 'pendingTransfers'},
-    {'1': 'active_support_sessions', '3': 2, '4': 1, '5': 5, '10': 'activeSupportSessions'},
-    {'1': 'available_operators', '3': 3, '4': 1, '5': 5, '10': 'availableOperators'},
-    {'1': 'average_wait_time_seconds', '3': 4, '4': 1, '5': 2, '10': 'averageWaitTimeSeconds'},
+    {
+      '1': 'pending_transfers',
+      '3': 1,
+      '4': 1,
+      '5': 5,
+      '10': 'pendingTransfers'
+    },
+    {
+      '1': 'active_support_sessions',
+      '3': 2,
+      '4': 1,
+      '5': 5,
+      '10': 'activeSupportSessions'
+    },
+    {
+      '1': 'available_operators',
+      '3': 3,
+      '4': 1,
+      '5': 5,
+      '10': 'availableOperators'
+    },
+    {
+      '1': 'average_wait_time_seconds',
+      '3': 4,
+      '4': 1,
+      '5': 2,
+      '10': 'averageWaitTimeSeconds'
+    },
   ],
 };
 
@@ -270,7 +368,14 @@ const SupportChatMessage$json = {
     {'1': 'message_id', '3': 1, '4': 1, '5': 9, '10': 'messageId'},
     {'1': 'role', '3': 2, '4': 1, '5': 9, '10': 'role'},
     {'1': 'content', '3': 3, '4': 1, '5': 9, '10': 'content'},
-    {'1': 'timestamp', '3': 4, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
     {'1': 'model_used', '3': 5, '4': 1, '5': 9, '10': 'modelUsed'},
     {'1': 'tokens_used', '3': 6, '4': 1, '5': 5, '10': 'tokensUsed'},
   ],
@@ -282,4 +387,3 @@ final $typed_data.Uint8List supportChatMessageDescriptor = $convert.base64Decode
     'JvbGUYAiABKAlSBHJvbGUSGAoHY29udGVudBgDIAEoCVIHY29udGVudBI4Cgl0aW1lc3RhbXAY'
     'BCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgl0aW1lc3RhbXASHQoKbW9kZWxfdX'
     'NlZBgFIAEoCVIJbW9kZWxVc2VkEh8KC3Rva2Vuc191c2VkGAYgASgFUgp0b2tlbnNVc2Vk');
-

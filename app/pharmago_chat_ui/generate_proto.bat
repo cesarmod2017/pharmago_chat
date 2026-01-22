@@ -153,7 +153,7 @@ REM Use comandos PowerShell com arquivos de substituição
     echo $files = Get-ChildItem -Path '%OUTPUT_DIR%\!output_subdir!' -Filter '*.dart'
     echo foreach^($file in $files^) {
     echo   $content = Get-Content $file.FullName
-    echo   $content = $content -replace "import '.*google/protobuf/empty.pb.dart'", "import 'package:protobuf_google/protobuf_google.dart'"
+    echo   $content = $content -replace "import '.*google/protobuf/empty.pb.dart'", "import 'package:mod_proto_google/mod_proto_google.dart'"
     echo   Set-Content -Path $file.FullName -Value $content
     echo }
 )
@@ -161,7 +161,7 @@ REM Use comandos PowerShell com arquivos de substituição
     echo $files = Get-ChildItem -Path '%OUTPUT_DIR%\!output_subdir!' -Filter '*.dart'
     echo foreach^($file in $files^) {
     echo   $content = Get-Content $file.FullName
-    echo   $content = $content -replace "import '.*google/protobuf/timestamp.pb.dart'", "import 'package:protobuf_google/protobuf_google.dart'"
+    echo   $content = $content -replace "import '.*google/protobuf/timestamp.pb.dart'", "import 'package:mod_proto_google/mod_proto_google.dart'"
     echo   Set-Content -Path $file.FullName -Value $content
     echo }
 )
@@ -222,7 +222,7 @@ for /r "%OUTPUT_DIR%" %%f in (*.pbgrpc.dart) do (
     echo export 'package:pharmago_chat_ui/src/grpc/!DART_PATH!'; >> "%EXPORT_FILE%"
     endlocal
 )
-echo export 'package:protobuf_google/protobuf_google.dart'; >> "%EXPORT_FILE%"
+echo export 'package:mod_proto_google/mod_proto_google.dart'; >> "%EXPORT_FILE%"
 
 
 echo Arquivo de exports gerado em: %EXPORT_FILE%

@@ -47,7 +47,7 @@ class ChatProvider {
       erpName: erpName ?? '',
       language: language,
       type: type,
-      metadata: metadata,
+      metadata: metadata?.entries,
     );
     return grpcClient.createSession(request);
   }

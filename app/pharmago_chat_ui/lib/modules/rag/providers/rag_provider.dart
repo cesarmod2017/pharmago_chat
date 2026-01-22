@@ -1,17 +1,16 @@
 import 'dart:async';
 
 import 'package:fixnum/fixnum.dart';
-import 'package:grpc/grpc.dart';
-import 'package:pharmago_chat_ui/src/grpc/grpc_exports.dart';
 import 'package:pharmago_chat_ui/modules/chat/providers/chat_provider.dart'
     show GrpcChannelFactory;
+import 'package:pharmago_chat_ui/src/grpc/grpc_exports.dart';
 
 class RagProvider {
   RAGServiceClient? _client;
   final GrpcChannelFactory _channelFactory;
 
   RagProvider({required GrpcChannelFactory channelFactory})
-      : _channelFactory = channelFactory;
+    : _channelFactory = channelFactory;
 
   Future<RAGServiceClient> get client async {
     if (_client == null) {
@@ -43,7 +42,7 @@ class RagProvider {
       content: content,
       documentType: documentType,
       type: type ?? '',
-      metadata: metadata,
+      metadata: metadata?.entries,
       tags: tags,
     );
     return grpcClient.addDocument(request);
@@ -91,9 +90,7 @@ class RagProvider {
     return grpcClient.listDocuments(request);
   }
 
-  Future<RagDocumentInfo> getDocument({
-    required String documentId,
-  }) async {
+  Future<RagDocumentInfo> getDocument({required String documentId}) async {
     final grpcClient = await client;
     final request = RagGetDocumentRequest(documentId: documentId);
     return grpcClient.getDocument(request);
@@ -128,7 +125,7 @@ class RagProvider {
     final grpcClient = await client;
     final request = RagAddEmbeddingDocumentRequest(
       content: content,
-      metadata: metadata,
+      metadata: metadata?.entries,
     );
     return grpcClient.addEmbeddingDocument(request);
   }
@@ -152,7 +149,7 @@ class RagProvider {
     final request = RagSearchEmbeddingDocumentsRequest(
       query: query,
       limit: limit,
-      filter: filter,
+      filter: filter?.entries,
     );
     return grpcClient.searchEmbeddingDocuments(request);
   }
@@ -191,7 +188,7 @@ class RagProvider {
       content: content,
       documentType: documentType ?? '',
       type: type ?? '',
-      metadata: metadata,
+      metadata: metadata?.entries,
       tags: tags,
     );
   }

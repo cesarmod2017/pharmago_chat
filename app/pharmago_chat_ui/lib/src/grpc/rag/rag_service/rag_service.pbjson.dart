@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: rag/rag_service.proto
-//
-// @dart = 2.12
+// Generated from rag/rag_service.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -39,7 +41,14 @@ const RagAddDocumentRequest$json = {
     {'1': 'content', '3': 2, '4': 1, '5': 9, '10': 'content'},
     {'1': 'document_type', '3': 3, '4': 1, '5': 9, '10': 'documentType'},
     {'1': 'type', '3': 4, '4': 1, '5': 9, '10': 'type'},
-    {'1': 'metadata', '3': 5, '4': 3, '5': 11, '6': '.chat.RagAddDocumentRequest.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 5,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagAddDocumentRequest.MetadataEntry',
+      '10': 'metadata'
+    },
     {'1': 'tags', '3': 6, '4': 3, '5': 9, '10': 'tags'},
   ],
   '3': [RagAddDocumentRequest_MetadataEntry$json],
@@ -70,7 +79,14 @@ const RagAddDocumentResponse$json = {
   '2': [
     {'1': 'document_id', '3': 1, '4': 1, '5': 9, '10': 'documentId'},
     {'1': 'chunks_created', '3': 2, '4': 1, '5': 5, '10': 'chunksCreated'},
-    {'1': 'created_at', '3': 3, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
+    {
+      '1': 'created_at',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'createdAt'
+    },
   ],
 };
 
@@ -84,20 +100,35 @@ final $typed_data.Uint8List ragAddDocumentResponseDescriptor = $convert.base64De
 const RagAddDocumentsBatchRequest$json = {
   '1': 'RagAddDocumentsBatchRequest',
   '2': [
-    {'1': 'documents', '3': 1, '4': 3, '5': 11, '6': '.chat.RagAddDocumentRequest', '10': 'documents'},
+    {
+      '1': 'documents',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagAddDocumentRequest',
+      '10': 'documents'
+    },
   ],
 };
 
 /// Descriptor for `RagAddDocumentsBatchRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragAddDocumentsBatchRequestDescriptor = $convert.base64Decode(
-    'ChtSYWdBZGREb2N1bWVudHNCYXRjaFJlcXVlc3QSOQoJZG9jdW1lbnRzGAEgAygLMhsuY2hhdC'
-    '5SYWdBZGREb2N1bWVudFJlcXVlc3RSCWRvY3VtZW50cw==');
+final $typed_data.Uint8List ragAddDocumentsBatchRequestDescriptor =
+    $convert.base64Decode(
+        'ChtSYWdBZGREb2N1bWVudHNCYXRjaFJlcXVlc3QSOQoJZG9jdW1lbnRzGAEgAygLMhsuY2hhdC'
+        '5SYWdBZGREb2N1bWVudFJlcXVlc3RSCWRvY3VtZW50cw==');
 
 @$core.Deprecated('Use ragAddDocumentsBatchResponseDescriptor instead')
 const RagAddDocumentsBatchResponse$json = {
   '1': 'RagAddDocumentsBatchResponse',
   '2': [
-    {'1': 'results', '3': 1, '4': 3, '5': 11, '6': '.chat.RagAddDocumentResponse', '10': 'results'},
+    {
+      '1': 'results',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagAddDocumentResponse',
+      '10': 'results'
+    },
     {'1': 'success_count', '3': 2, '4': 1, '5': 5, '10': 'successCount'},
     {'1': 'failure_count', '3': 3, '4': 1, '5': 5, '10': 'failureCount'},
     {'1': 'errors', '3': 4, '4': 3, '5': 9, '10': 'errors'},
@@ -120,9 +151,10 @@ const RagDeleteDocumentRequest$json = {
 };
 
 /// Descriptor for `RagDeleteDocumentRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragDeleteDocumentRequestDescriptor = $convert.base64Decode(
-    'ChhSYWdEZWxldGVEb2N1bWVudFJlcXVlc3QSHwoLZG9jdW1lbnRfaWQYASABKAlSCmRvY3VtZW'
-    '50SWQ=');
+final $typed_data.Uint8List ragDeleteDocumentRequestDescriptor =
+    $convert.base64Decode(
+        'ChhSYWdEZWxldGVEb2N1bWVudFJlcXVlc3QSHwoLZG9jdW1lbnRfaWQYASABKAlSCmRvY3VtZW'
+        '50SWQ=');
 
 @$core.Deprecated('Use ragDeleteDocumentResponseDescriptor instead')
 const RagDeleteDocumentResponse$json = {
@@ -134,9 +166,10 @@ const RagDeleteDocumentResponse$json = {
 };
 
 /// Descriptor for `RagDeleteDocumentResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragDeleteDocumentResponseDescriptor = $convert.base64Decode(
-    'ChlSYWdEZWxldGVEb2N1bWVudFJlc3BvbnNlEhgKB3N1Y2Nlc3MYASABKAhSB3N1Y2Nlc3MSJQ'
-    'oOY2h1bmtzX2RlbGV0ZWQYAiABKAVSDWNodW5rc0RlbGV0ZWQ=');
+final $typed_data.Uint8List ragDeleteDocumentResponseDescriptor =
+    $convert.base64Decode(
+        'ChlSYWdEZWxldGVEb2N1bWVudFJlc3BvbnNlEhgKB3N1Y2Nlc3MYASABKAhSB3N1Y2Nlc3MSJQ'
+        'oOY2h1bmtzX2RlbGV0ZWQYAiABKAVSDWNodW5rc0RlbGV0ZWQ=');
 
 @$core.Deprecated('Use ragDeleteDocumentsBatchRequestDescriptor instead')
 const RagDeleteDocumentsBatchRequest$json = {
@@ -147,9 +180,10 @@ const RagDeleteDocumentsBatchRequest$json = {
 };
 
 /// Descriptor for `RagDeleteDocumentsBatchRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragDeleteDocumentsBatchRequestDescriptor = $convert.base64Decode(
-    'Ch5SYWdEZWxldGVEb2N1bWVudHNCYXRjaFJlcXVlc3QSIQoMZG9jdW1lbnRfaWRzGAEgAygJUg'
-    'tkb2N1bWVudElkcw==');
+final $typed_data.Uint8List ragDeleteDocumentsBatchRequestDescriptor =
+    $convert.base64Decode(
+        'Ch5SYWdEZWxldGVEb2N1bWVudHNCYXRjaFJlcXVlc3QSIQoMZG9jdW1lbnRfaWRzGAEgAygJUg'
+        'tkb2N1bWVudElkcw==');
 
 @$core.Deprecated('Use ragDeleteDocumentsBatchResponseDescriptor instead')
 const RagDeleteDocumentsBatchResponse$json = {
@@ -162,10 +196,11 @@ const RagDeleteDocumentsBatchResponse$json = {
 };
 
 /// Descriptor for `RagDeleteDocumentsBatchResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragDeleteDocumentsBatchResponseDescriptor = $convert.base64Decode(
-    'Ch9SYWdEZWxldGVEb2N1bWVudHNCYXRjaFJlc3BvbnNlEiMKDXN1Y2Nlc3NfY291bnQYASABKA'
-    'VSDHN1Y2Nlc3NDb3VudBIjCg1mYWlsdXJlX2NvdW50GAIgASgFUgxmYWlsdXJlQ291bnQSFgoG'
-    'ZXJyb3JzGAMgAygJUgZlcnJvcnM=');
+final $typed_data.Uint8List ragDeleteDocumentsBatchResponseDescriptor =
+    $convert.base64Decode(
+        'Ch9SYWdEZWxldGVEb2N1bWVudHNCYXRjaFJlc3BvbnNlEiMKDXN1Y2Nlc3NfY291bnQYASABKA'
+        'VSDHN1Y2Nlc3NDb3VudBIjCg1mYWlsdXJlX2NvdW50GAIgASgFUgxmYWlsdXJlQ291bnQSFgoG'
+        'ZXJyb3JzGAMgAygJUgZlcnJvcnM=');
 
 @$core.Deprecated('Use ragListDocumentsRequestDescriptor instead')
 const RagListDocumentsRequest$json = {
@@ -173,7 +208,13 @@ const RagListDocumentsRequest$json = {
   '2': [
     {'1': 'limit', '3': 1, '4': 1, '5': 5, '10': 'limit'},
     {'1': 'offset', '3': 2, '4': 1, '5': 5, '10': 'offset'},
-    {'1': 'document_type_filter', '3': 3, '4': 1, '5': 9, '10': 'documentTypeFilter'},
+    {
+      '1': 'document_type_filter',
+      '3': 3,
+      '4': 1,
+      '5': 9,
+      '10': 'documentTypeFilter'
+    },
     {'1': 'type_filter', '3': 4, '4': 1, '5': 9, '10': 'typeFilter'},
     {'1': 'tag_filter', '3': 5, '4': 3, '5': 9, '10': 'tagFilter'},
   ],
@@ -190,7 +231,14 @@ final $typed_data.Uint8List ragListDocumentsRequestDescriptor = $convert.base64D
 const RagListDocumentsResponse$json = {
   '1': 'RagListDocumentsResponse',
   '2': [
-    {'1': 'documents', '3': 1, '4': 3, '5': 11, '6': '.chat.RagDocumentInfo', '10': 'documents'},
+    {
+      '1': 'documents',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagDocumentInfo',
+      '10': 'documents'
+    },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
   ],
 };
@@ -223,9 +271,30 @@ const RagDocumentInfo$json = {
     {'1': 'document_type', '3': 3, '4': 1, '5': 9, '10': 'documentType'},
     {'1': 'type', '3': 4, '4': 1, '5': 9, '10': 'type'},
     {'1': 'chunk_count', '3': 5, '4': 1, '5': 5, '10': 'chunkCount'},
-    {'1': 'created_at', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
-    {'1': 'updated_at', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updatedAt'},
-    {'1': 'metadata', '3': 8, '4': 3, '5': 11, '6': '.chat.RagDocumentInfo.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'created_at',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'createdAt'
+    },
+    {
+      '1': 'updated_at',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'updatedAt'
+    },
+    {
+      '1': 'metadata',
+      '3': 8,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagDocumentInfo.MetadataEntry',
+      '10': 'metadata'
+    },
     {'1': 'tags', '3': 9, '4': 3, '5': 9, '10': 'tags'},
     {'1': 'content_length', '3': 10, '4': 1, '5': 5, '10': 'contentLength'},
   ],
@@ -260,7 +329,13 @@ const RagSearchDocumentsRequest$json = {
   '2': [
     {'1': 'query', '3': 1, '4': 1, '5': 9, '10': 'query'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'similarity_threshold', '3': 3, '4': 1, '5': 2, '10': 'similarityThreshold'},
+    {
+      '1': 'similarity_threshold',
+      '3': 3,
+      '4': 1,
+      '5': 2,
+      '10': 'similarityThreshold'
+    },
     {'1': 'type_filter', '3': 4, '4': 1, '5': 9, '10': 'typeFilter'},
     {'1': 'tag_filter', '3': 5, '4': 3, '5': 9, '10': 'tagFilter'},
   ],
@@ -277,14 +352,22 @@ final $typed_data.Uint8List ragSearchDocumentsRequestDescriptor = $convert.base6
 const RagSearchDocumentsResponse$json = {
   '1': 'RagSearchDocumentsResponse',
   '2': [
-    {'1': 'results', '3': 1, '4': 3, '5': 11, '6': '.chat.RagSearchResult', '10': 'results'},
+    {
+      '1': 'results',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagSearchResult',
+      '10': 'results'
+    },
   ],
 };
 
 /// Descriptor for `RagSearchDocumentsResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragSearchDocumentsResponseDescriptor = $convert.base64Decode(
-    'ChpSYWdTZWFyY2hEb2N1bWVudHNSZXNwb25zZRIvCgdyZXN1bHRzGAEgAygLMhUuY2hhdC5SYW'
-    'dTZWFyY2hSZXN1bHRSB3Jlc3VsdHM=');
+final $typed_data.Uint8List ragSearchDocumentsResponseDescriptor =
+    $convert.base64Decode(
+        'ChpSYWdTZWFyY2hEb2N1bWVudHNSZXNwb25zZRIvCgdyZXN1bHRzGAEgAygLMhUuY2hhdC5SYW'
+        'dTZWFyY2hSZXN1bHRSB3Jlc3VsdHM=');
 
 @$core.Deprecated('Use ragSearchResultDescriptor instead')
 const RagSearchResult$json = {
@@ -296,7 +379,14 @@ const RagSearchResult$json = {
     {'1': 'content', '3': 4, '4': 1, '5': 9, '10': 'content'},
     {'1': 'type', '3': 5, '4': 1, '5': 9, '10': 'type'},
     {'1': 'similarity_score', '3': 6, '4': 1, '5': 2, '10': 'similarityScore'},
-    {'1': 'metadata', '3': 7, '4': 3, '5': 11, '6': '.chat.RagSearchResult.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 7,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagSearchResult.MetadataEntry',
+      '10': 'metadata'
+    },
     {'1': 'tags', '3': 8, '4': 3, '5': 9, '10': 'tags'},
   ],
   '3': [RagSearchResult_MetadataEntry$json],
@@ -327,7 +417,14 @@ const RagAddEmbeddingDocumentRequest$json = {
   '1': 'RagAddEmbeddingDocumentRequest',
   '2': [
     {'1': 'content', '3': 1, '4': 1, '5': 9, '10': 'content'},
-    {'1': 'metadata', '3': 2, '4': 3, '5': 11, '6': '.chat.RagAddEmbeddingDocumentRequest.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagAddEmbeddingDocumentRequest.MetadataEntry',
+      '10': 'metadata'
+    },
   ],
   '3': [RagAddEmbeddingDocumentRequest_MetadataEntry$json],
 };
@@ -343,11 +440,12 @@ const RagAddEmbeddingDocumentRequest_MetadataEntry$json = {
 };
 
 /// Descriptor for `RagAddEmbeddingDocumentRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragAddEmbeddingDocumentRequestDescriptor = $convert.base64Decode(
-    'Ch5SYWdBZGRFbWJlZGRpbmdEb2N1bWVudFJlcXVlc3QSGAoHY29udGVudBgBIAEoCVIHY29udG'
-    'VudBJOCghtZXRhZGF0YRgCIAMoCzIyLmNoYXQuUmFnQWRkRW1iZWRkaW5nRG9jdW1lbnRSZXF1'
-    'ZXN0Lk1ldGFkYXRhRW50cnlSCG1ldGFkYXRhGjsKDU1ldGFkYXRhRW50cnkSEAoDa2V5GAEgAS'
-    'gJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4AQ==');
+final $typed_data.Uint8List ragAddEmbeddingDocumentRequestDescriptor =
+    $convert.base64Decode(
+        'Ch5SYWdBZGRFbWJlZGRpbmdEb2N1bWVudFJlcXVlc3QSGAoHY29udGVudBgBIAEoCVIHY29udG'
+        'VudBJOCghtZXRhZGF0YRgCIAMoCzIyLmNoYXQuUmFnQWRkRW1iZWRkaW5nRG9jdW1lbnRSZXF1'
+        'ZXN0Lk1ldGFkYXRhRW50cnlSCG1ldGFkYXRhGjsKDU1ldGFkYXRhRW50cnkSEAoDa2V5GAEgAS'
+        'gJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4AQ==');
 
 @$core.Deprecated('Use ragAddEmbeddingDocumentResponseDescriptor instead')
 const RagAddEmbeddingDocumentResponse$json = {
@@ -358,9 +456,10 @@ const RagAddEmbeddingDocumentResponse$json = {
 };
 
 /// Descriptor for `RagAddEmbeddingDocumentResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragAddEmbeddingDocumentResponseDescriptor = $convert.base64Decode(
-    'Ch9SYWdBZGRFbWJlZGRpbmdEb2N1bWVudFJlc3BvbnNlEh8KC2RvY3VtZW50X2lkGAEgASgDUg'
-    'pkb2N1bWVudElk');
+final $typed_data.Uint8List ragAddEmbeddingDocumentResponseDescriptor =
+    $convert.base64Decode(
+        'Ch9SYWdBZGRFbWJlZGRpbmdEb2N1bWVudFJlc3BvbnNlEh8KC2RvY3VtZW50X2lkGAEgASgDUg'
+        'pkb2N1bWVudElk');
 
 @$core.Deprecated('Use ragDeleteEmbeddingDocumentRequestDescriptor instead')
 const RagDeleteEmbeddingDocumentRequest$json = {
@@ -371,9 +470,10 @@ const RagDeleteEmbeddingDocumentRequest$json = {
 };
 
 /// Descriptor for `RagDeleteEmbeddingDocumentRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragDeleteEmbeddingDocumentRequestDescriptor = $convert.base64Decode(
-    'CiFSYWdEZWxldGVFbWJlZGRpbmdEb2N1bWVudFJlcXVlc3QSHwoLZG9jdW1lbnRfaWQYASABKA'
-    'NSCmRvY3VtZW50SWQ=');
+final $typed_data.Uint8List ragDeleteEmbeddingDocumentRequestDescriptor =
+    $convert.base64Decode(
+        'CiFSYWdEZWxldGVFbWJlZGRpbmdEb2N1bWVudFJlcXVlc3QSHwoLZG9jdW1lbnRfaWQYASABKA'
+        'NSCmRvY3VtZW50SWQ=');
 
 @$core.Deprecated('Use ragDeleteEmbeddingDocumentResponseDescriptor instead')
 const RagDeleteEmbeddingDocumentResponse$json = {
@@ -384,9 +484,10 @@ const RagDeleteEmbeddingDocumentResponse$json = {
 };
 
 /// Descriptor for `RagDeleteEmbeddingDocumentResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragDeleteEmbeddingDocumentResponseDescriptor = $convert.base64Decode(
-    'CiJSYWdEZWxldGVFbWJlZGRpbmdEb2N1bWVudFJlc3BvbnNlEhgKB3N1Y2Nlc3MYASABKAhSB3'
-    'N1Y2Nlc3M=');
+final $typed_data.Uint8List ragDeleteEmbeddingDocumentResponseDescriptor =
+    $convert.base64Decode(
+        'CiJSYWdEZWxldGVFbWJlZGRpbmdEb2N1bWVudFJlc3BvbnNlEhgKB3N1Y2Nlc3MYASABKAhSB3'
+        'N1Y2Nlc3M=');
 
 @$core.Deprecated('Use ragSearchEmbeddingDocumentsRequestDescriptor instead')
 const RagSearchEmbeddingDocumentsRequest$json = {
@@ -394,7 +495,14 @@ const RagSearchEmbeddingDocumentsRequest$json = {
   '2': [
     {'1': 'query', '3': 1, '4': 1, '5': 9, '10': 'query'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'filter', '3': 3, '4': 3, '5': 11, '6': '.chat.RagSearchEmbeddingDocumentsRequest.FilterEntry', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 3,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagSearchEmbeddingDocumentsRequest.FilterEntry',
+      '10': 'filter'
+    },
   ],
   '3': [RagSearchEmbeddingDocumentsRequest_FilterEntry$json],
 };
@@ -410,24 +518,33 @@ const RagSearchEmbeddingDocumentsRequest_FilterEntry$json = {
 };
 
 /// Descriptor for `RagSearchEmbeddingDocumentsRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragSearchEmbeddingDocumentsRequestDescriptor = $convert.base64Decode(
-    'CiJSYWdTZWFyY2hFbWJlZGRpbmdEb2N1bWVudHNSZXF1ZXN0EhQKBXF1ZXJ5GAEgASgJUgVxdW'
-    'VyeRIUCgVsaW1pdBgCIAEoBVIFbGltaXQSTAoGZmlsdGVyGAMgAygLMjQuY2hhdC5SYWdTZWFy'
-    'Y2hFbWJlZGRpbmdEb2N1bWVudHNSZXF1ZXN0LkZpbHRlckVudHJ5UgZmaWx0ZXIaOQoLRmlsdG'
-    'VyRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4AQ==');
+final $typed_data.Uint8List ragSearchEmbeddingDocumentsRequestDescriptor =
+    $convert.base64Decode(
+        'CiJSYWdTZWFyY2hFbWJlZGRpbmdEb2N1bWVudHNSZXF1ZXN0EhQKBXF1ZXJ5GAEgASgJUgVxdW'
+        'VyeRIUCgVsaW1pdBgCIAEoBVIFbGltaXQSTAoGZmlsdGVyGAMgAygLMjQuY2hhdC5SYWdTZWFy'
+        'Y2hFbWJlZGRpbmdEb2N1bWVudHNSZXF1ZXN0LkZpbHRlckVudHJ5UgZmaWx0ZXIaOQoLRmlsdG'
+        'VyRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4AQ==');
 
 @$core.Deprecated('Use ragSearchEmbeddingDocumentsResponseDescriptor instead')
 const RagSearchEmbeddingDocumentsResponse$json = {
   '1': 'RagSearchEmbeddingDocumentsResponse',
   '2': [
-    {'1': 'results', '3': 1, '4': 3, '5': 11, '6': '.chat.RagEmbeddingSearchResult', '10': 'results'},
+    {
+      '1': 'results',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagEmbeddingSearchResult',
+      '10': 'results'
+    },
   ],
 };
 
 /// Descriptor for `RagSearchEmbeddingDocumentsResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragSearchEmbeddingDocumentsResponseDescriptor = $convert.base64Decode(
-    'CiNSYWdTZWFyY2hFbWJlZGRpbmdEb2N1bWVudHNSZXNwb25zZRI4CgdyZXN1bHRzGAEgAygLMh'
-    '4uY2hhdC5SYWdFbWJlZGRpbmdTZWFyY2hSZXN1bHRSB3Jlc3VsdHM=');
+final $typed_data.Uint8List ragSearchEmbeddingDocumentsResponseDescriptor =
+    $convert.base64Decode(
+        'CiNSYWdTZWFyY2hFbWJlZGRpbmdEb2N1bWVudHNSZXNwb25zZRI4CgdyZXN1bHRzGAEgAygLMh'
+        '4uY2hhdC5SYWdFbWJlZGRpbmdTZWFyY2hSZXN1bHRSB3Jlc3VsdHM=');
 
 @$core.Deprecated('Use ragEmbeddingSearchResultDescriptor instead')
 const RagEmbeddingSearchResult$json = {
@@ -435,7 +552,14 @@ const RagEmbeddingSearchResult$json = {
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 3, '10': 'id'},
     {'1': 'content', '3': 2, '4': 1, '5': 9, '10': 'content'},
-    {'1': 'metadata', '3': 3, '4': 3, '5': 11, '6': '.chat.RagEmbeddingSearchResult.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 3,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagEmbeddingSearchResult.MetadataEntry',
+      '10': 'metadata'
+    },
     {'1': 'similarity_score', '3': 4, '4': 1, '5': 2, '10': 'similarityScore'},
   ],
   '3': [RagEmbeddingSearchResult_MetadataEntry$json],
@@ -467,7 +591,14 @@ const RagUploadFile$json = {
     {'1': 'content', '3': 2, '4': 1, '5': 9, '10': 'content'},
     {'1': 'document_type', '3': 3, '4': 1, '5': 9, '10': 'documentType'},
     {'1': 'type', '3': 4, '4': 1, '5': 9, '10': 'type'},
-    {'1': 'metadata', '3': 5, '4': 3, '5': 11, '6': '.chat.RagUploadFile.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 5,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagUploadFile.MetadataEntry',
+      '10': 'metadata'
+    },
     {'1': 'tags', '3': 6, '4': 3, '5': 9, '10': 'tags'},
   ],
   '3': [RagUploadFile_MetadataEntry$json],
@@ -495,14 +626,22 @@ final $typed_data.Uint8List ragUploadFileDescriptor = $convert.base64Decode(
 const RagUploadFilesBatchRequest$json = {
   '1': 'RagUploadFilesBatchRequest',
   '2': [
-    {'1': 'files', '3': 1, '4': 3, '5': 11, '6': '.chat.RagUploadFile', '10': 'files'},
+    {
+      '1': 'files',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.RagUploadFile',
+      '10': 'files'
+    },
   ],
 };
 
 /// Descriptor for `RagUploadFilesBatchRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List ragUploadFilesBatchRequestDescriptor = $convert.base64Decode(
-    'ChpSYWdVcGxvYWRGaWxlc0JhdGNoUmVxdWVzdBIpCgVmaWxlcxgBIAMoCzITLmNoYXQuUmFnVX'
-    'Bsb2FkRmlsZVIFZmlsZXM=');
+final $typed_data.Uint8List ragUploadFilesBatchRequestDescriptor =
+    $convert.base64Decode(
+        'ChpSYWdVcGxvYWRGaWxlc0JhdGNoUmVxdWVzdBIpCgVmaWxlcxgBIAMoCzITLmNoYXQuUmFnVX'
+        'Bsb2FkRmlsZVIFZmlsZXM=');
 
 @$core.Deprecated('Use ragUploadFileProgressDescriptor instead')
 const RagUploadFileProgress$json = {
@@ -511,11 +650,25 @@ const RagUploadFileProgress$json = {
     {'1': 'file_name', '3': 1, '4': 1, '5': 9, '10': 'fileName'},
     {'1': 'file_index', '3': 2, '4': 1, '5': 5, '10': 'fileIndex'},
     {'1': 'total_files', '3': 3, '4': 1, '5': 5, '10': 'totalFiles'},
-    {'1': 'status', '3': 4, '4': 1, '5': 14, '6': '.chat.RagUploadStatus', '10': 'status'},
+    {
+      '1': 'status',
+      '3': 4,
+      '4': 1,
+      '5': 14,
+      '6': '.chat.RagUploadStatus',
+      '10': 'status'
+    },
     {'1': 'message', '3': 5, '4': 1, '5': 9, '10': 'message'},
     {'1': 'document_id', '3': 6, '4': 1, '5': 3, '10': 'documentId'},
     {'1': 'error', '3': 7, '4': 1, '5': 9, '10': 'error'},
-    {'1': 'timestamp', '3': 8, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
   ],
 };
 
@@ -527,4 +680,3 @@ final $typed_data.Uint8List ragUploadFileProgressDescriptor = $convert.base64Dec
     'dtZXNzYWdlGAUgASgJUgdtZXNzYWdlEh8KC2RvY3VtZW50X2lkGAYgASgDUgpkb2N1bWVudElk'
     'EhQKBWVycm9yGAcgASgJUgVlcnJvchI4Cgl0aW1lc3RhbXAYCCABKAsyGi5nb29nbGUucHJvdG'
     '9idWYuVGltZXN0YW1wUgl0aW1lc3RhbXA=');
-

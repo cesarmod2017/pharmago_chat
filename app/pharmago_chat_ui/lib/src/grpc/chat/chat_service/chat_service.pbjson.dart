@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: chat/chat_service.proto
-//
-// @dart = 2.12
+// Generated from chat/chat_service.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -24,7 +26,14 @@ const ChatCreateSessionRequest$json = {
     {'1': 'erp_name', '3': 5, '4': 1, '5': 9, '10': 'erpName'},
     {'1': 'language', '3': 6, '4': 1, '5': 9, '10': 'language'},
     {'1': 'type', '3': 7, '4': 1, '5': 9, '10': 'type'},
-    {'1': 'metadata', '3': 8, '4': 3, '5': 11, '6': '.chat.ChatCreateSessionRequest.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 8,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ChatCreateSessionRequest.MetadataEntry',
+      '10': 'metadata'
+    },
   ],
   '3': [ChatCreateSessionRequest_MetadataEntry$json],
 };
@@ -53,7 +62,14 @@ const ChatCreateSessionResponse$json = {
   '1': 'ChatCreateSessionResponse',
   '2': [
     {'1': 'session_id', '3': 1, '4': 1, '5': 9, '10': 'sessionId'},
-    {'1': 'created_at', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
+    {
+      '1': 'created_at',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'createdAt'
+    },
     {'1': 'welcome_message', '3': 3, '4': 1, '5': 9, '10': 'welcomeMessage'},
   ],
 };
@@ -89,7 +105,14 @@ const ChatSendMessageResponse$json = {
     {'1': 'response', '3': 2, '4': 1, '5': 9, '10': 'response'},
     {'1': 'model_used', '3': 3, '4': 1, '5': 9, '10': 'modelUsed'},
     {'1': 'tokens_used', '3': 4, '4': 1, '5': 5, '10': 'tokensUsed'},
-    {'1': 'timestamp', '3': 5, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
     {'1': 'sources', '3': 6, '4': 3, '5': 9, '10': 'sources'},
   ],
 };
@@ -141,15 +164,23 @@ final $typed_data.Uint8List chatGetHistoryRequestDescriptor = $convert.base64Dec
 const ChatGetHistoryResponse$json = {
   '1': 'ChatGetHistoryResponse',
   '2': [
-    {'1': 'messages', '3': 1, '4': 3, '5': 11, '6': '.chat.ChatMessage', '10': 'messages'},
+    {
+      '1': 'messages',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ChatMessage',
+      '10': 'messages'
+    },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
   ],
 };
 
 /// Descriptor for `ChatGetHistoryResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List chatGetHistoryResponseDescriptor = $convert.base64Decode(
-    'ChZDaGF0R2V0SGlzdG9yeVJlc3BvbnNlEi0KCG1lc3NhZ2VzGAEgAygLMhEuY2hhdC5DaGF0TW'
-    'Vzc2FnZVIIbWVzc2FnZXMSHwoLdG90YWxfY291bnQYAiABKAVSCnRvdGFsQ291bnQ=');
+final $typed_data.Uint8List chatGetHistoryResponseDescriptor =
+    $convert.base64Decode(
+        'ChZDaGF0R2V0SGlzdG9yeVJlc3BvbnNlEi0KCG1lc3NhZ2VzGAEgAygLMhEuY2hhdC5DaGF0TW'
+        'Vzc2FnZVIIbWVzc2FnZXMSHwoLdG90YWxfY291bnQYAiABKAVSCnRvdGFsQ291bnQ=');
 
 @$core.Deprecated('Use chatMessageDescriptor instead')
 const ChatMessage$json = {
@@ -158,7 +189,14 @@ const ChatMessage$json = {
     {'1': 'message_id', '3': 1, '4': 1, '5': 9, '10': 'messageId'},
     {'1': 'role', '3': 2, '4': 1, '5': 9, '10': 'role'},
     {'1': 'content', '3': 3, '4': 1, '5': 9, '10': 'content'},
-    {'1': 'timestamp', '3': 4, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
     {'1': 'model_used', '3': 5, '4': 1, '5': 9, '10': 'modelUsed'},
     {'1': 'tokens_used', '3': 6, '4': 1, '5': 5, '10': 'tokensUsed'},
   ],
@@ -190,7 +228,14 @@ const ChatEndSessionResponse$json = {
   '1': 'ChatEndSessionResponse',
   '2': [
     {'1': 'success', '3': 1, '4': 1, '5': 8, '10': 'success'},
-    {'1': 'ended_at', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'endedAt'},
+    {
+      '1': 'ended_at',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'endedAt'
+    },
     {'1': 'total_messages', '3': 3, '4': 1, '5': 5, '10': 'totalMessages'},
     {'1': 'total_tokens', '3': 4, '4': 1, '5': 5, '10': 'totalTokens'},
   ],
@@ -212,9 +257,10 @@ const ChatGetSessionInfoRequest$json = {
 };
 
 /// Descriptor for `ChatGetSessionInfoRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List chatGetSessionInfoRequestDescriptor = $convert.base64Decode(
-    'ChlDaGF0R2V0U2Vzc2lvbkluZm9SZXF1ZXN0Eh0KCnNlc3Npb25faWQYASABKAlSCXNlc3Npb2'
-    '5JZA==');
+final $typed_data.Uint8List chatGetSessionInfoRequestDescriptor =
+    $convert.base64Decode(
+        'ChlDaGF0R2V0U2Vzc2lvbkluZm9SZXF1ZXN0Eh0KCnNlc3Npb25faWQYASABKAlSCXNlc3Npb2'
+        '5JZA==');
 
 @$core.Deprecated('Use chatSessionInfoDescriptor instead')
 const ChatSessionInfo$json = {
@@ -224,17 +270,44 @@ const ChatSessionInfo$json = {
     {'1': 'user_name', '3': 2, '4': 1, '5': 9, '10': 'userName'},
     {'1': 'user_email', '3': 3, '4': 1, '5': 9, '10': 'userEmail'},
     {'1': 'status', '3': 4, '4': 1, '5': 9, '10': 'status'},
-    {'1': 'created_at', '3': 5, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
-    {'1': 'last_activity', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'lastActivity'},
+    {
+      '1': 'created_at',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'createdAt'
+    },
+    {
+      '1': 'last_activity',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'lastActivity'
+    },
     {'1': 'message_count', '3': 7, '4': 1, '5': 5, '10': 'messageCount'},
     {'1': 'total_tokens', '3': 8, '4': 1, '5': 5, '10': 'totalTokens'},
-    {'1': 'current_operator_id', '3': 9, '4': 1, '5': 9, '10': 'currentOperatorId'},
+    {
+      '1': 'current_operator_id',
+      '3': 9,
+      '4': 1,
+      '5': 9,
+      '10': 'currentOperatorId'
+    },
     {'1': 'client', '3': 10, '4': 1, '5': 9, '10': 'client'},
     {'1': 'agent_name', '3': 11, '4': 1, '5': 9, '10': 'agentName'},
     {'1': 'erp_name', '3': 12, '4': 1, '5': 9, '10': 'erpName'},
     {'1': 'language', '3': 13, '4': 1, '5': 9, '10': 'language'},
     {'1': 'type', '3': 14, '4': 1, '5': 9, '10': 'type'},
-    {'1': 'metadata', '3': 15, '4': 3, '5': 11, '6': '.chat.ChatSessionInfo.MetadataEntry', '10': 'metadata'},
+    {
+      '1': 'metadata',
+      '3': 15,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ChatSessionInfo.MetadataEntry',
+      '10': 'metadata'
+    },
   ],
   '3': [ChatSessionInfo_MetadataEntry$json],
 };
@@ -275,25 +348,34 @@ const ChatListActiveSessionsRequest$json = {
 };
 
 /// Descriptor for `ChatListActiveSessionsRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List chatListActiveSessionsRequestDescriptor = $convert.base64Decode(
-    'Ch1DaGF0TGlzdEFjdGl2ZVNlc3Npb25zUmVxdWVzdBIUCgVsaW1pdBgBIAEoBVIFbGltaXQSFg'
-    'oGb2Zmc2V0GAIgASgFUgZvZmZzZXQSIwoNc3RhdHVzX2ZpbHRlchgDIAEoCVIMc3RhdHVzRmls'
-    'dGVy');
+final $typed_data.Uint8List chatListActiveSessionsRequestDescriptor =
+    $convert.base64Decode(
+        'Ch1DaGF0TGlzdEFjdGl2ZVNlc3Npb25zUmVxdWVzdBIUCgVsaW1pdBgBIAEoBVIFbGltaXQSFg'
+        'oGb2Zmc2V0GAIgASgFUgZvZmZzZXQSIwoNc3RhdHVzX2ZpbHRlchgDIAEoCVIMc3RhdHVzRmls'
+        'dGVy');
 
 @$core.Deprecated('Use chatListActiveSessionsResponseDescriptor instead')
 const ChatListActiveSessionsResponse$json = {
   '1': 'ChatListActiveSessionsResponse',
   '2': [
-    {'1': 'sessions', '3': 1, '4': 3, '5': 11, '6': '.chat.ChatSessionInfo', '10': 'sessions'},
+    {
+      '1': 'sessions',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ChatSessionInfo',
+      '10': 'sessions'
+    },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
   ],
 };
 
 /// Descriptor for `ChatListActiveSessionsResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List chatListActiveSessionsResponseDescriptor = $convert.base64Decode(
-    'Ch5DaGF0TGlzdEFjdGl2ZVNlc3Npb25zUmVzcG9uc2USMQoIc2Vzc2lvbnMYASADKAsyFS5jaG'
-    'F0LkNoYXRTZXNzaW9uSW5mb1IIc2Vzc2lvbnMSHwoLdG90YWxfY291bnQYAiABKAVSCnRvdGFs'
-    'Q291bnQ=');
+final $typed_data.Uint8List chatListActiveSessionsResponseDescriptor =
+    $convert.base64Decode(
+        'Ch5DaGF0TGlzdEFjdGl2ZVNlc3Npb25zUmVzcG9uc2USMQoIc2Vzc2lvbnMYASADKAsyFS5jaG'
+        'F0LkNoYXRTZXNzaW9uSW5mb1IIc2Vzc2lvbnMSHwoLdG90YWxfY291bnQYAiABKAVSCnRvdGFs'
+        'Q291bnQ=');
 
 @$core.Deprecated('Use chatGetHistoryByEmailRequestDescriptor instead')
 const ChatGetHistoryByEmailRequest$json = {
@@ -301,20 +383,36 @@ const ChatGetHistoryByEmailRequest$json = {
   '2': [
     {'1': 'user_email', '3': 1, '4': 1, '5': 9, '10': 'userEmail'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
+    {'1': 'type', '3': 3, '4': 1, '5': 9, '10': 'type'},
   ],
 };
 
 /// Descriptor for `ChatGetHistoryByEmailRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List chatGetHistoryByEmailRequestDescriptor = $convert.base64Decode(
-    'ChxDaGF0R2V0SGlzdG9yeUJ5RW1haWxSZXF1ZXN0Eh0KCnVzZXJfZW1haWwYASABKAlSCXVzZX'
-    'JFbWFpbBIUCgVsaW1pdBgCIAEoBVIFbGltaXQ=');
+final $typed_data.Uint8List chatGetHistoryByEmailRequestDescriptor =
+    $convert.base64Decode(
+        'ChxDaGF0R2V0SGlzdG9yeUJ5RW1haWxSZXF1ZXN0Eh0KCnVzZXJfZW1haWwYASABKAlSCXVzZX'
+        'JFbWFpbBIUCgVsaW1pdBgCIAEoBVIFbGltaXQSEgoEdHlwZRgDIAEoCVIEdHlwZQ==');
 
 @$core.Deprecated('Use chatGetHistoryByEmailResponseDescriptor instead')
 const ChatGetHistoryByEmailResponse$json = {
   '1': 'ChatGetHistoryByEmailResponse',
   '2': [
-    {'1': 'messages', '3': 1, '4': 3, '5': 11, '6': '.chat.ChatHistoryMessage', '10': 'messages'},
+    {
+      '1': 'messages',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ChatHistoryMessage',
+      '10': 'messages'
+    },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
+    {
+      '1': 'welcome_message_inserted',
+      '3': 3,
+      '4': 1,
+      '5': 8,
+      '10': 'welcomeMessageInserted'
+    },
   ],
 };
 
@@ -322,7 +420,8 @@ const ChatGetHistoryByEmailResponse$json = {
 final $typed_data.Uint8List chatGetHistoryByEmailResponseDescriptor = $convert.base64Decode(
     'Ch1DaGF0R2V0SGlzdG9yeUJ5RW1haWxSZXNwb25zZRI0CghtZXNzYWdlcxgBIAMoCzIYLmNoYX'
     'QuQ2hhdEhpc3RvcnlNZXNzYWdlUghtZXNzYWdlcxIfCgt0b3RhbF9jb3VudBgCIAEoBVIKdG90'
-    'YWxDb3VudA==');
+    'YWxDb3VudBI4Chh3ZWxjb21lX21lc3NhZ2VfaW5zZXJ0ZWQYAyABKAhSFndlbGNvbWVNZXNzYW'
+    'dlSW5zZXJ0ZWQ=');
 
 @$core.Deprecated('Use chatHistoryMessageDescriptor instead')
 const ChatHistoryMessage$json = {
@@ -331,7 +430,14 @@ const ChatHistoryMessage$json = {
     {'1': 'message_id', '3': 1, '4': 1, '5': 9, '10': 'messageId'},
     {'1': 'role', '3': 2, '4': 1, '5': 9, '10': 'role'},
     {'1': 'content', '3': 3, '4': 1, '5': 9, '10': 'content'},
-    {'1': 'timestamp', '3': 4, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
+    {
+      '1': 'timestamp',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'timestamp'
+    },
     {'1': 'model_used', '3': 5, '4': 1, '5': 9, '10': 'modelUsed'},
     {'1': 'tokens_used', '3': 6, '4': 1, '5': 5, '10': 'tokensUsed'},
     {'1': 'session_id', '3': 7, '4': 1, '5': 9, '10': 'sessionId'},
@@ -345,4 +451,3 @@ final $typed_data.Uint8List chatHistoryMessageDescriptor = $convert.base64Decode
     'BCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgl0aW1lc3RhbXASHQoKbW9kZWxfdX'
     'NlZBgFIAEoCVIJbW9kZWxVc2VkEh8KC3Rva2Vuc191c2VkGAYgASgFUgp0b2tlbnNVc2VkEh0K'
     'CnNlc3Npb25faWQYByABKAlSCXNlc3Npb25JZA==');
-

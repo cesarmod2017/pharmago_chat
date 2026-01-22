@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: prompts/prompt_service.proto
-//
-// @dart = 2.12
+// Generated from prompts/prompt_service.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -35,7 +37,14 @@ const CreatePromptResponse$json = {
   '1': 'CreatePromptResponse',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
-    {'1': 'created_at', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
+    {
+      '1': 'created_at',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'createdAt'
+    },
   ],
 };
 
@@ -67,7 +76,14 @@ const UpdatePromptResponse$json = {
   '1': 'UpdatePromptResponse',
   '2': [
     {'1': 'success', '3': 1, '4': 1, '5': 8, '10': 'success'},
-    {'1': 'updated_at', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updatedAt'},
+    {
+      '1': 'updated_at',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'updatedAt'
+    },
   ],
 };
 
@@ -85,8 +101,8 @@ const DeletePromptRequest$json = {
 };
 
 /// Descriptor for `DeletePromptRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List deletePromptRequestDescriptor = $convert.base64Decode(
-    'ChNEZWxldGVQcm9tcHRSZXF1ZXN0Eg4KAmlkGAEgASgJUgJpZA==');
+final $typed_data.Uint8List deletePromptRequestDescriptor = $convert
+    .base64Decode('ChNEZWxldGVQcm9tcHRSZXF1ZXN0Eg4KAmlkGAEgASgJUgJpZA==');
 
 @$core.Deprecated('Use deletePromptResponseDescriptor instead')
 const DeletePromptResponse$json = {
@@ -97,8 +113,9 @@ const DeletePromptResponse$json = {
 };
 
 /// Descriptor for `DeletePromptResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List deletePromptResponseDescriptor = $convert.base64Decode(
-    'ChREZWxldGVQcm9tcHRSZXNwb25zZRIYCgdzdWNjZXNzGAEgASgIUgdzdWNjZXNz');
+final $typed_data.Uint8List deletePromptResponseDescriptor =
+    $convert.base64Decode(
+        'ChREZWxldGVQcm9tcHRSZXNwb25zZRIYCgdzdWNjZXNzGAEgASgIUgdzdWNjZXNz');
 
 @$core.Deprecated('Use getPromptRequestDescriptor instead')
 const GetPromptRequest$json = {
@@ -109,8 +126,8 @@ const GetPromptRequest$json = {
 };
 
 /// Descriptor for `GetPromptRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getPromptRequestDescriptor = $convert.base64Decode(
-    'ChBHZXRQcm9tcHRSZXF1ZXN0Eg4KAmlkGAEgASgJUgJpZA==');
+final $typed_data.Uint8List getPromptRequestDescriptor =
+    $convert.base64Decode('ChBHZXRQcm9tcHRSZXF1ZXN0Eg4KAmlkGAEgASgJUgJpZA==');
 
 @$core.Deprecated('Use listPromptsRequestDescriptor instead')
 const ListPromptsRequest$json = {
@@ -137,15 +154,23 @@ const GetPromptsByTypeRequest$json = {
 };
 
 /// Descriptor for `GetPromptsByTypeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getPromptsByTypeRequestDescriptor = $convert.base64Decode(
-    'ChdHZXRQcm9tcHRzQnlUeXBlUmVxdWVzdBISCgR0eXBlGAEgASgJUgR0eXBlEhQKBWxpbWl0GA'
-    'IgASgFUgVsaW1pdBIWCgZvZmZzZXQYAyABKAVSBm9mZnNldA==');
+final $typed_data.Uint8List getPromptsByTypeRequestDescriptor =
+    $convert.base64Decode(
+        'ChdHZXRQcm9tcHRzQnlUeXBlUmVxdWVzdBISCgR0eXBlGAEgASgJUgR0eXBlEhQKBWxpbWl0GA'
+        'IgASgFUgVsaW1pdBIWCgZvZmZzZXQYAyABKAVSBm9mZnNldA==');
 
 @$core.Deprecated('Use listPromptsResponseDescriptor instead')
 const ListPromptsResponse$json = {
   '1': 'ListPromptsResponse',
   '2': [
-    {'1': 'prompts', '3': 1, '4': 3, '5': 11, '6': '.chat.PromptInfo', '10': 'prompts'},
+    {
+      '1': 'prompts',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.PromptInfo',
+      '10': 'prompts'
+    },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
   ],
 };
@@ -164,8 +189,22 @@ const PromptInfo$json = {
     {'1': 'type', '3': 3, '4': 1, '5': 9, '10': 'type'},
     {'1': 'prompt', '3': 4, '4': 1, '5': 9, '10': 'prompt'},
     {'1': 'welcome_message', '3': 5, '4': 1, '5': 9, '10': 'welcomeMessage'},
-    {'1': 'created_at', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
-    {'1': 'updated_at', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updatedAt'},
+    {
+      '1': 'created_at',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'createdAt'
+    },
+    {
+      '1': 'updated_at',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'updatedAt'
+    },
   ],
 };
 
@@ -176,4 +215,3 @@ final $typed_data.Uint8List promptInfoDescriptor = $convert.base64Decode(
     'GAUgASgJUg53ZWxjb21lTWVzc2FnZRI5CgpjcmVhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3'
     'RvYnVmLlRpbWVzdGFtcFIJY3JlYXRlZEF0EjkKCnVwZGF0ZWRfYXQYByABKAsyGi5nb29nbGUu'
     'cHJvdG9idWYuVGltZXN0YW1wUgl1cGRhdGVkQXQ=');
-

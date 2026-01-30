@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:grpc/grpc.dart';
 import 'package:pharmago_chat_ui/src/grpc/grpc_exports.dart';
 
-typedef GrpcChannelFactory = Future<ClientChannel> Function();
+/// Factory function that creates a gRPC channel.
+/// Returns dynamic to support both ClientChannel (native) and GrpcWebClientChannel (web).
+typedef GrpcChannelFactory = Future<dynamic> Function();
 
 class ChatProvider {
   ChatServiceClient? _client;
@@ -15,6 +16,7 @@ class ChatProvider {
   Future<ChatServiceClient> get client async {
     if (_client == null) {
       final channel = await _channelFactory();
+      // Both ClientChannel and GrpcWebClientChannel work with the generated client
       _client = ChatServiceClient(channel);
     }
     return _client!;

@@ -31,6 +31,7 @@
 export 'bindings/chat_binding.dart';
 
 // Config
+export 'config/chat_channel_factory.dart';
 export 'config/chat_environment.dart';
 
 // Controllers

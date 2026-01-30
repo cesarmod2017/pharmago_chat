@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:grpc/grpc.dart';
+import 'chat_channel_factory.dart' as channel_factory;
 
 /// Environment configuration for PharmaGO Chat gRPC connections.
 ///
@@ -7,6 +7,10 @@ import 'package:grpc/grpc.dart';
 /// the PharmaGo.Chat.Grpc service in different modes:
 /// - Debug mode: connects to localhost
 /// - Release mode: connects to production URL via port 443
+///
+/// Supports multiple platforms:
+/// - Web: Uses GrpcWebClientChannel with XHR transport
+/// - Native (Windows, Android, iOS, macOS, Linux): Uses ClientChannel with HTTP/2
 class ChatEnvironment {
   /// Private constructor to prevent instantiation
   ChatEnvironment._();
@@ -32,6 +36,9 @@ class ChatEnvironment {
 
   /// Returns true if running in release mode
   static bool get isRelease => kReleaseMode;
+
+  /// Returns true if running on web platform
+  static bool get isWeb => kIsWeb;
 
   /// Current host based on environment
   static String get host =>
@@ -63,30 +70,19 @@ class ChatEnvironment {
     _customUseTls = null;
   }
 
-  /// Creates a gRPC ClientChannel configured for the current environment
-  static ClientChannel createChannel() {
-    return ClientChannel(
-      host,
-      port: port,
-      options: ChannelOptions(
-        credentials: useTls
-            ? const ChannelCredentials.secure()
-            : const ChannelCredentials.insecure(),
-        connectionTimeout: const Duration(seconds: 30),
-        idleTimeout: const Duration(minutes: 5),
-      ),
-    );
-  }
-
-  /// Factory function for creating channels (for use with ChatBindingFactory)
-  static Future<ClientChannel> channelFactory() async {
-    return createChannel();
+  /// Factory function for creating channels (for use with ChatBindingFactory).
+  /// Automatically selects the correct channel type based on platform:
+  /// - Web: GrpcWebClientChannel
+  /// - Native: ClientChannel
+  static Future<dynamic> channelFactory() async {
+    return channel_factory.createChatChannel();
   }
 
   /// Returns a description of current environment settings
   static String get description {
     final mode = isDebug ? 'DEBUG' : 'RELEASE';
     final tls = useTls ? 'TLS' : 'insecure';
-    return '[$mode] $host:$port ($tls)';
+    final platform = isWeb ? 'Web' : 'Native';
+    return '[$mode] $host:$port ($tls) - $platform';
   }
 }

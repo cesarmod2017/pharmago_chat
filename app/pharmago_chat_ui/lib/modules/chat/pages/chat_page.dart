@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../controllers/chat_controller.dart';
 import '../models/chat_contact_model.dart';
 import '../theme/chat_theme.dart';
+import '../widgets/chat_connection_error.dart';
 import '../widgets/chat_header.dart';
 import '../widgets/chat_input.dart';
 import '../widgets/chat_message_list.dart';
@@ -144,7 +145,7 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class ChatPageWidget extends StatelessWidget {
+class ChatPageWidget extends StatefulWidget {
   final ChatController controller;
   final ChatContactModel? contact;
   final ChatThemeData? theme;
@@ -193,64 +194,109 @@ class ChatPageWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final chatTheme = theme ?? ChatThemeData.fromTheme(Theme.of(context));
+  State<ChatPageWidget> createState() => _ChatPageWidgetState();
+}
 
-    if (contact != null) {
+class _ChatPageWidgetState extends State<ChatPageWidget>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Forçar verificação de conexão ao abrir a tela
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller.ensureConnected();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Forçar reconexão quando o app volta ao primeiro plano
+    if (state == AppLifecycleState.resumed) {
+      widget.controller.ensureConnected();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chatTheme =
+        widget.theme ?? ChatThemeData.fromTheme(Theme.of(context));
+
+    if (widget.contact != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.setContact(contact!);
+        widget.controller.setContact(widget.contact!);
       });
     }
 
     return Column(
       children: [
-        if (showAppBar)
+        if (widget.showAppBar)
           Obx(
             () => ChatHeader(
-              contact: controller.contact.value,
+              contact: widget.controller.contact.value,
               theme: chatTheme,
-              onBackPressed: onBackPressed,
-              actions: headerActions,
+              onBackPressed: widget.onBackPressed,
+              actions: widget.headerActions,
             ),
           ),
         Expanded(
           child: Container(
             color: chatTheme.backgroundColor,
-            child: Obx(
-              () => controller.isLoading.value && controller.messages.isEmpty
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: chatTheme.sendButtonColor,
-                      ),
-                    )
-                  : ChatMessageList(
-                      messages: controller.messages.toList(),
-                      scrollController: controller.scrollController,
-                      isTyping: controller.isTyping.value,
-                      theme: chatTheme,
-                      onRetryLastMessage: controller.retryLastMessage,
-                      emptyWidget: emptyWidget,
-                    ),
-            ),
+            child: Obx(() {
+              // Mostrar tela de erro se houver erro de conexão persistente
+              if (widget.controller.hasConnectionError.value &&
+                  widget.controller.sessionId.value.isEmpty) {
+                return ChatConnectionError(
+                  controller: widget.controller,
+                  theme: chatTheme,
+                );
+              }
+
+              // Mostrar loading se estiver carregando e não houver mensagens
+              if (widget.controller.isLoading.value &&
+                  widget.controller.messages.isEmpty) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: chatTheme.sendButtonColor,
+                  ),
+                );
+              }
+
+              // Mostrar lista de mensagens
+              return ChatMessageList(
+                messages: widget.controller.messages.toList(),
+                scrollController: widget.controller.scrollController,
+                isTyping: widget.controller.isTyping.value,
+                theme: chatTheme,
+                onRetryLastMessage: widget.controller.retryLastMessage,
+                emptyWidget: widget.emptyWidget,
+              );
+            }),
           ),
         ),
         Obx(
           () => ChatInput(
-            controller: controller.messageController,
-            focusNode: controller.messageFocusNode,
-            onSend: controller.sendMessage,
-            enabled:
-                !controller.isLoading.value &&
-                !controller.isTyping.value &&
-                controller.sessionId.value.isNotEmpty,
+            controller: widget.controller.messageController,
+            focusNode: widget.controller.messageFocusNode,
+            onSend: widget.controller.sendMessage,
+            enabled: !widget.controller.isLoading.value &&
+                !widget.controller.isTyping.value &&
+                widget.controller.sessionId.value.isNotEmpty &&
+                !widget.controller.hasConnectionError.value,
             theme: chatTheme,
-            hintText: inputHintText,
-            sendOnEnter: sendOnEnter,
-            sendButtonIcon: sendButtonIcon,
-            inputBackgroundColor: inputBackgroundColor,
-            inputBorderColor: inputBorderColor,
-            inputHintColor: inputHintColor,
-            inputTextColor: inputTextColor,
+            hintText: widget.inputHintText,
+            sendOnEnter: widget.sendOnEnter,
+            sendButtonIcon: widget.sendButtonIcon,
+            inputBackgroundColor: widget.inputBackgroundColor,
+            inputBorderColor: widget.inputBorderColor,
+            inputHintColor: widget.inputHintColor,
+            inputTextColor: widget.inputTextColor,
           ),
         ),
       ],

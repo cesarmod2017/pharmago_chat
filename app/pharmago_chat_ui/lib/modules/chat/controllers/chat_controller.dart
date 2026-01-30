@@ -8,6 +8,14 @@ import '../models/chat_contact_model.dart';
 import '../models/chat_message_model.dart';
 import '../providers/chat_provider.dart';
 
+/// Estados de conexão para o chat gRPC
+enum ChatConnectionState {
+  connected,
+  connecting,
+  disconnected,
+  reconnecting,
+}
+
 class ChatController extends GetxController {
   final ChatProvider provider;
   final String userName;
@@ -49,8 +57,46 @@ class ChatController extends GetxController {
   final contact = ChatContactModel.defaultBot().obs;
   final isOnline = true.obs;
 
+  /// Estado atual da conexão
+  final connectionState = ChatConnectionState.disconnected.obs;
+
+  /// Indica se está em processo de reconexão
+  final isReconnecting = false.obs;
+
+  /// Indica se houve falha persistente de conexão
+  final hasConnectionError = false.obs;
+
   StreamSubscription? _streamSubscription;
   Timer? _healthCheckTimer;
+
+  // ============ Variáveis para reconexão com backoff exponencial ============
+
+  /// Intervalos de backoff em segundos: 5s, 15s, 30s, 60s
+  static const List<int> _backoffIntervals = [5, 15, 30, 60];
+
+  /// Índice atual no array de intervalos de backoff
+  int _currentBackoffIndex = 0;
+
+  /// Contador de erros consecutivos no intervalo atual
+  int _consecutiveErrors = 0;
+
+  /// Máximo de erros antes de avançar para o próximo intervalo
+  static const int _maxErrorsPerInterval = 5;
+
+  /// Timer para reconexão automática
+  Timer? _reconnectTimer;
+
+  /// Indica se reconexão está ativa
+  bool _reconnectionActive = false;
+
+  /// Timestamps dos últimos erros para detectar erros em rajada
+  final List<DateTime> _errorTimestamps = [];
+
+  /// Contador de tentativas na pausa especial (5 tentativas a cada 5s)
+  int _specialPauseAttempts = 0;
+
+  /// Indica se está em modo de pausa especial
+  bool _inSpecialPause = false;
 
   @override
   void onInit() {
@@ -66,6 +112,8 @@ class ChatController extends GetxController {
     messageFocusNode.dispose();
     _streamSubscription?.cancel();
     _healthCheckTimer?.cancel();
+    _reconnectTimer?.cancel();
+    _reconnectionActive = false;
     _endSessionSilently();
     super.onClose();
   }
@@ -84,10 +132,208 @@ class ChatController extends GetxController {
 
   Future<void> _checkHealth() async {
     final online = await provider.checkHealth();
-    if (isOnline.value != online) {
+    final wasOnline = isOnline.value;
+
+    if (wasOnline != online) {
       isOnline.value = online;
       _updateContactStatus();
+
+      if (!online && wasOnline) {
+        // Conexão perdida - iniciar reconexão automática
+        _startReconnection();
+      } else if (online && !wasOnline) {
+        // Conexão restaurada
+        _onConnectionRestored();
+      }
     }
+  }
+
+  // ============ Métodos de reconexão com backoff exponencial ============
+
+  /// Reseta todos os contadores de backoff para valores iniciais
+  void _resetBackoff() {
+    _currentBackoffIndex = 0;
+    _consecutiveErrors = 0;
+    _errorTimestamps.clear();
+    _specialPauseAttempts = 0;
+    _inSpecialPause = false;
+  }
+
+  /// Chamado quando a conexão é restaurada com sucesso
+  void _onConnectionRestored() {
+    _resetBackoff();
+    _reconnectTimer?.cancel();
+    _reconnectionActive = false;
+    isReconnecting.value = false;
+    hasConnectionError.value = false;
+    connectionState.value = ChatConnectionState.connected;
+  }
+
+  /// Inicia o processo de reconexão automática
+  void _startReconnection() {
+    if (_reconnectionActive) return;
+
+    _reconnectionActive = true;
+    isReconnecting.value = true;
+    hasConnectionError.value = true;
+    connectionState.value = ChatConnectionState.reconnecting;
+
+    _scheduleReconnect();
+  }
+
+  /// Agenda a próxima tentativa de reconexão
+  void _scheduleReconnect() {
+    _reconnectTimer?.cancel();
+
+    if (!_reconnectionActive) return;
+
+    final interval = _getNextInterval();
+    _reconnectTimer = Timer(
+      Duration(seconds: interval),
+      _attemptReconnect,
+    );
+  }
+
+  /// Calcula o próximo intervalo de reconexão baseado no backoff
+  int _getNextInterval() {
+    // Se está em pausa especial, usar intervalo de 5 segundos
+    if (_inSpecialPause) {
+      return 5;
+    }
+
+    // Verificar se houve 5 erros em 60 segundos (ativar pausa especial)
+    _cleanOldErrorTimestamps();
+    if (_errorTimestamps.length >= 5) {
+      _inSpecialPause = true;
+      _specialPauseAttempts = 0;
+      return 5;
+    }
+
+    return _backoffIntervals[_currentBackoffIndex];
+  }
+
+  /// Remove timestamps de erros mais antigos que 60 segundos
+  void _cleanOldErrorTimestamps() {
+    final cutoff = DateTime.now().subtract(const Duration(seconds: 60));
+    _errorTimestamps.removeWhere((ts) => ts.isBefore(cutoff));
+  }
+
+  /// Tenta reconectar ao servidor gRPC
+  Future<void> _attemptReconnect() async {
+    if (!_reconnectionActive) return;
+
+    connectionState.value = ChatConnectionState.connecting;
+
+    try {
+      // Resetar o cliente gRPC para forçar nova conexão
+      provider.resetClient();
+
+      final online = await provider.checkHealth();
+
+      if (online) {
+        // Conexão restaurada com sucesso
+        isOnline.value = true;
+        _updateContactStatus();
+        _onConnectionRestored();
+
+        // Reinicializar sessão se necessário
+        if (sessionId.value.isEmpty) {
+          await _initSession();
+        }
+        return;
+      }
+
+      // Conexão falhou - registrar erro
+      _onReconnectError();
+    } catch (e) {
+      _onReconnectError();
+    }
+  }
+
+  /// Chamado quando uma tentativa de reconexão falha
+  void _onReconnectError() {
+    _errorTimestamps.add(DateTime.now());
+    _consecutiveErrors++;
+
+    if (_inSpecialPause) {
+      _specialPauseAttempts++;
+      if (_specialPauseAttempts >= 5) {
+        // Pausa especial concluída, voltar ao backoff normal
+        _inSpecialPause = false;
+        _specialPauseAttempts = 0;
+        // Avançar para o próximo intervalo após a pausa especial
+        if (_currentBackoffIndex < _backoffIntervals.length - 1) {
+          _currentBackoffIndex++;
+        }
+        _consecutiveErrors = 0;
+      }
+    } else if (_consecutiveErrors >= _maxErrorsPerInterval) {
+      // Avançar para o próximo intervalo de backoff
+      _consecutiveErrors = 0;
+      if (_currentBackoffIndex < _backoffIntervals.length - 1) {
+        _currentBackoffIndex++;
+      }
+    }
+
+    connectionState.value = ChatConnectionState.reconnecting;
+    _scheduleReconnect();
+  }
+
+  /// Força uma tentativa imediata de reconexão (chamado pelo usuário)
+  Future<bool> forceReconnect() async {
+    _reconnectTimer?.cancel();
+    isReconnecting.value = true;
+    connectionState.value = ChatConnectionState.connecting;
+
+    try {
+      provider.resetClient();
+      final online = await provider.checkHealth();
+
+      if (online) {
+        isOnline.value = true;
+        _updateContactStatus();
+        _onConnectionRestored();
+
+        // Reinicializar sessão se necessário
+        if (sessionId.value.isEmpty) {
+          await _initSession();
+        }
+        return true;
+      }
+
+      // Falha na reconexão forçada
+      _onReconnectError();
+      return false;
+    } catch (e) {
+      _onReconnectError();
+      return false;
+    }
+  }
+
+  /// Verifica e tenta reconectar se necessário (para uso ao abrir a tela)
+  Future<void> ensureConnected() async {
+    if (!isOnline.value || hasConnectionError.value) {
+      await forceReconnect();
+    } else {
+      // Verificar saúde da conexão
+      final online = await provider.checkHealth();
+      if (!online) {
+        await forceReconnect();
+      }
+    }
+  }
+
+  /// Retorna o intervalo atual de reconexão em segundos
+  int get currentReconnectInterval {
+    if (_inSpecialPause) return 5;
+    return _backoffIntervals[_currentBackoffIndex];
+  }
+
+  /// Para a reconexão automática
+  void stopReconnection() {
+    _reconnectTimer?.cancel();
+    _reconnectionActive = false;
+    isReconnecting.value = false;
   }
 
   void _updateContactStatus() {
@@ -101,6 +347,7 @@ class ChatController extends GetxController {
   Future<void> _initSession() async {
     isLoading.value = true;
     error.value = null;
+    connectionState.value = ChatConnectionState.connecting;
 
     try {
       // Load existing history by email from Redis (180 days TTL)
@@ -119,7 +366,10 @@ class ChatController extends GetxController {
 
       sessionId.value = response.sessionId;
       isOnline.value = true;
+      hasConnectionError.value = false;
+      connectionState.value = ChatConnectionState.connected;
       _updateContactStatus();
+      _resetBackoff();
 
       // Only show welcome message if no history was loaded
       if (response.welcomeMessage.isNotEmpty && messages.isEmpty) {
@@ -135,8 +385,12 @@ class ChatController extends GetxController {
     } catch (e) {
       error.value = 'chat_error_init_session'.tr;
       isOnline.value = false;
+      hasConnectionError.value = true;
+      connectionState.value = ChatConnectionState.disconnected;
       _updateContactStatus();
-      _addErrorMessage('chat_error_connection'.tr);
+      // Não adicionar mensagem de erro - a UI mostrará a tela de erro
+      // Iniciar reconexão automática
+      _startReconnection();
     } finally {
       isLoading.value = false;
     }

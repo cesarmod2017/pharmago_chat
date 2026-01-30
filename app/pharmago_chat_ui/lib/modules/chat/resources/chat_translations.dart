@@ -16,6 +16,14 @@ abstract class ChatTranslations {
     'chat_typing': 'Typing...',
     'chat_empty_conversation': 'Start a conversation',
     'chat_yesterday': 'Yesterday',
+    // Connection error screen
+    'chat_connection_error_title': 'Connection unavailable',
+    'chat_connection_error_message':
+        'We are having trouble connecting to our server. Please check your internet connection.',
+    'chat_connecting': 'Connecting...',
+    'chat_reconnecting_in': 'Reconnecting in @seconds seconds...',
+    'chat_talk_to_attendant': 'Talk to an attendant',
+    'chat_retry': 'Try again',
   };
 
   static const Map<String, String> ptBR = {
@@ -30,6 +38,14 @@ abstract class ChatTranslations {
     'chat_typing': 'Digitando...',
     'chat_empty_conversation': 'Inicie uma conversa',
     'chat_yesterday': 'Ontem',
+    // Connection error screen
+    'chat_connection_error_title': 'Conexão indisponível',
+    'chat_connection_error_message':
+        'Estamos com dificuldade para conectar ao nosso servidor. Verifique sua conexão com a internet.',
+    'chat_connecting': 'Conectando...',
+    'chat_reconnecting_in': 'Reconectando em @seconds segundos...',
+    'chat_talk_to_attendant': 'Falar com um atendente',
+    'chat_retry': 'Tentar novamente',
   };
 
   static const Map<String, String> esES = {
@@ -44,5 +60,13 @@ abstract class ChatTranslations {
     'chat_typing': 'Escribiendo...',
     'chat_empty_conversation': 'Iniciar conversación',
     'chat_yesterday': 'Ayer',
+    // Connection error screen
+    'chat_connection_error_title': 'Conexión no disponible',
+    'chat_connection_error_message':
+        'Estamos teniendo dificultades para conectar con nuestro servidor. Verifique su conexión a internet.',
+    'chat_connecting': 'Conectando...',
+    'chat_reconnecting_in': 'Reconectando en @seconds segundos...',
+    'chat_talk_to_attendant': 'Hablar con un agente',
+    'chat_retry': 'Intentar de nuevo',
   };
 }

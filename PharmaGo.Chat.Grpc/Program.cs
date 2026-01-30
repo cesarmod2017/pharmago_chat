@@ -126,19 +126,23 @@ builder.Services.AddGrpcReflection();
 // ============================================================================
 // CORS
 // ============================================================================
+// Configura a política de CORS para gRPC-Web (compatível com PharmaGo.Grpc)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .AllowAnyOrigin() // Substitua por WithOrigins("http://localhost:3000") em produção
             .AllowAnyMethod()
             .AllowAnyHeader()
             .WithExposedHeaders(
                 "Grpc-Status",
                 "Grpc-Message",
                 "Grpc-Encoding",
-                "Grpc-Accept-Encoding");
+                "Grpc-Accept-Encoding",
+                "Content-Grpc-Status",
+                "Content-Grpc-Message",
+                "Content-Grpc-Encoding");
     });
 });
 
@@ -150,23 +154,34 @@ builder.Services.AddHealthChecks()
     .AddRedis(chatSettings.Redis.Host, name: "redis");
 
 // ============================================================================
-// Kestrel Configuration
+// Kestrel Configuration (compatível com PharmaGo.Grpc)
 // ============================================================================
 builder.WebHost.ConfigureKestrel(options =>
 {
+    // Limites de conexão e tamanho de mensagem
     options.Limits.MaxConcurrentConnections = 200;
     options.Limits.MaxConcurrentUpgradedConnections = 200;
     options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
+
+    // Timeouts alinhados com cliente Flutter gRPC
     options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(30);
     options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(5);
+
+    // Desabilita rate limiting para long-lived gRPC streams
     options.Limits.MinRequestBodyDataRate = null;
     options.Limits.MinResponseDataRate = null;
 
-    // HTTP/2 settings for gRPC
+    // Configurações HTTP/2 específicas para gRPC keepalive
     options.Limits.Http2.KeepAlivePingDelay = TimeSpan.FromSeconds(30);
     options.Limits.Http2.KeepAlivePingTimeout = TimeSpan.FromSeconds(20);
     options.Limits.Http2.MaxStreamsPerConnection = 100;
+    options.Limits.Http2.MaxFrameSize = 16384; // 16 KB
+    options.Limits.Http2.HeaderTableSize = 4096; // 4 KB
+    options.Limits.Http2.InitialConnectionWindowSize = 128 * 1024; // 128 KB
+    options.Limits.Http2.InitialStreamWindowSize = 96 * 1024; // 96 KB
 
+    // Configuração HTTP/2 apenas (gRPC nativo)
+    Console.WriteLine("[KESTREL] Configurando HTTP/2 para gRPC nativo");
     options.ConfigureEndpointDefaults(listenOptions =>
     {
         listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;

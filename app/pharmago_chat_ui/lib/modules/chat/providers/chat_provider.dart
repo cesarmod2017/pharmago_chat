@@ -20,8 +20,17 @@ class ChatProvider {
     return _client!;
   }
 
+  /// Reseta o cliente gRPC, forçando uma nova conexão na próxima chamada.
+  /// Útil para reconexão após erros de rede.
   void resetClient() {
     _client = null;
+  }
+
+  /// Força uma reconexão recriando o cliente gRPC.
+  /// Retorna true se a reconexão foi bem-sucedida.
+  Future<bool> reconnect() async {
+    resetClient();
+    return await checkHealth();
   }
 
   void dispose() {

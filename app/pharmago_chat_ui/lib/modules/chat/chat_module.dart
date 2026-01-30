@@ -57,6 +57,7 @@ export 'theme/chat_theme.dart';
 
 // Widgets
 export 'widgets/chat_bubble.dart';
+export 'widgets/chat_connection_error.dart';
 export 'widgets/chat_header.dart';
 export 'widgets/chat_input.dart';
 export 'widgets/chat_message_list.dart';

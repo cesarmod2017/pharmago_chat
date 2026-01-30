@@ -180,11 +180,12 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.Http2.InitialConnectionWindowSize = 128 * 1024; // 128 KB
     options.Limits.Http2.InitialStreamWindowSize = 96 * 1024; // 96 KB
 
-    // Configuração HTTP/2 apenas (gRPC nativo)
-    Console.WriteLine("[KESTREL] Configurando HTTP/2 para gRPC nativo");
+    // Configuração HTTP/1.1 e HTTP/2 para suportar gRPC nativo e gRPC-Web
+    // gRPC-Web via navegador requer HTTP/1.1, enquanto clientes gRPC nativos usam HTTP/2
+    Console.WriteLine("[KESTREL] Configurando HTTP/1.1 + HTTP/2 para gRPC nativo e gRPC-Web");
     options.ConfigureEndpointDefaults(listenOptions =>
     {
-        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
     });
 });
 

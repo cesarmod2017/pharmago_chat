@@ -180,12 +180,14 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.Http2.InitialConnectionWindowSize = 128 * 1024; // 128 KB
     options.Limits.Http2.InitialStreamWindowSize = 96 * 1024; // 96 KB
 
-    // Configuração HTTP/1.1 e HTTP/2 para suportar gRPC nativo e gRPC-Web
-    // gRPC-Web via navegador requer HTTP/1.1, enquanto clientes gRPC nativos usam HTTP/2
-    Console.WriteLine("[KESTREL] Configurando HTTP/1.1 + HTTP/2 para gRPC nativo e gRPC-Web");
-    options.ConfigureEndpointDefaults(listenOptions =>
+    // Configuração HTTP/2 Cleartext (h2c) para gRPC atrás de proxy com terminação SSL
+    // Quando Nginx faz terminação SSL, a comunicação interna é HTTP sem TLS
+    // gRPC nativo requer HTTP/2, enquanto gRPC-Web pode usar HTTP/1.1 ou HTTP/2
+    Console.WriteLine("[KESTREL] Configurando HTTP/2 Cleartext (h2c) para gRPC atrás de proxy");
+    options.ListenAnyIP(8080, listenOptions =>
     {
-        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+        // HTTP/2 sem TLS (h2c) - necessário para gRPC atrás de proxy que faz terminação SSL
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
 });
 

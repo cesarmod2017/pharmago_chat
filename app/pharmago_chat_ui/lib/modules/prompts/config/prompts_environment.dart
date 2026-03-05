@@ -16,7 +16,7 @@ class PromptsEnvironment {
   static int? _customPort;
   static bool? _customUseTls;
 
-  static bool get isDebug => kDebugMode;
+  static bool get isDebug => !kDebugMode;
   static bool get isRelease => kReleaseMode;
 
   static String get host =>

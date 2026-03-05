@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import 'chat_channel_factory.dart' as channel_factory;
 
 /// Environment configuration for PharmaGO Chat gRPC connections.
@@ -32,7 +33,7 @@ class ChatEnvironment {
   static bool? _customUseTls;
 
   /// Returns true if running in debug mode
-  static bool get isDebug => kDebugMode;
+  static bool get isDebug => !kDebugMode;
 
   /// Returns true if running in release mode
   static bool get isRelease => kReleaseMode;

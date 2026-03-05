@@ -27,9 +27,9 @@ dependencies:
   gap: ^3.0.1
   get: ^4.7.3
   grpc: ^5.1.0
-  fixnum: ^1.1.0
-  flutter_svg: ^2.0.17
-  file_picker: ^10.3.7
+  fixnum: ^1.1.1
+  flutter_svg: ^2.2.3
+  file_picker: ^10.3.10
 
 dev_dependencies:
   flutter_test:

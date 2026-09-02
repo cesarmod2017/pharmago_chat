@@ -160,3 +160,18 @@ yarn-error.log*
 nul
 *.tmp
 *.temp
+
+# CLI/agent workspaces (Kyroon) - nunca versionar
+.agents
+.ai-logs
+**/.ai-logs/
+.claude
+.claude-staging
+.codex
+.droid
+.kimi
+.kyroon
+.kyroon-staging
+.opencode
+.qwen
+.tmp
